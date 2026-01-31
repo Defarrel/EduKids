@@ -160,7 +160,7 @@ class _SplashScreenState extends State<SplashScreen>
                   position:
                       _floatingAnimation, 
                   child: Image.asset(
-                    'lib/core/assets/images/logo_sementara.png',
+                    'assets/images/logo_sementara.png',
                     width: AppSize.scaleWidth(280),
                     fit: BoxFit.contain,
                   ),
