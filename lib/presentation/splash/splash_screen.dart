@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/core/constant/sizes.dart';
 import 'package:flutter/material.dart';
-import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/presentation/home/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -24,45 +24,41 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
+    // Intro Animation
     _logoIntroController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
-
     _scaleIntroAnimation = CurvedAnimation(
       parent: _logoIntroController,
-      curve: Curves.elasticOut, 
+      curve: Curves.elasticOut,
     );
 
+    // Floating Animation
     _floatingController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2), 
+      duration: const Duration(seconds: 2),
     );
-
     _floatingAnimation =
         Tween<Offset>(
           begin: Offset.zero,
-          end: const Offset(
-            0.0,
-            -0.05,
-          ), 
+          end: const Offset(0.0, -0.05),
         ).animate(
-          CurvedAnimation(
-            parent: _floatingController,
-            curve: Curves.easeInOut,
-          ),
+          CurvedAnimation(parent: _floatingController, curve: Curves.easeInOut),
         );
 
     _logoIntroController.forward().then((value) {
       _floatingController.repeat(reverse: true);
     });
 
+    // Loop Animation
     _backgroundLoopController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 10), 
+      duration: const Duration(seconds: 5),
     );
-    _backgroundLoopController.repeat(); 
+    _backgroundLoopController.repeat(reverse: true);
 
+    // Timer
     Timer(const Duration(seconds: 5), () {
       if (mounted) {
         Navigator.pushReplacement(
@@ -84,108 +80,119 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     AppSize.init(context);
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.primaryLight, AppColors.primary],
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: AppSize.screenHeight * 0.3,
-              child: AnimatedBuilder(
-                animation: _backgroundLoopController,
-                builder: (context, child) {
-                  final t = _backgroundLoopController.value;
-                  return Stack(
-                    children: [
-                      // Ombak 1
-                      Positioned(
-                        top: AppSize.scaleHeight(40),
-                        left: AppSize.scaleWidth(-20) + (screenWidth * 0.1 * t),
-                        child: _buildOrnament(size: 60, opacity: 0.3),
-                      ),
-                      Positioned(
-                        top: AppSize.scaleHeight(80),
-                        right:
-                            AppSize.scaleWidth(-30) + (screenWidth * 0.15 * t),
-                        child: _buildOrnament(size: 40, opacity: 0.2),
-                      ),
-                      Positioned(
-                        top:
-                            AppSize.scaleHeight(20) +
-                            (10 * math.sin(t * 2 * math.pi)),
-                        left: screenWidth * 0.6,
-                        child: _buildOrnament(size: 30, opacity: 0.25),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-
-            // Ombak 2
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: AppSize.screenHeight * 0.45,
-              child: AnimatedBuilder(
-                animation: _backgroundLoopController,
-                builder: (context, child) {
-                  return CustomPaint(
-                    painter: AnimatedWavePainter(
-                      _backgroundLoopController.value,
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            Center(
-              child: ScaleTransition(
-                scale: _scaleIntroAnimation, 
-                child: SlideTransition(
-                  position:
-                      _floatingAnimation, 
-                  child: Image.asset(
-                    'assets/images/logo_sementara.png',
-                    width: AppSize.scaleWidth(280),
-                    fit: BoxFit.contain,
-                  ),
+      body: Stack(
+        children: [
+          // Background
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.bgCyan,
+                    AppColors.bgBlue,
+                    AppColors.bgPurple,
+                  ],
+                  stops: [0.0, 0.5, 1.0],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+
+          // Bubbles
+          AnimatedBuilder(
+            animation: _backgroundLoopController,
+            builder: (context, child) {
+              final t = _backgroundLoopController.value;
+              final baseOpacity = 0.4 + (t * 0.5);
+
+              return Stack(
+                children: [
+                  Positioned(
+                    top: AppSize.screenHeight * 0.08,
+                    left: AppSize.screenWidth * 0.1,
+                    child: _buildBubble(size: 55, opacity: baseOpacity),
+                  ),
+                  Positioned(
+                    top: AppSize.screenHeight * 0.15,
+                    right: AppSize.screenWidth * 0.15,
+                    child: _buildBubble(size: 40, opacity: baseOpacity * 0.9),
+                  ),
+                  Positioned(
+                    top: AppSize.screenHeight * 0.05,
+                    left: AppSize.screenWidth * 0.55,
+                    child: _buildBubble(size: 25, opacity: baseOpacity * 0.7),
+                  ),
+                  Positioned(
+                    top: AppSize.screenHeight * 0.28,
+                    left: AppSize.screenWidth * 0.05,
+                    child: _buildBubble(size: 45, opacity: baseOpacity * 0.85),
+                  ),
+                  Positioned(
+                    top: AppSize.screenHeight * 0.25,
+                    right: AppSize.screenWidth * 0.05,
+                    child: _buildBubble(size: 30, opacity: baseOpacity * 0.75),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          // Waves
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: AppSize.screenHeight * 0.35,
+            child: AnimatedBuilder(
+              animation: _backgroundLoopController,
+              builder: (context, child) {
+                return CustomPaint(
+                  painter: AnimatedWavePainter(_backgroundLoopController.value),
+                );
+              },
+            ),
+          ),
+
+          // Logo
+          Center(
+            child: ScaleTransition(
+              scale: _scaleIntroAnimation,
+              child: SlideTransition(
+                position: _floatingAnimation,
+                child: Image.asset(
+                  'assets/images/logo_sementara1.png',
+                  height: AppSize.screenHeight * 0.70,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  // Helper Widget 
-  Widget _buildOrnament({required double size, required double opacity}) {
+  // Bubble Widget
+  Widget _buildBubble({required double size, required double opacity}) {
     return Container(
       width: AppSize.scaleWidth(size),
       height: AppSize.scaleWidth(size),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withOpacity(opacity),
+        color: AppColors.white.withOpacity(opacity * 0.3),
+        border: Border.all(
+          color: AppColors.white.withOpacity(opacity * 0.5),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withOpacity(opacity * 0.5),
-            blurRadius: 20,
-            spreadRadius: 5,
+            color: AppColors.white.withOpacity(opacity * 0.4),
+            blurRadius: size * 0.5,
+            spreadRadius: 0,
           ),
         ],
       ),
@@ -193,13 +200,14 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
+// Wave Painter
 class AnimatedWavePainter extends CustomPainter {
   final double value;
   AnimatedWavePainter(this.value);
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Ombak Belakang
+    // Back Wave
     _drawWave(
       canvas,
       size,
@@ -208,7 +216,7 @@ class AnimatedWavePainter extends CustomPainter {
       waveHeight: 25,
       speedMultiplier: -1.0,
     );
-    // Ombak Depan
+    // Front Wave
     _drawWave(
       canvas,
       size,
@@ -228,9 +236,11 @@ class AnimatedWavePainter extends CustomPainter {
     required double speedMultiplier,
   }) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(opacity)
+      ..color = AppColors.white.withOpacity(opacity)
       ..style = PaintingStyle.fill;
+
     final path = Path()..moveTo(0, size.height);
+
     for (double i = 0.0; i <= size.width; i++) {
       path.lineTo(
         i,

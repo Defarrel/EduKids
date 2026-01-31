@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:ui'; // Diperlukan untuk efek kaca (jika pakai BackdropFilter)
+import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/core/constant/sizes.dart';
 import 'package:flutter/material.dart';
@@ -14,89 +14,83 @@ class HomeMiniGamesScreen extends StatefulWidget {
 }
 
 class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
-  // --- DATA GAMES ---
+  // Game Data
   final List<Map<String, dynamic>> _games = [
     {
-      "title": "Creator's\nMatch",
-      "color": const Color(0xFFFF9800), // Orange Block
-      "icon": Icons.volunteer_activism_rounded,
-      "route": "/game-creator",
-      "locked": false,
-      "isNew": true, // Penanda game baru
+      "title": "Islamic\nPuzzle",
+      "color": AppColors.gameSkyBlue,
+      "icon": Icons.extension_rounded,
+      "route": "/game-puzzle",
     },
     {
-      "title": "Halal Food\nRun",
-      "color": const Color(0xFF4CAF50), // Green Block
-      "icon": Icons.fastfood_rounded,
-      "route": "/game-halal",
-      "locked": false,
-      "isNew": false,
+      "title": "True or\nFalse",
+      "color": AppColors.gamePink,
+      "icon": Icons.check_circle_rounded,
+      "route": "/game-true-false",
     },
     {
-      "title": "Wudu\nPuzzle",
-      "color": const Color(0xFF2196F3), // Blue Block
-      "icon": Icons.water_drop_rounded,
-      "route": "/game-wudu",
-      "locked": true,
-      "isNew": false,
+      "title": "Halal\nColoring",
+      "color": AppColors.gameYellow,
+      "icon": Icons.palette_rounded,
+      "route": "/game-coloring",
     },
     {
-      "title": "Shadow\nMatch",
-      "color": const Color(0xFF9C27B0), // Purple Block
-      "icon": Icons.light_mode_rounded,
-      "route": "/game-shadow",
-      "locked": true,
-      "isNew": false,
+      "title": "Learn to\nDraw",
+      "color": AppColors.gameGreen,
+      "icon": Icons.brush_rounded,
+      "route": "/game-drawing",
     },
     {
-      "title": "Hijaiyah\nPop",
-      "color": const Color(0xFFE91E63), // Pink Block
-      "icon": Icons.audiotrack_rounded,
-      "route": "/game-hijaiyah",
-      "locked": true,
-      "isNew": false,
+      "title": "Abjad\nSort",
+      "color": AppColors.gamePurple,
+      "icon": Icons.sort_by_alpha_rounded,
+      "route": "/game-sorting",
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     AppSize.init(context);
+    final double itemAspectRatio = 1.4;
 
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        // BACKGROUND BERGAMBAR/GRADIENT
-        // Kita beri sedikit corak kotak-kotak samar agar kesan Minecraft terasa di bg
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [AppColors.primaryLight, AppColors.primary],
+          color: AppColors.bgCream,
+          image: DecorationImage(
+            image: AssetImage("assets/images/pattern_bg.png"),
+            opacity: 0.05,
+            repeat: ImageRepeat.repeat,
           ),
         ),
         child: SafeArea(
+          bottom: false,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- 1. HEADER (Back & Title) ---
+              // Header
               Padding(
-                padding: EdgeInsets.all(AppSize.paddingMedium()),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSize.paddingMedium(),
+                  vertical: 8,
+                ),
                 child: Row(
                   children: [
-                    _buildGlassBackButton(context),
-                    SizedBox(width: AppSize.gapM()),
+                    _buildCompactBubbleBackButton(context),
+                    const SizedBox(width: 12),
                     Text(
-                      "World of Games",
-                      style: GoogleFonts.vt323(
-                        // Font Pixelated jika ada, atau Poppins Bold
-                        fontSize: 32, // Ukuran besar
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                      "Mini Games",
+                      style: GoogleFonts.fredoka(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary, 
                         shadows: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            offset: const Offset(2, 2),
-                            blurRadius: 0, // Hard shadow text
+                          const BoxShadow(
+                            color: Colors.black12,
+                            offset: Offset(1, 1),
+                            blurRadius: 1,
                           ),
                         ],
                       ),
@@ -105,35 +99,29 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
                 ),
               ),
 
-              // --- 2. GRID GAMES ---
+              // Game Grid
               Expanded(
                 child: GridView.builder(
-                  padding: EdgeInsets.fromLTRB(
-                    AppSize.paddingMedium(),
-                    0,
-                    AppSize.paddingMedium(),
-                    AppSize.paddingMedium(),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSize.paddingMedium(),
+                    vertical: 0,
                   ),
+                  scrollDirection: Axis.horizontal,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: AppSize.scaleWidth(15),
-                    mainAxisSpacing: AppSize.scaleWidth(15),
-                    childAspectRatio: 0.8, // Sedikit lebih tinggi
+                    mainAxisSpacing: 15,
+                    crossAxisSpacing: 15,
+                    childAspectRatio: 1 / itemAspectRatio,
                   ),
                   itemCount: _games.length,
                   itemBuilder: (context, index) {
                     final game = _games[index];
-
-                    // Kita gunakan Widget terpisah agar bisa punya Controller animasi sendiri
-                    return _GlassBlockCard(
-                      index: index,
-                      gameData: game,
-                      // Logika: Game pertama (index 0) dan tidak dikunci adalah "Active"
-                      isActiveGame: index == 0 && !game['locked'],
-                    );
+                    return _BubbleGameCard(index: index, gameData: game);
                   },
                 ),
               ),
+
+              const SizedBox(height: 10),
             ],
           ),
         ),
@@ -141,82 +129,55 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
     );
   }
 
-  Widget _buildGlassBackButton(BuildContext context) {
+  Widget _buildCompactBubbleBackButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.mediumImpact();
+        AudioManager().playSfx('bubble-pop.mp3');
         Navigator.pop(context);
       },
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2), // Kaca transparan
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
+          color: Colors.white,
+          shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              offset: const Offset(2, 2),
-              blurRadius: 0,
+              color: Colors.cyan.withOpacity(0.3),
+              offset: const Offset(0, 2),
+              blurRadius: 4,
             ),
           ],
+          border: Border.all(color: Colors.cyan.shade100, width: 1.5),
         ),
         child: const Icon(
-          Icons.arrow_back_ios_new_rounded,
-          color: Colors.white,
+          Icons.arrow_back_rounded,
+          color: AppColors.gameSkyBlue, 
+          size: 20,
         ),
       ),
     );
   }
 }
 
-// ==========================================================
-// WIDGET KARTU GAME "GLASS BLOCK" (STATEFUL UNTUK ANIMASI)
-// ==========================================================
-class _GlassBlockCard extends StatefulWidget {
+// Bubble Card Widget
+class _BubbleGameCard extends StatefulWidget {
   final int index;
   final Map<String, dynamic> gameData;
-  final bool isActiveGame;
 
-  const _GlassBlockCard({
-    required this.index,
-    required this.gameData,
-    required this.isActiveGame,
-  });
+  const _BubbleGameCard({required this.index, required this.gameData});
 
   @override
-  State<_GlassBlockCard> createState() => _GlassBlockCardState();
+  State<_BubbleGameCard> createState() => _BubbleGameCardState();
 }
 
-class _GlassBlockCardState extends State<_GlassBlockCard>
-    with SingleTickerProviderStateMixin {
-  // Controller untuk animasi "Breathing" (Active Game)
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
-
-  // Variable untuk animasi Entry
+class _BubbleGameCardState extends State<_BubbleGameCard> {
   bool _isVisible = false;
 
   @override
   void initState() {
     super.initState();
-
-    // 1. SETUP ANIMASI PULSE (Hanya untuk Active Game)
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    );
-
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
-    if (widget.isActiveGame) {
-      _pulseController.repeat(reverse: true);
-    }
-
-    // 2. SETUP ANIMASI ENTRY (Delay berdasarkan index)
-    // Semakin besar index, semakin lama delay munculnya
+    // Entry Animation
     Future.delayed(Duration(milliseconds: 100 * widget.index), () {
       if (mounted) {
         setState(() {
@@ -227,195 +188,104 @@ class _GlassBlockCardState extends State<_GlassBlockCard>
   }
 
   @override
-  void dispose() {
-    _pulseController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final color = widget.gameData['color'] as Color;
-    final isLocked = widget.gameData['locked'] as bool;
 
-    // ANIMASI 1: ENTRY (Slide Up + Fade In)
-    return AnimatedOpacity(
-      duration: const Duration(milliseconds: 500),
-      opacity: _isVisible ? 1.0 : 0.0,
-      curve: Curves.easeOut,
-      child: AnimatedSlide(
-        duration: const Duration(milliseconds: 500),
-        offset: _isVisible
-            ? Offset.zero
-            : const Offset(0, 0.2), // Dari bawah sedikit
-        curve: Curves.elasticOut, // Efek memantul saat mendarat
-        child: _buildCardContent(color, isLocked),
-      ),
-    );
-  }
-
-  Widget _buildCardContent(Color color, bool isLocked) {
-    return ScaleTransition(
-      scale: widget.isActiveGame
-          ? _pulseAnimation
-          : const AlwaysStoppedAnimation(1.0),
+    return AnimatedScale(
+      scale: _isVisible ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.elasticOut,
       child: GestureDetector(
         onTap: () {
-          if (isLocked) {
-            HapticFeedback.vibrate();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  "Ups! Selesaikan level sebelumnya dulu ya.",
-                  style: GoogleFonts.poppins(),
-                ),
-                backgroundColor: Colors.redAccent,
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          } else {
-            HapticFeedback.heavyImpact();
-            // AudioManager().playSfx('pop.mp3'); // Jangan lupa nyalakan sfx
-            print("Buka Game");
-          }
+          HapticFeedback.mediumImpact();
+          AudioManager().playSfx('bubble-pop.mp3');
+          print("Mainkan Game: ${widget.gameData['title']}");
+          // Navigator.pushNamed(context, widget.gameData['route']);
         },
         child: Container(
-          // --- STYLE GLASS BLOCK ---
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: isLocked
-                  ? [Colors.grey.withOpacity(0.4), Colors.grey.withOpacity(0.1)]
-                  : [
-                      Colors.white.withOpacity(0.6),
-                      Colors.white.withOpacity(0.2),
-                    ],
+              colors: [color, color.withOpacity(0.85)],
             ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isLocked
-                  ? Colors.grey.shade400
-                  : Colors.white.withOpacity(0.8),
-              width: 2,
-            ),
+            borderRadius: BorderRadius.circular(25),
             boxShadow: [
               BoxShadow(
-                color: (isLocked ? Colors.black : color).withOpacity(0.3),
-                offset: const Offset(6, 6),
-                blurRadius: 0, // HARD SHADOW
+                color: color.withOpacity(0.3),
+                offset: const Offset(0, 6),
+                blurRadius: 10,
+                spreadRadius: -1,
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(18),
-            child: Stack(
-              children: [
-                // 1. Dekorasi Kilauan (Pojok Kiri Atas)
-                Positioned(
-                  top: -50,
-                  left: -50,
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
+          child: Stack(
+            children: [
+              // Glare Effect
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 40,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(25),
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withOpacity(0.3),
+                        Colors.white.withOpacity(0.0),
+                      ],
                     ),
                   ),
                 ),
+              ),
 
-                // 2. CONTENT UTAMA (DIBUNGKUS CENTER AGAR DI TENGAH)
-                Center(
-                  // <--- TAMBAHKAN WIDGET INI
-                  child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.center, // Vertikal tengah
-                    crossAxisAlignment:
-                        CrossAxisAlignment.center, // Horizontal tengah
-                    children: [
-                      // ICON DALAM KOTAK
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: isLocked
-                              ? Colors.black12
-                              : color.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isLocked
-                                ? Colors.transparent
-                                : color.withOpacity(0.5),
-                            width: 2,
-                          ),
-                        ),
-                        child: Icon(
-                          isLocked
-                              ? Icons.lock_outline_rounded
-                              : widget.gameData['icon'],
-                          size: 32,
-                          color: isLocked ? Colors.white60 : color,
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // TEXT JUDUL
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: Text(
-                          widget.gameData['title'],
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            color: isLocked ? Colors.white60 : Colors.white,
-                            shadows: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.5),
-                                offset: const Offset(1, 1),
-                                blurRadius: 2,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // 3. INDICATOR "START!"
-                if (widget.isActiveGame)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
+              // Content
+              Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Icon
+                    Container(
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(2, 2),
-                            blurRadius: 0,
-                          ),
-                        ],
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
                       ),
+                      child: Icon(
+                        widget.gameData['icon'],
+                        size: 28,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Title
+                    Flexible(
                       child: Text(
-                        "START!",
-                        style: GoogleFonts.vt323(
-                          color: color,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                        widget.gameData['title'],
+                        textAlign: TextAlign.left,
+                        style: GoogleFonts.fredoka(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          height: 1.1,
+                          shadows: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              offset: const Offset(1, 1),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-              ],
-            ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
