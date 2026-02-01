@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/core/constant/sizes.dart';
+import 'package:edukids_app/presentation/mini_games/puzzle/islamic_puzzle_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -85,7 +86,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
                       style: GoogleFonts.fredoka(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary, 
+                        color: AppColors.textSecondary,
                         shadows: [
                           const BoxShadow(
                             color: Colors.black12,
@@ -152,7 +153,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
         ),
         child: const Icon(
           Icons.arrow_back_rounded,
-          color: AppColors.gameSkyBlue, 
+          color: AppColors.gameSkyBlue,
           size: 20,
         ),
       ),
@@ -161,6 +162,9 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
 }
 
 // Bubble Card Widget
+// ... (Bagian atas kode HomeMiniGamesScreen biarkan saja, tidak berubah) ...
+
+// GANTI CLASS _BubbleGameCard DENGAN INI:
 class _BubbleGameCard extends StatefulWidget {
   final int index;
   final Map<String, dynamic> gameData;
@@ -177,7 +181,6 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
   @override
   void initState() {
     super.initState();
-    // Entry Animation
     Future.delayed(Duration(milliseconds: 100 * widget.index), () {
       if (mounted) {
         setState(() {
@@ -187,9 +190,24 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
     });
   }
 
+  // Fungsi helper untuk menampilkan pesan jika game belum ada
+  void _showComingSoon() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Game ini sedang dibuat, tunggu ya!",
+          style: GoogleFonts.fredoka(),
+        ),
+        backgroundColor: Colors.orange,
+        duration: const Duration(seconds: 1),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final color = widget.gameData['color'] as Color;
+    final String title = widget.gameData['title']; // Ambil judul game
 
     return AnimatedScale(
       scale: _isVisible ? 1.0 : 0.0,
@@ -198,9 +216,34 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
       child: GestureDetector(
         onTap: () {
           HapticFeedback.mediumImpact();
-          AudioManager().playSfx('bubble-pop.mp3');
-          print("Mainkan Game: ${widget.gameData['title']}");
-          // Navigator.pushNamed(context, widget.gameData['route']);
+          AudioManager().playSfx(
+            'bubble-pop.mp3',
+          ); // Pastikan nama file sound benar
+
+          // --- LOGIKA NAVIGASI DI SINI ---
+
+          // 1. Cek apakah ini Game Islamic Puzzle?
+          if (title.contains("Puzzle")) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const IslamicPuzzleScreen(),
+              ),
+            );
+          }
+          // 2. Cek Game True/False (Nanti kalau sudah dibuat screennya)
+          else if (title.contains("True")) {
+            // Navigator.push(context, MaterialPageRoute(builder: (context) => TrueFalseScreen()));
+            _showComingSoon();
+          }
+          // 3. Cek Game Coloring
+          else if (title.contains("Coloring")) {
+            _showComingSoon();
+          }
+          // 4. Default untuk game lain
+          else {
+            _showComingSoon();
+          }
         },
         child: Container(
           decoration: BoxDecoration(
@@ -266,7 +309,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                     // Title
                     Flexible(
                       child: Text(
-                        widget.gameData['title'],
+                        title,
                         textAlign: TextAlign.left,
                         style: GoogleFonts.fredoka(
                           fontSize: 16,

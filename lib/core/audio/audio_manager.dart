@@ -43,13 +43,16 @@ class AudioManager {
         ),
       );
 
-      // SETUP BGM PLAYER
-      await _bgmPlayer.setAsset('assets/sounds/bgm.mp3');
-      await _bgmPlayer.setLoopMode(LoopMode.one); // Loop selamanya
-      await _bgmPlayer.setVolume(bgmVolume);
+      try {
+        await _bgmPlayer.setAsset('assets/sounds/bgm.mp3');
+        await _bgmPlayer.setLoopMode(LoopMode.one);
+        await _bgmPlayer.setVolume(bgmVolume);
 
-      if (isBgmOn) {
-        _bgmPlayer.play();
+        if (isBgmOn) {
+          _bgmPlayer.play();
+        }
+      } catch (e) {
+        print("Default BGM not found, skipping auto-play: $e");
       }
 
       // SETUP SFX PLAYER
@@ -61,12 +64,33 @@ class AudioManager {
     }
   }
 
+  // FUNGSI UNTUK GANTI LAGU BGM 
+  Future<void> playBgm(String fileName) async {
+    if (!_initialized) return;
+
+    try {
+      if (_bgmPlayer.playing) {
+        await _bgmPlayer.stop();
+      }
+
+      await _bgmPlayer.setAsset('assets/sounds/$fileName');
+
+      await _bgmPlayer.setLoopMode(LoopMode.one);
+      await _bgmPlayer.setVolume(bgmVolume);
+
+      if (isBgmOn) {
+        _bgmPlayer.play();
+      }
+    } catch (e) {
+      print("Error changing BGM to $fileName: $e");
+    }
+  }
+
   // LOGIC SFX
   Future<void> playSfx(String fileName) async {
     if (!isSfxOn || !_initialized) return;
 
     try {
-      // Load file asset baru
       await _sfxPlayer.setAsset('assets/sounds/$fileName');
 
       if (_sfxPlayer.playing) {
