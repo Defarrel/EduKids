@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:edukids_app/presentation/mini_games/abjad_sort/abjad_sort_screen.dart';
+import 'package:edukids_app/presentation/mini_games/true_and_false/true_false_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-// Imports
 import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/core/constant/sizes.dart';
@@ -18,45 +17,50 @@ class HomeMiniGamesScreen extends StatefulWidget {
 }
 
 class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
-  // Data
+  // Data Game
   final List<Map<String, dynamic>> _games = [
     {
       "title": "Islamic\nPuzzle",
       "color": AppColors.gameSkyBlue,
       "icon": Icons.extension_rounded,
       "route": "/game-puzzle",
+      "image": "assets/images/bg_puzzle.jpg",
     },
     {
       "title": "True or\nFalse",
       "color": AppColors.gamePink,
       "icon": Icons.check_circle_rounded,
       "route": "/game-true-false",
+      "image": "assets/images/bg_puzzle.png",
     },
     {
       "title": "Halal\nColoring",
       "color": AppColors.gameYellow,
       "icon": Icons.palette_rounded,
       "route": "/game-coloring",
+      "image": "assets/images/bg_puzzle.png",
     },
     {
       "title": "Learn to\nDraw",
       "color": AppColors.gameGreen,
       "icon": Icons.brush_rounded,
       "route": "/game-drawing",
+      "image": "assets/images/bg_puzzle.png",
     },
     {
       "title": "Abjad\nSort",
       "color": AppColors.gamePurple,
       "icon": Icons.sort_by_alpha_rounded,
       "route": "/game-sorting",
+      "image": "assets/images/bg_abjad.png",
     },
   ];
 
-  // UI
   @override
   Widget build(BuildContext context) {
     AppSize.init(context);
-    final double itemAspectRatio = 1.4;
+
+    const double itemAspectRatio = 1.3;
 
     return Scaffold(
       body: Container(
@@ -88,7 +92,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
                     Text(
                       "Mini Games",
                       style: GoogleFonts.fredoka(
-                        fontSize: 20,
+                        fontSize: 30,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textSecondary,
                         shadows: [
@@ -104,19 +108,21 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
                 ),
               ),
 
-              // Game Grid
+              // Game Grid 
               Expanded(
                 child: GridView.builder(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSize.paddingMedium(),
-                    vertical: 0,
+                  padding: EdgeInsets.fromLTRB(
+                    AppSize.paddingMedium(),
+                    10,
+                    AppSize.paddingMedium(),
+                    20, 
                   ),
-                  scrollDirection: Axis.horizontal,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
+                  scrollDirection: Axis.vertical,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, 
                     mainAxisSpacing: 15,
                     crossAxisSpacing: 15,
-                    childAspectRatio: 1 / itemAspectRatio,
+                    childAspectRatio: itemAspectRatio,
                   ),
                   itemCount: _games.length,
                   itemBuilder: (context, index) {
@@ -125,8 +131,6 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
                   },
                 ),
               ),
-
-              const SizedBox(height: 10),
             ],
           ),
         ),
@@ -134,7 +138,6 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
     );
   }
 
-  // Widgets
   Widget _buildCompactBubbleBackButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -166,7 +169,6 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
   }
 }
 
-// Components
 class _BubbleGameCard extends StatefulWidget {
   final int index;
   final Map<String, dynamic> gameData;
@@ -180,7 +182,6 @@ class _BubbleGameCard extends StatefulWidget {
 class _BubbleGameCardState extends State<_BubbleGameCard> {
   bool _isVisible = false;
 
-  // Lifecycle
   @override
   void initState() {
     super.initState();
@@ -193,7 +194,6 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
     });
   }
 
-  // Helpers
   void _showComingSoon() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -207,113 +207,128 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
     );
   }
 
-  // UI
   @override
   Widget build(BuildContext context) {
     final color = widget.gameData['color'] as Color;
     final String title = widget.gameData['title'];
+    final String imagePath =
+        widget.gameData['image'] ?? "assets/images/bg_puzzle.png";
 
-    return AnimatedScale(
-      scale: _isVisible ? 1.0 : 0.0,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.elasticOut,
-      child: GestureDetector(
-        onTap: () {
-          HapticFeedback.mediumImpact();
-          AudioManager().playSfx('bubble-pop.mp3');
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double h = constraints.maxHeight;
 
-          // Navigation Logic
-          if (title.contains("Puzzle")) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const IslamicPuzzleScreen(),
-              ),
-            );
-          } else if (title.contains("Abjad")) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AbjadSortScreen()),
-            );
-          } else {
-            _showComingSoon();
-          }
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [color, color.withOpacity(0.85)],
-            ),
-            borderRadius: BorderRadius.circular(25),
-            boxShadow: [
-              BoxShadow(
-                color: color.withOpacity(0.3),
-                offset: const Offset(0, 6),
-                blurRadius: 10,
-                spreadRadius: -1,
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              // Glare Effect
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 40,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(25),
-                    ),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withOpacity(0.3),
-                        Colors.white.withOpacity(0.0),
-                      ],
-                    ),
+        double iconSize = h * 0.20;
+        double fontSize = h * 0.12;
+
+        return AnimatedScale(
+          scale: _isVisible ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.elasticOut,
+          child: GestureDetector(
+            onTap: () {
+              HapticFeedback.mediumImpact();
+              AudioManager().playSfx('bubble-pop.mp3');
+
+              if (title.contains("Puzzle")) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const IslamicPuzzleScreen(),
                   ),
+                );
+              } else if (title.contains("Abjad")) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AbjadSortScreen(),
+                  ),
+                );
+              } else if (title.contains("True")) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TrueFalseScreen(),
+                  ),
+                );
+              } else {
+                _showComingSoon();
+              }
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color,
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withOpacity(0.4),
+                      offset: const Offset(0, 4),
+                      blurRadius: 6,
+                    ),
+                  ],
                 ),
-              ),
-
-              // Content
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Stack(
                   children: [
-                    // Icon
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        widget.gameData['icon'],
-                        size: 28,
-                        color: Colors.white,
+                    // Background
+                    Positioned.fill(
+                      child: Image.asset(
+                        imagePath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Container(color: color.withOpacity(0.5)),
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    // Title
-                    Flexible(
-                      child: Text(
-                        title,
-                        textAlign: TextAlign.left,
-                        style: GoogleFonts.fredoka(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                          height: 1.1,
-                          shadows: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              offset: const Offset(1, 1),
+
+                    // Gradient Overlay 
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.4),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Bottom Panel
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.65),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              widget.gameData['icon'],
+                              size: iconSize,
+                              color: color, 
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                title.replaceAll("\n", " "),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.fredoka(
+                                  fontSize: fontSize,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  height: 1.1,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -322,10 +337,10 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                   ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

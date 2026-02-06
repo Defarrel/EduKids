@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:confetti/confetti.dart';
 import 'package:edukids_app/core/components/finish_games.dart';
 import 'package:edukids_app/core/components/win_games.dart';
@@ -73,7 +74,7 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
       duration: const Duration(milliseconds: 1500),
     );
 
-    // Animasi geser kanan-kiri
+    // Animasi geser
     _handSlideAnimation =
         Tween<Offset>(
           begin: const Offset(-0.85, 0.2),
@@ -170,24 +171,48 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
           // Background
           Positioned.fill(
             child: Opacity(
-              opacity: 0.5,
+              opacity: 1,
               child: Image.asset(
-                "assets/images/bg_abjad.jpg",
+                "assets/images/bg_abjad.png",
                 fit: BoxFit.cover,
               ),
             ),
           ),
 
           SafeArea(
-            child: Column(
-              children: [
-                _buildHeaderWithHint(level),
-                const Spacer(flex: 2),
-                _buildImageArea(level),
-                const Spacer(flex: 3),
-                _buildLetterSlotsWithHand(),
-                const Spacer(flex: 4),
-              ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // responsive logic
+                double w = constraints.maxWidth;
+                double h = constraints.maxHeight;
+
+                double headerHeight = h * 0.15;
+                if (headerHeight < 70) headerHeight = 70; 
+
+                double availableH = h - headerHeight;
+
+                double imageSize = min(w * 0.70, availableH * 0.60);
+
+                double letterSize = min((w - 40) / 5.5, 85.0);
+                if (letterSize < 45) letterSize = 45; 
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Header Area
+                    SizedBox(
+                      height: headerHeight,
+                      child: _buildHeaderWithHint(level),
+                    ),
+
+                    _buildImageArea(level, imageSize),
+
+                    _buildLetterSlotsWithHand(letterSize),
+
+                    SizedBox(height: h * 0.05),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -195,12 +220,12 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
     );
   }
 
-  // Header dengan Hint
+  // Header 
   Widget _buildHeaderWithHint(AbjadLevel level) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center, 
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
@@ -213,6 +238,7 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   "Word Sort",
@@ -248,6 +274,7 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                fontSize: 16, 
               ),
             ),
           ),
@@ -256,13 +283,13 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
     );
   }
 
-  Widget _buildImageArea(AbjadLevel level) {
+  Widget _buildImageArea(AbjadLevel level, double size) {
     return AnimatedScale(
       scale: _isGameFinished ? 1.2 : 1.0,
       duration: const Duration(milliseconds: 500),
       child: Container(
-        width: 160,
-        height: 160,
+        width: size,
+        height: size,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -280,13 +307,11 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
     );
   }
 
-  // Gabungan Huruf dan Hand Pointer
-  Widget _buildLetterSlotsWithHand() {
+  Widget _buildLetterSlotsWithHand(double letterSize) {
     return Stack(
       alignment: Alignment.center,
       clipBehavior: Clip.none,
       children: [
-        // Layer Huruf
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Wrap(
@@ -294,7 +319,11 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
             runSpacing: 12,
             alignment: WrapAlignment.center,
             children: List.generate(_currentLetters.length, (index) {
-              return _buildDraggableLetter(index, _currentLetters[index]);
+              return _buildDraggableLetter(
+                index,
+                _currentLetters[index],
+                letterSize,
+              );
             }),
           ),
         ),
@@ -312,8 +341,8 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
                   children: [
                     Image.asset(
                       'assets/images/hand_pointer.png',
-                      width: 50,
-                      height: 50,
+                      width: letterSize * 0.9,
+                      height: letterSize * 0.9,
                     ),
                     Text(
                       'Drag and Drop',
@@ -332,7 +361,7 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
     );
   }
 
-  Widget _buildDraggableLetter(int index, String char) {
+  Widget _buildDraggableLetter(int index, String char, double size) {
     List<Color> colors = [
       AppColors.gameGreen,
       AppColors.gamePink,
@@ -349,22 +378,27 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
           data: index,
           feedback: Material(
             color: Colors.transparent,
-            child: _buildLetterTile(char, tileColor, isFeedback: true),
+            child: _buildLetterTile(char, tileColor, size, isFeedback: true),
           ),
           childWhenDragging: Opacity(
             opacity: 0.3,
-            child: _buildLetterTile(char, Colors.grey),
+            child: _buildLetterTile(char, Colors.grey, size),
           ),
-          child: _buildLetterTile(char, tileColor),
+          child: _buildLetterTile(char, tileColor, size),
         );
       },
     );
   }
 
-  Widget _buildLetterTile(String char, Color color, {bool isFeedback = false}) {
+  Widget _buildLetterTile(
+    String char,
+    Color color,
+    double size, {
+    bool isFeedback = false,
+  }) {
     return Container(
-      width: 55,
-      height: 55,
+      width: size,
+      height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: color,
@@ -380,7 +414,7 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
       child: Text(
         char,
         style: GoogleFonts.fredoka(
-          fontSize: 26,
+          fontSize: size * 0.5,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
@@ -388,7 +422,6 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
     );
   }
 
-  // Dialogs
   void _showWinDialog() {
     bool isLastLevel = _currentIndex == _levels.length - 1;
     _confettiController.play();

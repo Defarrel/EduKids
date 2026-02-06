@@ -297,8 +297,8 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
         return FinishGames(
           confettiController: _confettiController,
           onMainMenuPressed: () {
-            Navigator.of(ctx).pop(); // Tutup Dialog
-            Navigator.of(context).pop(); // Kembali ke Menu Utama
+            Navigator.of(ctx).pop();
+            Navigator.of(context).pop();
           },
         );
       },
@@ -332,13 +332,22 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                 double w = constraints.maxWidth;
                 double h = constraints.maxHeight;
 
-                double headerH = 70;
-                double footerH = 60;
-                double availableH = h - headerH - footerH;
+                double headerHeight = h * 0.15;
+                double footerHeight = h * 0.15;
 
-                double puzzleSize = min(w * 0.95, availableH * 0.85);
+                if (headerHeight < 70) headerHeight = 70;
+                if (footerHeight < 60) footerHeight = 60;
+
+                // Area tersedia untuk Puzzle
+                double availableHeight = h - headerHeight - footerHeight;
+                double availableWidth = w;
+
+                double puzzleSize = min(availableWidth, availableHeight) - 24.0;
+
+                if (puzzleSize < 0) puzzleSize = 0;
 
                 double bgPadding = 6.0;
+                // Ukuran area dalam 
                 double innerSize = puzzleSize - (bgPadding * 2);
 
                 double pieceSpacing = isGameFinished ? 0 : 1.0;
@@ -347,165 +356,174 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                     level.gridSize;
 
                 return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Header
+                    // Header Area
                     SizedBox(
-                      height: headerH,
+                      height: headerHeight,
                       child: _buildCompactHeader(level),
                     ),
 
-                    const Spacer(),
-
-                    // Puzzle Area
-                    isLoading
-                        ? SizedBox(
-                            width: puzzleSize,
-                            height: puzzleSize,
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                              ),
-                            ),
-                          )
-                        : AnimatedScale(
-                            scale: _isWinningZoom ? 1.6 : 1.3,
-                            duration: const Duration(milliseconds: 800),
-                            curve: Curves.easeInOutBack,
-                            child: SizedBox(
+                    // Puzzle Area 
+                    Center(
+                      child: isLoading
+                          ? SizedBox(
                               width: puzzleSize,
                               height: puzzleSize,
-                              child: Stack(
-                                children: [
-                                  // White Board
-                                  Positioned.fill(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(
-                                          isGameFinished ? 16 : 16,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-
-                                  // Ghost Image
-                                  Positioned.fill(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(bgPadding),
-                                      child: Opacity(
-                                        opacity: 0.2,
-                                        child: ClipRRect(
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          : AnimatedScale(
+                              scale: _isWinningZoom ? 1.05 : 1.0,
+                              duration: const Duration(milliseconds: 800),
+                              curve: Curves.easeInOutBack,
+                              child: SizedBox(
+                                width: puzzleSize,
+                                height: puzzleSize,
+                                child: Stack(
+                                  children: [
+                                    // White Board
+                                    Positioned.fill(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
                                           borderRadius: BorderRadius.circular(
-                                            isGameFinished ? 0 : 12,
+                                            16,
                                           ),
-                                          child: Image.asset(
-                                            level.imagePath,
-                                            fit: BoxFit.cover,
-                                          ),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Colors.black26,
+                                              blurRadius: 10,
+                                              offset: Offset(0, 5),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  ),
 
-                                  // Pieces
-                                  Positioned.fill(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(bgPadding),
-                                      child: Stack(
-                                        children: [
-                                          ...List.generate(
-                                            level.gridSize * level.gridSize,
-                                            (pieceId) {
-                                              int currentGridIndex =
-                                                  pieceCurrentPos[pieceId];
-                                              int row =
-                                                  currentGridIndex ~/
-                                                  level.gridSize;
-                                              int col =
-                                                  currentGridIndex %
-                                                  level.gridSize;
-
-                                              double top =
-                                                  row *
-                                                  (pieceSize + pieceSpacing);
-                                              double left =
-                                                  col *
-                                                  (pieceSize + pieceSpacing);
-
-                                              return AnimatedPositioned(
-                                                duration: const Duration(
-                                                  milliseconds: 600,
-                                                ),
-                                                curve: Curves.easeInOutBack,
-                                                top: top,
-                                                left: left,
-                                                child:
-                                                    _buildDraggableTargetPiece(
-                                                      pieceId,
-                                                      pieceSize,
-                                                      innerSize,
-                                                      level,
-                                                    ),
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-
-                                  // Hand Tutorial
-                                  if (showHandTutorial)
-                                    Positioned(
-                                      top: puzzleSize * 0.15,
-                                      left: puzzleSize * 0.15,
-                                      child: IgnorePointer(
-                                        child: SlideTransition(
-                                          position: _handSlideAnimation,
-                                          child: ScaleTransition(
-                                            scale: _handScaleAnimation,
+                                    // Ghost Image
+                                    Center(
+                                      child: SizedBox(
+                                        width: innerSize,
+                                        height: innerSize,
+                                        child: Opacity(
+                                          opacity: 0.2,
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              isGameFinished ? 0 : 4,
+                                            ),
                                             child: Image.asset(
-                                              'assets/images/hand_pointer.png',
-                                              width: 60,
-                                              height: 60,
+                                              level.imagePath,
+                                              fit: BoxFit
+                                                  .fill, 
                                             ),
                                           ),
                                         ),
                                       ),
                                     ),
 
-                                  if (isShuffling)
-                                    Center(
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 8,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.black54,
-                                          borderRadius: BorderRadius.circular(
-                                            20,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          "Shuffling...",
-                                          style: GoogleFonts.fredoka(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                          ),
+                                    // Pieces
+                                    Positioned.fill(
+                                      child: Padding(
+                                        padding: EdgeInsets.all(bgPadding),
+                                        child: Stack(
+                                          children: [
+                                            ...List.generate(
+                                              level.gridSize * level.gridSize,
+                                              (pieceId) {
+                                                int currentGridIndex =
+                                                    pieceCurrentPos[pieceId];
+                                                int row =
+                                                    currentGridIndex ~/
+                                                    level.gridSize;
+                                                int col =
+                                                    currentGridIndex %
+                                                    level.gridSize;
+
+                                                double top =
+                                                    row *
+                                                    (pieceSize + pieceSpacing);
+                                                double left =
+                                                    col *
+                                                    (pieceSize + pieceSpacing);
+
+                                                return AnimatedPositioned(
+                                                  duration: const Duration(
+                                                    milliseconds: 600,
+                                                  ),
+                                                  curve: Curves.easeInOutBack,
+                                                  top: top,
+                                                  left: left,
+                                                  child:
+                                                      _buildDraggableTargetPiece(
+                                                        pieceId,
+                                                        pieceSize,
+                                                        innerSize,
+                                                        level,
+                                                      ),
+                                                );
+                                              },
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                ],
+
+                                    // Hand Tutorial
+                                    if (showHandTutorial)
+                                      Positioned(
+                                        top: puzzleSize * 0.15,
+                                        left: puzzleSize * 0.15,
+                                        child: IgnorePointer(
+                                          child: SlideTransition(
+                                            position: _handSlideAnimation,
+                                            child: ScaleTransition(
+                                              scale: _handScaleAnimation,
+                                              child: Image.asset(
+                                                'assets/images/hand_pointer.png',
+                                                width: puzzleSize * 0.2,
+                                                height: puzzleSize * 0.2,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                    if (isShuffling)
+                                      Center(
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black54,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            "Shuffling...",
+                                            style: GoogleFonts.fredoka(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
+                    ),
 
-                    const Spacer(),
-
-                    // Footer
+                    // Footer Area
                     SizedBox(
-                      height: footerH,
+                      height: footerHeight,
+                      width: double.infinity,
                       child: Center(
                         child: Opacity(
                           opacity:
@@ -519,21 +537,26 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                               horizontal: 16,
                               vertical: 8,
                             ),
+                            decoration: BoxDecoration(
+                              color: Colors.black12,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Image.asset(
                                   'assets/images/hand_pointer.png',
-                                  width: 20,
-                                  height: 20,
-                                  color: Colors.white70,
+                                  width: 24,
+                                  height: 24,
+                                  color: Colors.white,
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
                                   "Drag to swap pieces",
                                   style: GoogleFonts.fredoka(
                                     color: Colors.white,
-                                    fontSize: 12,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ],
@@ -650,6 +673,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
           path,
           width: totalSize,
           height: totalSize,
+          fit: BoxFit.fill,
           color: isGameFinished
               ? null
               : Colors.white.withOpacity(isFeedback ? 1.0 : 0.95),
@@ -662,17 +686,22 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
 
   Widget _buildCompactHeader(PuzzleLevel level) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: const CircleAvatar(
+              radius: 20,
               backgroundColor: Colors.white,
-              child: Icon(Icons.arrow_back, color: AppColors.gameSkyBlue),
+              child: Icon(
+                Icons.arrow_back,
+                color: AppColors.gameSkyBlue,
+                size: 24,
+              ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -681,7 +710,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                 Text(
                   "Fix the Image!",
                   style: GoogleFonts.fredoka(
-                    fontSize: 20,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -691,7 +720,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.fredoka(
-                    fontSize: 14,
+                    fontSize: 16,
                     color: Colors.white70,
                   ),
                 ),
@@ -710,6 +739,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
           ),
