@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'package:edukids_app/presentation/mini_games/abjad_sort/abjad_sort_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+// Imports
 import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/core/constant/sizes.dart';
 import 'package:edukids_app/presentation/mini_games/puzzle/islamic_puzzle_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class HomeMiniGamesScreen extends StatefulWidget {
   const HomeMiniGamesScreen({super.key});
@@ -15,7 +18,7 @@ class HomeMiniGamesScreen extends StatefulWidget {
 }
 
 class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
-  // Game Data
+  // Data
   final List<Map<String, dynamic>> _games = [
     {
       "title": "Islamic\nPuzzle",
@@ -49,6 +52,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
     },
   ];
 
+  // UI
   @override
   Widget build(BuildContext context) {
     AppSize.init(context);
@@ -61,7 +65,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
         decoration: const BoxDecoration(
           color: AppColors.bgCream,
           image: DecorationImage(
-            image: AssetImage("assets/images/pattern_bg.png"),
+            image: AssetImage("assets/images/bg_puzzle.png"),
             opacity: 0.05,
             repeat: ImageRepeat.repeat,
           ),
@@ -130,6 +134,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
     );
   }
 
+  // Widgets
   Widget _buildCompactBubbleBackButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -161,10 +166,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
   }
 }
 
-// Bubble Card Widget
-// ... (Bagian atas kode HomeMiniGamesScreen biarkan saja, tidak berubah) ...
-
-// GANTI CLASS _BubbleGameCard DENGAN INI:
+// Components
 class _BubbleGameCard extends StatefulWidget {
   final int index;
   final Map<String, dynamic> gameData;
@@ -178,6 +180,7 @@ class _BubbleGameCard extends StatefulWidget {
 class _BubbleGameCardState extends State<_BubbleGameCard> {
   bool _isVisible = false;
 
+  // Lifecycle
   @override
   void initState() {
     super.initState();
@@ -190,7 +193,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
     });
   }
 
-  // Fungsi helper untuk menampilkan pesan jika game belum ada
+  // Helpers
   void _showComingSoon() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -204,10 +207,11 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
     );
   }
 
+  // UI
   @override
   Widget build(BuildContext context) {
     final color = widget.gameData['color'] as Color;
-    final String title = widget.gameData['title']; // Ambil judul game
+    final String title = widget.gameData['title'];
 
     return AnimatedScale(
       scale: _isVisible ? 1.0 : 0.0,
@@ -216,13 +220,9 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
       child: GestureDetector(
         onTap: () {
           HapticFeedback.mediumImpact();
-          AudioManager().playSfx(
-            'bubble-pop.mp3',
-          ); // Pastikan nama file sound benar
+          AudioManager().playSfx('bubble-pop.mp3');
 
-          // --- LOGIKA NAVIGASI DI SINI ---
-
-          // 1. Cek apakah ini Game Islamic Puzzle?
+          // Navigation Logic
           if (title.contains("Puzzle")) {
             Navigator.push(
               context,
@@ -230,18 +230,12 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                 builder: (context) => const IslamicPuzzleScreen(),
               ),
             );
-          }
-          // 2. Cek Game True/False (Nanti kalau sudah dibuat screennya)
-          else if (title.contains("True")) {
-            // Navigator.push(context, MaterialPageRoute(builder: (context) => TrueFalseScreen()));
-            _showComingSoon();
-          }
-          // 3. Cek Game Coloring
-          else if (title.contains("Coloring")) {
-            _showComingSoon();
-          }
-          // 4. Default untuk game lain
-          else {
+          } else if (title.contains("Abjad")) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AbjadSortScreen()),
+            );
+          } else {
             _showComingSoon();
           }
         },
