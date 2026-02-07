@@ -64,15 +64,16 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
   late Animation<double> _handScaleAnimation;
   late ConfettiController _confettiController;
 
-  // Lifecycle
+  // animation controller
+  late AnimationController _entranceController;
+  late Animation<double> _puzzleEntranceAnimation;
+
   @override
   void initState() {
     super.initState();
 
-    // BGM Setup
     AudioManager().playBgm('puzzle_bgm.mp3');
 
-    // Controllers Setup
     _handController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 2000),
@@ -81,7 +82,18 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
       duration: const Duration(seconds: 3),
     );
 
-    // Animations
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _puzzleEntranceAnimation = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.0, 0.7, curve: Curves.elasticOut),
+    );
+
+    _entranceController.forward();
+
     _handScaleAnimation = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.0), weight: 10),
       TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.8), weight: 10),
@@ -102,12 +114,11 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
 
   @override
   void dispose() {
-    // Reset BGM
     AudioManager().playBgm('bgm.mp3');
 
-    // Cleanup
     _handController.dispose();
     _confettiController.dispose();
+    _entranceController.dispose(); 
     super.dispose();
   }
 
@@ -277,7 +288,9 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
           confettiController: _confettiController,
           onActionPressed: () {
             Navigator.of(ctx).pop();
-            _nextLevel();
+            Future.delayed(const Duration(milliseconds: 300), () {
+              _nextLevel();
+            });
           },
         );
       },
@@ -347,7 +360,6 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                 if (puzzleSize < 0) puzzleSize = 0;
 
                 double bgPadding = 6.0;
-                // Ukuran area dalam
                 double innerSize = puzzleSize - (bgPadding * 2);
 
                 double pieceSpacing = isGameFinished ? 0 : 1.0;
@@ -364,159 +376,194 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                       child: _buildCompactHeader(level),
                     ),
 
-                    // Puzzle Area
+                    // Puzzle Area 
                     Center(
-                      child: isLoading
-                          ? SizedBox(
-                              width: puzzleSize,
-                              height: puzzleSize,
-                              child: const Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            )
-                          : AnimatedScale(
-                              scale: _isWinningZoom ? 1.05 : 1.0,
-                              duration: const Duration(milliseconds: 800),
-                              curve: Curves.easeInOutBack,
-                              child: SizedBox(
-                                width: puzzleSize,
-                                height: puzzleSize,
-                                child: Stack(
-                                  children: [
-                                    // White Board
-                                    Positioned.fill(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.black26,
-                                              blurRadius: 10,
-                                              offset: Offset(0, 5),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                      child: ScaleTransition(
+                        scale: _puzzleEntranceAnimation, 
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 600),
+                          transitionBuilder:
+                              (Widget child, Animation<double> animation) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: ScaleTransition(
+                                    scale: CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.elasticOut,
+                                      reverseCurve: Curves.easeIn,
                                     ),
-
-                                    // Ghost Image
-                                    Center(
-                                      child: SizedBox(
-                                        width: innerSize,
-                                        height: innerSize,
-                                        child: Opacity(
-                                          opacity: 0.2,
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                              isGameFinished ? 0 : 4,
-                                            ),
-                                            child: Image.asset(
-                                              level.imagePath,
-                                              fit: BoxFit.fill,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                    child: child,
+                                  ),
+                                );
+                              },
+                          child: isLoading
+                              ? SizedBox(
+                                  key: const ValueKey('loading_spinner'),
+                                  width: puzzleSize,
+                                  height: puzzleSize,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
                                     ),
-
-                                    // Pieces
-                                    Positioned.fill(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(bgPadding),
-                                        child: Stack(
-                                          children: [
-                                            ...List.generate(
-                                              level.gridSize * level.gridSize,
-                                              (pieceId) {
-                                                int currentGridIndex =
-                                                    pieceCurrentPos[pieceId];
-                                                int row =
-                                                    currentGridIndex ~/
-                                                    level.gridSize;
-                                                int col =
-                                                    currentGridIndex %
-                                                    level.gridSize;
-
-                                                double top =
-                                                    row *
-                                                    (pieceSize + pieceSpacing);
-                                                double left =
-                                                    col *
-                                                    (pieceSize + pieceSpacing);
-
-                                                return AnimatedPositioned(
-                                                  duration: const Duration(
-                                                    milliseconds: 600,
+                                  ),
+                                )
+                              : SizedBox(
+                                  key: ValueKey<int>(
+                                    _currentIndex,
+                                  ), 
+                                  width: puzzleSize,
+                                  height: puzzleSize,
+                                  child: AnimatedScale(
+                                    scale: _isWinningZoom ? 1.05 : 1.0,
+                                    duration: const Duration(milliseconds: 800),
+                                    curve: Curves.easeInOutBack,
+                                    child: SizedBox(
+                                      width: puzzleSize,
+                                      height: puzzleSize,
+                                      child: Stack(
+                                        children: [
+                                          // White Board
+                                          Positioned.fill(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Colors.black26,
+                                                    blurRadius: 10,
+                                                    offset: Offset(0, 5),
                                                   ),
-                                                  curve: Curves.easeInOutBack,
-                                                  top: top,
-                                                  left: left,
-                                                  child:
-                                                      _buildDraggableTargetPiece(
-                                                        pieceId,
-                                                        pieceSize,
-                                                        innerSize,
-                                                        level,
-                                                      ),
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-
-                                    // Hand Tutorial
-                                    if (showHandTutorial)
-                                      Positioned(
-                                        top: puzzleSize * 0.15,
-                                        left: puzzleSize * 0.15,
-                                        child: IgnorePointer(
-                                          child: SlideTransition(
-                                            position: _handSlideAnimation,
-                                            child: ScaleTransition(
-                                              scale: _handScaleAnimation,
-                                              child: Image.asset(
-                                                'assets/images/hand_pointer.png',
-                                                width: puzzleSize * 0.2,
-                                                height: puzzleSize * 0.2,
+                                                ],
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ),
 
-                                    if (isShuffling)
-                                      Center(
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 8,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.black54,
-                                            borderRadius: BorderRadius.circular(
-                                              20,
+                                          // Ghost Image
+                                          Center(
+                                            child: SizedBox(
+                                              width: innerSize,
+                                              height: innerSize,
+                                              child: Opacity(
+                                                opacity: 0.2,
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        isGameFinished ? 0 : 4,
+                                                      ),
+                                                  child: Image.asset(
+                                                    level.imagePath,
+                                                    fit: BoxFit.fill,
+                                                  ),
+                                                ),
+                                              ),
                                             ),
                                           ),
-                                          child: Text(
-                                            "Shuffling...",
-                                            style: GoogleFonts.fredoka(
-                                              color: Colors.white,
-                                              fontSize: 16,
+
+                                          // Pieces
+                                          Positioned.fill(
+                                            child: Padding(
+                                              padding: EdgeInsets.all(
+                                                bgPadding,
+                                              ),
+                                              child: Stack(
+                                                children: [
+                                                  ...List.generate(
+                                                    level.gridSize *
+                                                        level.gridSize,
+                                                    (pieceId) {
+                                                      int currentGridIndex =
+                                                          pieceCurrentPos[pieceId];
+                                                      int row =
+                                                          currentGridIndex ~/
+                                                          level.gridSize;
+                                                      int col =
+                                                          currentGridIndex %
+                                                          level.gridSize;
+
+                                                      double top =
+                                                          row *
+                                                          (pieceSize +
+                                                              pieceSpacing);
+                                                      double left =
+                                                          col *
+                                                          (pieceSize +
+                                                              pieceSpacing);
+
+                                                      return AnimatedPositioned(
+                                                        duration:
+                                                            const Duration(
+                                                              milliseconds: 600,
+                                                            ),
+                                                        curve: Curves
+                                                            .easeInOutBack,
+                                                        top: top,
+                                                        left: left,
+                                                        child:
+                                                            _buildDraggableTargetPiece(
+                                                              pieceId,
+                                                              pieceSize,
+                                                              innerSize,
+                                                              level,
+                                                            ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
+
+                                          // Hand Tutorial
+                                          if (showHandTutorial)
+                                            Positioned(
+                                              top: puzzleSize * 0.15,
+                                              left: puzzleSize * 0.15,
+                                              child: IgnorePointer(
+                                                child: SlideTransition(
+                                                  position: _handSlideAnimation,
+                                                  child: ScaleTransition(
+                                                    scale: _handScaleAnimation,
+                                                    child: Image.asset(
+                                                      'assets/images/hand_pointer.png',
+                                                      width: puzzleSize * 0.2,
+                                                      height: puzzleSize * 0.2,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+
+                                          if (isShuffling)
+                                            Center(
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 8,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black54,
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                child: Text(
+                                                  "Shuffling...",
+                                                  style: GoogleFonts.fredoka(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                        ],
                                       ),
-                                  ],
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
+                        ),
+                      ),
                     ),
 
                     // Footer Area
@@ -712,6 +759,9 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
+                    shadows: const [
+                      Shadow(color: Colors.black45, blurRadius: 7),
+                    ],
                   ),
                 ),
                 Text(
@@ -720,7 +770,10 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.fredoka(
                     fontSize: 16,
-                    color: Colors.white70,
+                    color: Colors.white,
+                    shadows: const [
+                      Shadow(color: Colors.black45, blurRadius: 7),
+                    ],
                   ),
                 ),
               ],
@@ -732,13 +785,20 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
               color: Colors.white24,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white30),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  offset: Offset(0, 4),
+                  blurRadius: 1,
+                ),
+              ],
             ),
             child: Text(
               "Level ${_currentIndex + 1}",
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 18,
               ),
             ),
           ),

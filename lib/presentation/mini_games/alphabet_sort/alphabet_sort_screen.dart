@@ -60,6 +60,11 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
   late AnimationController _handController;
   late Animation<Offset> _handSlideAnimation;
 
+  // animation controller
+  late AnimationController _entranceController;
+  late Animation<double> _imageEntranceAnimation;
+  late Animation<double> _lettersEntranceAnimation;
+
   @override
   void initState() {
     super.initState();
@@ -74,7 +79,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
       duration: const Duration(milliseconds: 1500),
     );
 
-    // Animasi geser
+    // Animasi geser tangan
     _handSlideAnimation =
         Tween<Offset>(
           begin: const Offset(-0.85, 0.2),
@@ -82,6 +87,23 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
         ).animate(
           CurvedAnimation(parent: _handController, curve: Curves.easeInOut),
         );
+
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _imageEntranceAnimation = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
+    );
+
+    _lettersEntranceAnimation = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.4, 1.0, curve: Curves.elasticOut),
+    );
+
+    _entranceController.forward();
 
     _initializeLevel();
   }
@@ -91,6 +113,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
     AudioManager().playBgm('bgm.mp3');
     _confettiController.dispose();
     _handController.dispose();
+    _entranceController.dispose(); 
     super.dispose();
   }
 
@@ -205,9 +228,36 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
                       child: _buildHeaderWithHint(level),
                     ),
 
-                    _buildImageArea(level, imageSize),
+                    // Image Area 
+                    ScaleTransition(
+                      scale: _imageEntranceAnimation, 
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 600),
+                        transitionBuilder:
+                            (Widget child, Animation<double> animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: ScaleTransition(
+                                  scale: CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.elasticOut,
+                                    reverseCurve: Curves.easeIn,
+                                  ),
+                                  child: child,
+                                ),
+                              );
+                            },
+                        child: Container(
+                          key: ValueKey<int>(_currentIndex),
+                          child: _buildImageArea(level, imageSize),
+                        ),
+                      ),
+                    ),
 
-                    _buildLetterSlotsWithHand(letterSize),
+                    ScaleTransition(
+                      scale: _lettersEntranceAnimation, 
+                      child: _buildLetterSlotsWithHand(letterSize),
+                    ),
 
                     SizedBox(height: h * 0.05),
                   ],
@@ -250,13 +300,17 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  level.hint,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.fredoka(
-                    fontSize: 14,
-                    color: Colors.white70,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: Text(
+                    level.hint,
+                    key: ValueKey<String>(level.hint),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.fredoka(
+                      fontSize: 18,
+                      color: Colors.white70,
+                    ),
                   ),
                 ),
               ],
@@ -437,7 +491,9 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
           confettiController: _confettiController,
           onActionPressed: () {
             Navigator.of(ctx).pop();
-            _nextLevel();
+            Future.delayed(const Duration(milliseconds: 300), () {
+              _nextLevel();
+            });
           },
         );
       },

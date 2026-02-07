@@ -17,7 +17,8 @@ class TrueFalseScreen extends StatefulWidget {
   State<TrueFalseScreen> createState() => _TrueFalseScreenState();
 }
 
-class _TrueFalseScreenState extends State<TrueFalseScreen> {
+class _TrueFalseScreenState extends State<TrueFalseScreen>
+    with TickerProviderStateMixin {
   // Data Level
   final List<TrueFalseLevel> _levels = [
     TrueFalseLevel(
@@ -51,6 +52,11 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
   int _currentIndex = 0;
   late ConfettiController _confettiController;
 
+  // Animation Controllers
+  late AnimationController _entranceController;
+  late Animation<double> _cardEntranceAnimation;
+  late Animation<double> _buttonEntranceAnimation;
+
   @override
   void initState() {
     super.initState();
@@ -58,12 +64,30 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 3),
     );
+
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _cardEntranceAnimation = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
+    );
+
+    _buttonEntranceAnimation = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.4, 1.0, curve: Curves.elasticOut),
+    );
+
+    _entranceController.forward();
   }
 
   @override
   void dispose() {
     AudioManager().playBgm('bgm.mp3');
     _confettiController.dispose();
+    _entranceController.dispose();
     super.dispose();
   }
 
@@ -75,10 +99,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
       AudioManager().playSfx('pop.mp3');
       _showWinDialog();
     } else {
-      AudioManager().playSfx(
-        'bubble-pop.mp3',
-      ); // Ganti dengan sound "wrong" nanti
-
+      AudioManager().playSfx('bubble-pop.mp3');
       _showWrongDialog();
     }
   }
@@ -197,7 +218,6 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
     );
   }
 
-  // Dialogs Menang & Finish
   void _showWinDialog() {
     bool isLastLevel = _currentIndex == _levels.length - 1;
     _confettiController.play();
@@ -213,7 +233,10 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
           confettiController: _confettiController,
           onActionPressed: () {
             Navigator.of(ctx).pop();
-            _nextLevel();
+
+            Future.delayed(const Duration(milliseconds: 300), () {
+              _nextLevel();
+            });
           },
         );
       },
@@ -249,7 +272,6 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
       backgroundColor: AppColors.gameSkyBlue,
       body: Stack(
         children: [
-          // Background
           Positioned.fill(
             child: Opacity(
               opacity: 1,
@@ -263,19 +285,11 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                // Dimensions Calculation
                 double h = constraints.maxHeight;
                 double w = constraints.maxWidth;
-
-                // Proporsi Layar
-                double headerH = h * 0.15;
-                if (headerH < 70) headerH = 70;
-
-                double footerH = h * 0.20;
-                if (footerH < 100) footerH = 100;
-
+                double headerH = max(h * 0.15, 70.0);
+                double footerH = max(h * 0.20, 100.0);
                 double availableH = h - headerH - footerH;
-
                 double cardWidth = min(w * 0.5, 500.0);
                 double cardHeight = min(availableH * 0.9, 500.0);
 
@@ -285,13 +299,44 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
 
                     Expanded(
                       child: Center(
-                        child: _buildQuestionCard(level, cardWidth, cardHeight),
+                        child: ScaleTransition(
+                          scale: _cardEntranceAnimation,
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 500),
+                            transitionBuilder: (Widget child, Animation<double> animation) {
+                              return FadeTransition(
+                                opacity:
+                                    animation, 
+                                child: ScaleTransition(
+                                  scale: CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.elasticOut,
+                                    reverseCurve: Curves
+                                        .easeIn,
+                                  ),
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: _buildQuestionCard(
+                              key: ValueKey<int>(
+                                _currentIndex,
+                              ), 
+                              level: level,
+                              width: cardWidth,
+                              height: cardHeight,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
 
                     SizedBox(
                       height: footerH,
-                      child: _buildAnswerButtons(w > 600),
+                      child: ScaleTransition(
+                        scale: _buttonEntranceAnimation,
+                        child: _buildAnswerButtons(w > 600),
+                      ),
                     ),
                   ],
                 );
@@ -337,7 +382,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
                 Text(
                   "Think carefully!",
                   style: GoogleFonts.fredoka(
-                    fontSize: 14,
+                    fontSize: 18,
                     color: Colors.white70,
                   ),
                 ),
@@ -365,8 +410,14 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
     );
   }
 
-  Widget _buildQuestionCard(TrueFalseLevel level, double width, double height) {
+  Widget _buildQuestionCard({
+    required Key key,
+    required TrueFalseLevel level,
+    required double width,
+    required double height,
+  }) {
     return Container(
+      key: key,
       width: width,
       height: height,
       padding: const EdgeInsets.all(20),
@@ -420,20 +471,24 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
       child: Row(
         children: [
           Expanded(
-            child: _gameButton(
-              text: "FALSE",
-              color: const Color(0xFFFF5252),
-              icon: Icons.close_rounded,
+            child: _BouncingButton(
               onTap: () => _checkAnswer(false),
+              child: _gameButtonContent(
+                text: "FALSE",
+                color: const Color(0xFFFF5252),
+                icon: Icons.close_rounded,
+              ),
             ),
           ),
           const SizedBox(width: 20),
           Expanded(
-            child: _gameButton(
-              text: "TRUE",
-              color: const Color(0xFF4CAF50),
-              icon: Icons.check_rounded,
+            child: _BouncingButton(
               onTap: () => _checkAnswer(true),
+              child: _gameButtonContent(
+                text: "TRUE",
+                color: const Color(0xFF4CAF50),
+                icon: Icons.check_rounded,
+              ),
             ),
           ),
         ],
@@ -441,51 +496,98 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
     );
   }
 
-  Widget _gameButton({
+  Widget _gameButtonContent({
     required String text,
     required Color color,
     required IconData icon,
-    required VoidCallback onTap,
   }) {
     return LayoutBuilder(
       builder: (context, constraints) {
         double btnHeight = min(constraints.maxHeight, 100);
 
-        return GestureDetector(
-          onTap: onTap,
-          child: Container(
-            height: btnHeight,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(color: Colors.white, width: 4),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.4),
-                  blurRadius: 10,
-                  offset: const Offset(0, 6),
+        return Container(
+          height: btnHeight,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: Colors.white, width: 4),
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(0.4),
+                blurRadius: 10,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: Colors.white, size: 36),
+              const SizedBox(height: 4),
+              Text(
+                text,
+                style: GoogleFonts.fredoka(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, color: Colors.white, size: 36),
-                const SizedBox(height: 4),
-                Text(
-                  text,
-                  style: GoogleFonts.fredoka(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
+    );
+  }
+}
+
+class _BouncingButton extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+
+  const _BouncingButton({required this.child, required this.onTap});
+
+  @override
+  State<_BouncingButton> createState() => _BouncingButtonState();
+}
+
+class _BouncingButtonState extends State<_BouncingButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+      lowerBound: 0.0,
+      upperBound: 0.1,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() async {
+    await _controller.forward();
+    await _controller.reverse();
+    widget.onTap();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => _controller.reverse(),
+      onTapCancel: () => _controller.reverse(),
+      onTap: _handleTap,
+      child: ScaleTransition(scale: _scaleAnimation, child: widget.child),
     );
   }
 }
