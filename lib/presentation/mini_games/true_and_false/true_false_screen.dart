@@ -142,8 +142,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.redAccent,
-                      decoration:
-                          TextDecoration.none, 
+                      decoration: TextDecoration.none,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -255,7 +254,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
             child: Opacity(
               opacity: 1,
               child: Image.asset(
-                "assets/images/bg_true_false.jpg",
+                "assets/images/bg_true_false.jpeg",
                 fit: BoxFit.cover,
               ),
             ),
@@ -277,7 +276,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
 
                 double availableH = h - headerH - footerH;
 
-                double cardWidth = min(w * 0.85, 500.0);
+                double cardWidth = min(w * 0.5, 500.0);
                 double cardHeight = min(availableH * 0.9, 500.0);
 
                 return Column(
@@ -316,7 +315,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen> {
               backgroundColor: Colors.white,
               child: Icon(
                 Icons.arrow_back,
-                color: AppColors.gameSkyBlue,
+                color: AppColors.gamePink,
                 size: 24,
               ),
             ),

@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:edukids_app/presentation/mini_games/abjad_sort/abjad_sort_screen.dart';
+import 'package:edukids_app/presentation/mini_games/alphabet_sort/alphabet_sort_screen.dart';
+import 'package:edukids_app/presentation/mini_games/coloring/halal_coloring_menu_screen.dart';
 import 'package:edukids_app/presentation/mini_games/true_and_false/true_false_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,35 +25,35 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
       "color": AppColors.gameSkyBlue,
       "icon": Icons.extension_rounded,
       "route": "/game-puzzle",
-      "image": "assets/images/bg_puzzle.jpg",
+      "image": "assets/images/bg_puzzle.jpeg",
     },
     {
       "title": "True or\nFalse",
       "color": AppColors.gamePink,
       "icon": Icons.check_circle_rounded,
       "route": "/game-true-false",
-      "image": "assets/images/bg_puzzle.png",
+      "image": "assets/images/bg_true_false.jpeg",
     },
     {
       "title": "Halal\nColoring",
       "color": AppColors.gameYellow,
       "icon": Icons.palette_rounded,
       "route": "/game-coloring",
-      "image": "assets/images/bg_puzzle.png",
+      "image": "assets/images/bg_halal.jpeg",
     },
     {
       "title": "Learn to\nDraw",
       "color": AppColors.gameGreen,
       "icon": Icons.brush_rounded,
       "route": "/game-drawing",
-      "image": "assets/images/bg_puzzle.png",
+      "image": "assets/images/bg_learn.jpeg",
     },
     {
-      "title": "Abjad\nSort",
+      "title": "Alphabet\nSort",
       "color": AppColors.gamePurple,
       "icon": Icons.sort_by_alpha_rounded,
       "route": "/game-sorting",
-      "image": "assets/images/bg_abjad.png",
+      "image": "assets/images/bg_alphabet.jpeg",
     },
   ];
 
@@ -67,11 +68,15 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          color: AppColors.bgCream,
-          image: DecorationImage(
-            image: AssetImage("assets/images/bg_puzzle.png"),
-            opacity: 0.05,
-            repeat: ImageRepeat.repeat,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.btnBlueMain,
+              AppColors.bgBlue,
+              AppColors.gameSkyBlue,
+            ],
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: SafeArea(
@@ -94,7 +99,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
                       style: GoogleFonts.fredoka(
                         fontSize: 30,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
+                        color: AppColors.white,
                         shadows: [
                           const BoxShadow(
                             color: Colors.black12,
@@ -108,18 +113,18 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
                 ),
               ),
 
-              // Game Grid 
+              // Game Grid
               Expanded(
                 child: GridView.builder(
                   padding: EdgeInsets.fromLTRB(
                     AppSize.paddingMedium(),
                     10,
                     AppSize.paddingMedium(),
-                    20, 
+                    20,
                   ),
                   scrollDirection: Axis.vertical,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, 
+                    crossAxisCount: 2,
                     mainAxisSpacing: 15,
                     crossAxisSpacing: 15,
                     childAspectRatio: itemAspectRatio,
@@ -237,11 +242,11 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                     builder: (context) => const IslamicPuzzleScreen(),
                   ),
                 );
-              } else if (title.contains("Abjad")) {
+              } else if (title.contains("Alphabet")) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AbjadSortScreen(),
+                    builder: (context) => const AlphabetSortScreen(),
                   ),
                 );
               } else if (title.contains("True")) {
@@ -249,6 +254,13 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const TrueFalseScreen(),
+                  ),
+                );
+              } else if (title.contains("Coloring")) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HalalColoringMenuScreen(),
                   ),
                 );
               } else {
@@ -280,7 +292,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                       ),
                     ),
 
-                    // Gradient Overlay 
+                    // Gradient Overlay
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
@@ -314,7 +326,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                             Icon(
                               widget.gameData['icon'],
                               size: iconSize,
-                              color: color, 
+                              color: color,
                             ),
                             const SizedBox(width: 8),
                             Flexible(

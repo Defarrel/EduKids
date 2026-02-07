@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:confetti/confetti.dart';
 import 'package:edukids_app/core/components/finish_games.dart';
 import 'package:edukids_app/core/components/win_games.dart';
-import 'package:edukids_app/data/abjad_sort/abjad_sort_model.dart';
+import 'package:edukids_app/data/alphabet_sort/alphabet_sort_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,38 +11,38 @@ import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/core/constant/sizes.dart';
 
-class AbjadSortScreen extends StatefulWidget {
-  const AbjadSortScreen({super.key});
+class AlphabetSortScreen extends StatefulWidget {
+  const AlphabetSortScreen({super.key});
 
   @override
-  State<AbjadSortScreen> createState() => _AbjadSortScreenState();
+  State<AlphabetSortScreen> createState() => _AlphabetSortScreenState();
 }
 
-class _AbjadSortScreenState extends State<AbjadSortScreen>
+class _AlphabetSortScreenState extends State<AlphabetSortScreen>
     with TickerProviderStateMixin {
   // Data
-  final List<AbjadLevel> _levels = [
-    AbjadLevel(
+  final List<AlphabetLevel> _levels = [
+    AlphabetLevel(
       answer: "ALLAH",
       imagePath: 'assets/images/Lafadz_Allah.png',
       hint: "God the Creator",
     ),
-    AbjadLevel(
+    AlphabetLevel(
       answer: "MUHAMMAD",
       imagePath: 'assets/images/Lafadz_Muhammad.png',
       hint: "Our Beloved Prophet",
     ),
-    AbjadLevel(
+    AlphabetLevel(
       answer: "KABAH",
       imagePath: 'assets/images/kabah.png',
       hint: "Qibla for Muslims",
     ),
-    AbjadLevel(
+    AlphabetLevel(
       answer: "MEDINA",
       imagePath: 'assets/images/madinah.png',
       hint: "The Prophet's City",
     ),
-    AbjadLevel(
+    AlphabetLevel(
       answer: "QURAN",
       imagePath: 'assets/images/quran.png',
       hint: "The Holy Book",
@@ -173,7 +173,7 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
             child: Opacity(
               opacity: 1,
               child: Image.asset(
-                "assets/images/bg_abjad.png",
+                "assets/images/bg_alphabet.jpeg",
                 fit: BoxFit.cover,
               ),
             ),
@@ -187,14 +187,14 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
                 double h = constraints.maxHeight;
 
                 double headerHeight = h * 0.15;
-                if (headerHeight < 70) headerHeight = 70; 
+                if (headerHeight < 70) headerHeight = 70;
 
                 double availableH = h - headerHeight;
 
                 double imageSize = min(w * 0.70, availableH * 0.60);
 
-                double letterSize = min((w - 40) / 5.5, 85.0);
-                if (letterSize < 45) letterSize = 45; 
+                double letterSize = min((w - 40) / 5.5, 60.0);
+                if (letterSize < 45) letterSize = 45;
 
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -220,18 +220,18 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
     );
   }
 
-  // Header 
-  Widget _buildHeaderWithHint(AbjadLevel level) {
+  // Header
+  Widget _buildHeaderWithHint(AlphabetLevel level) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center, 
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: const CircleAvatar(
               backgroundColor: Colors.white,
-              child: Icon(Icons.arrow_back, color: AppColors.gameSkyBlue),
+              child: Icon(Icons.arrow_back, color: AppColors.gamePurple),
             ),
           ),
           const SizedBox(width: 12),
@@ -241,7 +241,7 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Word Sort",
+                  "Alphabet Sort",
                   style: GoogleFonts.fredoka(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -274,7 +274,7 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16, 
+                fontSize: 16,
               ),
             ),
           ),
@@ -283,7 +283,7 @@ class _AbjadSortScreenState extends State<AbjadSortScreen>
     );
   }
 
-  Widget _buildImageArea(AbjadLevel level, double size) {
+  Widget _buildImageArea(AlphabetLevel level, double size) {
     return AnimatedScale(
       scale: _isGameFinished ? 1.2 : 1.0,
       duration: const Duration(milliseconds: 500),

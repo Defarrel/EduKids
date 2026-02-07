@@ -54,6 +54,7 @@ dependencies:
   just_audio: ^0.10.5
   audio_session: ^0.2.2
   confetti: ^0.8.0
+  image: ^4.7.2
 
 dev_dependencies:
   flutter_test:

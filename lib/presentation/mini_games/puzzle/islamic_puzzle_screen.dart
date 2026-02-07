@@ -38,7 +38,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
       gridSize: 3,
     ),
     PuzzleLevel(
-      title: "Masjid",
+      title: "Mosque",
       imagePath: 'assets/images/masjid.png',
       gridSize: 3,
     ),
@@ -318,9 +318,9 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
           // Background
           Positioned.fill(
             child: Opacity(
-              opacity: 0.5,
+              opacity: 1,
               child: Image.asset(
-                "assets/images/bg_puzzle.jpg",
+                "assets/images/bg_puzzle.jpeg",
                 fit: BoxFit.cover,
               ),
             ),
@@ -347,7 +347,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                 if (puzzleSize < 0) puzzleSize = 0;
 
                 double bgPadding = 6.0;
-                // Ukuran area dalam 
+                // Ukuran area dalam
                 double innerSize = puzzleSize - (bgPadding * 2);
 
                 double pieceSpacing = isGameFinished ? 0 : 1.0;
@@ -364,7 +364,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                       child: _buildCompactHeader(level),
                     ),
 
-                    // Puzzle Area 
+                    // Puzzle Area
                     Center(
                       child: isLoading
                           ? SizedBox(
@@ -417,8 +417,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                                             ),
                                             child: Image.asset(
                                               level.imagePath,
-                                              fit: BoxFit
-                                                  .fill, 
+                                              fit: BoxFit.fill,
                                             ),
                                           ),
                                         ),
