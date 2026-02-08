@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:confetti/confetti.dart';
 import 'package:edukids_app/core/components/finish_games.dart';
 import 'package:edukids_app/core/components/win_games.dart';
+import 'package:edukids_app/core/components/wrong_games.dart';
 import 'package:edukids_app/data/true_and_false/true_and_false_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -120,99 +121,12 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
       barrierDismissible: true,
       barrierLabel: "Wrong",
       barrierColor: Colors.black.withOpacity(0.6),
-      transitionDuration: const Duration(milliseconds: 400),
+      transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
-        return Center(
-          child: ScaleTransition(
-            scale: CurvedAnimation(parent: anim1, curve: Curves.elasticOut),
-            child: Container(
-              width: 300,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                border: Border.all(color: Colors.redAccent, width: 5),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 15,
-                    offset: Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: const BoxDecoration(
-                      color: Colors.redAccent,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.close_rounded,
-                      color: Colors.white,
-                      size: 50,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "Oops! Wrong Answer",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.fredoka(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Don't give up! Try again.",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.fredoka(
-                      fontSize: 16,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.gameSkyBlue,
-                          borderRadius: BorderRadius.circular(30),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.gameSkyBlue.withOpacity(0.4),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Text(
-                          "Try Again",
-                          style: GoogleFonts.fredoka(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+        return WrongGames(
+          onRetryPressed: () {
+            Navigator.of(context).pop();
+          },
         );
       },
     );
@@ -287,7 +201,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
               builder: (context, constraints) {
                 double h = constraints.maxHeight;
                 double w = constraints.maxWidth;
-                double headerH = max(h * 0.15, 70.0);
+                double headerH = max(h * 0.1, 70.0);
                 double footerH = max(h * 0.20, 100.0);
                 double availableH = h - headerH - footerH;
                 double cardWidth = min(w * 0.5, 500.0);
@@ -303,25 +217,22 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
                           scale: _cardEntranceAnimation,
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 500),
-                            transitionBuilder: (Widget child, Animation<double> animation) {
-                              return FadeTransition(
-                                opacity:
-                                    animation, 
-                                child: ScaleTransition(
-                                  scale: CurvedAnimation(
-                                    parent: animation,
-                                    curve: Curves.elasticOut,
-                                    reverseCurve: Curves
-                                        .easeIn,
-                                  ),
-                                  child: child,
-                                ),
-                              );
-                            },
+                            transitionBuilder:
+                                (Widget child, Animation<double> animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: ScaleTransition(
+                                      scale: CurvedAnimation(
+                                        parent: animation,
+                                        curve: Curves.elasticOut,
+                                        reverseCurve: Curves.easeIn,
+                                      ),
+                                      child: child,
+                                    ),
+                                  );
+                                },
                             child: _buildQuestionCard(
-                              key: ValueKey<int>(
-                                _currentIndex,
-                              ), 
+                              key: ValueKey<int>(_currentIndex),
                               level: level,
                               width: cardWidth,
                               height: cardHeight,

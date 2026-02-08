@@ -209,7 +209,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
                 double w = constraints.maxWidth;
                 double h = constraints.maxHeight;
 
-                double headerHeight = h * 0.15;
+                double headerHeight = h * 0.1;
                 if (headerHeight < 70) headerHeight = 70;
 
                 double availableH = h - headerHeight;

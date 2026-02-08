@@ -1,32 +1,21 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:confetti/confetti.dart';
 import 'package:edukids_app/core/constant/colors.dart';
 
-class WinGames extends StatefulWidget {
-  final bool isLastLevel;
-  final ConfettiController confettiController;
-  final VoidCallback onActionPressed;
+class WrongGames extends StatefulWidget {
+  final VoidCallback onRetryPressed;
 
-  const WinGames({
-    super.key,
-    required this.isLastLevel,
-    required this.confettiController,
-    required this.onActionPressed,
-  });
+  const WrongGames({super.key, required this.onRetryPressed});
 
   @override
-  State<WinGames> createState() => _WinGamesState();
+  State<WrongGames> createState() => _WrongGamesState();
 }
 
-class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
+class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
   late AnimationController _mainController;
   late Animation<double> _dialogScale;
-  late Animation<double> _trophyScale;
-  late Animation<double> _star1Scale;
-  late Animation<double> _star2Scale;
-  late Animation<double> _star3Scale;
+  late Animation<double> _iconScale;
   late Animation<double> _accentPulse;
 
   @override
@@ -35,7 +24,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
 
     _mainController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1000),
     );
 
     _dialogScale = CurvedAnimation(
@@ -43,22 +32,9 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
       curve: const Interval(0.0, 0.5, curve: Curves.easeOutBack),
     );
 
-    _trophyScale = CurvedAnimation(
+    _iconScale = CurvedAnimation(
       parent: _mainController,
       curve: const Interval(0.3, 0.7, curve: Curves.elasticOut),
-    );
-
-    _star1Scale = CurvedAnimation(
-      parent: _mainController,
-      curve: const Interval(0.5, 0.7, curve: Curves.bounceOut),
-    );
-    _star2Scale = CurvedAnimation(
-      parent: _mainController,
-      curve: const Interval(0.6, 0.8, curve: Curves.bounceOut),
-    );
-    _star3Scale = CurvedAnimation(
-      parent: _mainController,
-      curve: const Interval(0.7, 0.9, curve: Curves.bounceOut),
     );
 
     _accentPulse = Tween<double>(begin: 0.95, end: 1.05).animate(
@@ -89,7 +65,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
               alignment: Alignment.center,
               clipBehavior: Clip.none,
               children: [
-                // Ribbon Tails
+                // Ribbon Tails (Back)
                 Positioned(
                   top: 25,
                   child: ScaleTransition(
@@ -119,7 +95,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                       border: Border.all(color: Colors.white, width: 4),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.gamePurple.withOpacity(0.3),
+                          color: Colors.red.withOpacity(0.3),
                           blurRadius: 40,
                           offset: const Offset(0, 20),
                         ),
@@ -136,16 +112,16 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                                 _buildAccent(
                                   top: 60,
                                   left: 10,
-                                  icon: Icons.star_rounded,
-                                  color: AppColors.gameYellow,
+                                  icon: Icons.close_rounded,
+                                  color: Colors.redAccent.withOpacity(0.2),
                                   size: 30,
                                   rotate: -0.2,
                                 ),
                                 _buildAccent(
                                   top: 50,
                                   right: -10,
-                                  icon: Icons.favorite_rounded,
-                                  color: AppColors.gamePink.withOpacity(0.3),
+                                  icon: Icons.warning_rounded,
+                                  color: Colors.orange.withOpacity(0.3),
                                   size: 40,
                                   rotate: 0.3,
                                 ),
@@ -153,14 +129,14 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                                   top: 80,
                                   left: 50,
                                   icon: Icons.circle,
-                                  color: AppColors.gameSkyBlue.withOpacity(0.4),
+                                  color: Colors.grey.withOpacity(0.4),
                                   size: 10,
                                 ),
                                 _buildAccent(
                                   top: 110,
                                   right: 30,
                                   icon: Icons.change_history,
-                                  color: AppColors.gameGreen.withOpacity(0.5),
+                                  color: Colors.red.withOpacity(0.5),
                                   size: 20,
                                   rotate: 1.0,
                                 ),
@@ -168,23 +144,15 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                                   top: 120,
                                   left: -15,
                                   icon: Icons.bolt_rounded,
-                                  color: AppColors.gameYellow.withOpacity(0.5),
+                                  color: Colors.yellow.withOpacity(0.5),
                                   size: 50,
                                   rotate: -0.5,
-                                ),
-                                _buildAccent(
-                                  top: 130,
-                                  right: -5,
-                                  icon: Icons.star_rate_rounded,
-                                  color: AppColors.gamePurple.withOpacity(0.4),
-                                  size: 35,
-                                  rotate: 0.2,
                                 ),
                                 _buildAccent(
                                   bottom: 50,
                                   left: -5,
                                   icon: Icons.circle_outlined,
-                                  color: AppColors.gameSkyBlue,
+                                  color: Colors.redAccent,
                                   size: 35,
                                   rotate: 0.1,
                                 ),
@@ -192,25 +160,9 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                                   bottom: 40,
                                   right: 10,
                                   icon: Icons.square_rounded,
-                                  color: AppColors.gameGreen,
+                                  color: Colors.orangeAccent,
                                   size: 20,
                                   rotate: 0.8,
-                                ),
-                                _buildAccent(
-                                  bottom: 70,
-                                  right: 50,
-                                  icon: Icons.star_border_rounded,
-                                  color: AppColors.gameYellow,
-                                  size: 18,
-                                  rotate: -0.1,
-                                ),
-                                _buildAccent(
-                                  bottom: 20,
-                                  left: 30,
-                                  icon: Icons.diamond_outlined,
-                                  color: AppColors.gamePurple.withOpacity(0.5),
-                                  size: 25,
-                                  rotate: 0.4,
                                 ),
                               ],
                             ),
@@ -227,29 +179,26 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                                 const SizedBox(height: 50),
 
                                 Text(
-                                  "Level Completed!",
+                                  "Wrong Answer",
                                   style: GoogleFonts.fredoka(
                                     fontSize: 22,
-                                    color: AppColors.textSecondary,
+                                    color: Colors.redAccent,
                                     fontWeight: FontWeight.w800,
                                     decoration: TextDecoration.none,
                                   ),
                                 ),
 
-                                const SizedBox(height: 15),
+                                const SizedBox(height: 10),
 
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    _buildStar(_star1Scale, 45, -0.2),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 20,
-                                      ),
-                                      child: _buildStar(_star2Scale, 60, 0),
-                                    ),
-                                    _buildStar(_star3Scale, 45, 0.2),
-                                  ],
+                                Text(
+                                  "Don't give up!",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.fredoka(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.w600,
+                                    decoration: TextDecoration.none,
+                                  ),
                                 ),
                               ],
                             ),
@@ -278,7 +227,10 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [AppColors.gamePink, Color(0xFFFF80AB)],
+                                colors: [
+                                  Color(0xFFE53935),
+                                  Color(0xFFFF5252),
+                                ], // Red Gradient
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                               ),
@@ -293,7 +245,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                             ),
                             alignment: Alignment.center,
                             child: Text(
-                              "MASYAALLAH",
+                              "OOPS!",
                               style: GoogleFonts.fredoka(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w900,
@@ -328,11 +280,11 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                   ),
                 ),
 
-                // Trophy
+                // Floating Icon (X Mark)
                 Positioned(
                   top: -125,
                   child: ScaleTransition(
-                    scale: _trophyScale,
+                    scale: _iconScale,
                     child: SizedBox(
                       width: 140,
                       height: 140,
@@ -346,7 +298,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.orange.withOpacity(0.5),
+                                  color: Colors.red.withOpacity(0.5),
                                   blurRadius: 50,
                                   spreadRadius: 10,
                                 ),
@@ -354,12 +306,12 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                             ),
                           ),
                           const Icon(
-                            Icons.emoji_events_rounded,
+                            Icons.cancel_rounded,
                             size: 130,
-                            color: AppColors.gameYellow,
+                            color: Color(0xFFD32F2F),
                             shadows: [
                               Shadow(
-                                color: Colors.deepOrange,
+                                color: Colors.black26,
                                 blurRadius: 0,
                                 offset: Offset(0, 5),
                               ),
@@ -372,7 +324,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                               width: 18,
                               height: 18,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withOpacity(0.4),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -389,16 +341,13 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                   child: ScaleTransition(
                     scale: _dialogScale,
                     child: GestureDetector(
-                      onTap: widget.onActionPressed,
+                      onTap: widget.onRetryPressed,
                       child: Container(
                         width: cardWidth * 0.7,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [
-                              AppColors.btnCyanLight,
-                              AppColors.btnBlueMain,
-                            ],
+                            colors: [AppColors.gameSkyBlue, Colors.blueAccent],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),
@@ -406,7 +355,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                           border: Border.all(color: Colors.white, width: 3),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.btnBlueMain.withOpacity(0.5),
+                              color: Colors.blue.withOpacity(0.5),
                               blurRadius: 15,
                               offset: const Offset(0, 8),
                             ),
@@ -414,10 +363,10 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          widget.isLastLevel ? "FINISH" : "NEXT",
+                          "TRY AGAIN",
                           style: GoogleFonts.fredoka(
                             color: Colors.white,
-                            fontSize: 22,
+                            fontSize: 20,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1.5,
                             decoration: TextDecoration.none,
@@ -432,28 +381,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                         ),
                       ),
                     ),
-                  ),
-                ),
-
-                // Confetti
-                Positioned(
-                  top: -220,
-                  child: ConfettiWidget(
-                    confettiController: widget.confettiController,
-                    blastDirectionality: BlastDirectionality.explosive,
-                    shouldLoop: false,
-                    colors: const [
-                      AppColors.gameGreen,
-                      AppColors.gamePink,
-                      AppColors.gameYellow,
-                      AppColors.gameSkyBlue,
-                      Colors.orange,
-                      Colors.purpleAccent,
-                    ],
-                    gravity: 0.3,
-                    numberOfParticles: 50,
-                    minBlastForce: 20,
-                    maxBlastForce: 60,
                   ),
                 ),
               ],
@@ -475,9 +402,9 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
           width: 50,
           height: 60,
           decoration: BoxDecoration(
-            color: const Color(0xFFAD1457),
+            color: const Color(0xFFB71C1C), // Dark Red
             gradient: LinearGradient(
-              colors: [const Color(0xFF880E4F), const Color(0xFFAD1457)],
+              colors: [const Color(0xFFB71C1C), const Color(0xFFC62828)],
               begin: isLeft ? Alignment.centerRight : Alignment.centerLeft,
               end: isLeft ? Alignment.centerLeft : Alignment.centerRight,
             ),
@@ -490,39 +417,10 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
   Widget _buildRibbonFold(bool isLeft) {
     return ClipPath(
       clipper: SimpleTriangleClipper(isLeft),
-      child: Container(width: 10, height: 10, color: const Color(0xFF6A0D41)),
-    );
-  }
-
-  Widget _buildStar(Animation<double> animation, double size, double rotate) {
-    return ScaleTransition(
-      scale: animation,
-      child: Transform.rotate(
-        angle: rotate,
-        child: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.orange.withOpacity(0.5),
-                blurRadius: 20,
-                spreadRadius: -5,
-              ),
-            ],
-          ),
-          child: Icon(
-            Icons.star_rounded,
-            color: AppColors.gameYellow,
-            size: size,
-            shadows: const [
-              Shadow(
-                color: Colors.deepOrange,
-                blurRadius: 0,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-        ),
+      child: Container(
+        width: 10,
+        height: 10,
+        color: const Color(0xFF8E0000), // Very Dark Red
       ),
     );
   }

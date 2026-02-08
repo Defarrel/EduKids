@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:edukids_app/presentation/mini_games/alphabet_sort/alphabet_sort_screen.dart';
 import 'package:edukids_app/presentation/mini_games/coloring/halal_coloring_menu_screen.dart';
+import 'package:edukids_app/presentation/mini_games/learn_to_draw/learn_to_draw_menu_screen.dart';
 import 'package:edukids_app/presentation/mini_games/true_and_false/true_false_screen.dart';
+import 'package:edukids_app/presentation/mini_games/which_is_right/which_is_right_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -54,6 +56,13 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
       "icon": Icons.sort_by_alpha_rounded,
       "route": "/game-sorting",
       "image": "assets/images/bg_alphabet.jpeg",
+    },
+    {
+      "title": "Which is\nRight?",
+      "color": AppColors.gameRed,
+      "icon": Icons.question_mark_rounded,
+      "route": "/game-right-wrong",
+      "image": "assets/images/bg_right.jpeg",
     },
   ];
 
@@ -223,7 +232,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
       builder: (context, constraints) {
         double h = constraints.maxHeight;
 
-        double iconSize = h * 0.20;
+        double iconSize = h * 0.15;
         double fontSize = h * 0.12;
 
         return AnimatedScale(
@@ -261,6 +270,20 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const HalalColoringMenuScreen(),
+                  ),
+                );
+              } else if (title.contains("Learn")) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LearnToDrawMenuScreen(),
+                  ),
+                );
+              } else if (title.contains("Which")) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const WhichIsRightScreen(),
                   ),
                 );
               } else {

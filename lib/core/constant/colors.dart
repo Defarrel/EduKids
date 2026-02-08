@@ -21,6 +21,7 @@ class AppColors {
   static const gameYellow = Color(0xFFFFD166);  // Coloring
   static const gameGreen = Color(0xFF06D6A0);   // Drawing
   static const gamePurple = Color(0xFF9D4EDD);  // Sorting
+    static const gameRed = Color.fromARGB(255, 205, 13, 58);  // Right or Wrong
 
   // --- 4. SETTINGS ICONS (Soft Pastels) ---
   // Digunakan untuk icon di menu Settings

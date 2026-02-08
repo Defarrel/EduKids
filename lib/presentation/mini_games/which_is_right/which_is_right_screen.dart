@@ -1,0 +1,507 @@
+import 'dart:async';
+import 'dart:math';
+import 'package:confetti/confetti.dart';
+import 'package:edukids_app/core/audio/audio_manager.dart';
+import 'package:edukids_app/core/components/finish_games.dart';
+import 'package:edukids_app/core/components/win_games.dart';
+import 'package:edukids_app/core/components/wrong_games.dart';
+import 'package:edukids_app/core/constant/colors.dart';
+import 'package:edukids_app/core/constant/sizes.dart';
+import 'package:edukids_app/data/right_wrong/right_wrong_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class WhichIsRightScreen extends StatefulWidget {
+  const WhichIsRightScreen({super.key});
+
+  @override
+  State<WhichIsRightScreen> createState() => _WhichIsRightScreenState();
+}
+
+class _WhichIsRightScreenState extends State<WhichIsRightScreen>
+    with TickerProviderStateMixin {
+  // DATA LEVEL
+  final List<WhichLevel> _levels = [
+    WhichLevel(
+      question: "Which one is Allah's creation?",
+      leftImage: 'assets/images/matahari.png',
+      rightImage: 'assets/images/mobil.png',
+      isLeftCorrect: true,
+    ),
+    WhichLevel(
+      question: "Which one is man-made?",
+      leftImage: 'assets/images/gunung.png',
+      rightImage: 'assets/images/masjid.png',
+      isLeftCorrect: false,
+    ),
+    WhichLevel(
+      question: "Which one do we use for Sujud?",
+      leftImage: 'assets/images/sajadah.png',
+      rightImage: 'assets/images/baju_muslim.png',
+      isLeftCorrect: true,
+    ),
+    WhichLevel(
+      question: "Which is the Holy Book?",
+      leftImage: 'assets/images/buku.png',
+      rightImage: 'assets/images/quran.png',
+      isLeftCorrect: false,
+    ),
+  ];
+
+  // State
+  int _currentIndex = 0;
+  bool _isGameFinished = false;
+  late ConfettiController _confettiController;
+
+  // Animasi Controller
+  late AnimationController _entranceController;
+  late Animation<double> _questionEntranceAnimation;
+  late Animation<double> _cardsEntranceAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    AudioManager().playBgm('puzzle_bgm.mp3');
+
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 3),
+    );
+
+    // Setup Animasi Masuk (Membal)
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _questionEntranceAnimation = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
+    );
+
+    _cardsEntranceAnimation = CurvedAnimation(
+      parent: _entranceController,
+      curve: const Interval(0.3, 1.0, curve: Curves.elasticOut),
+    );
+
+    _entranceController.forward();
+  }
+
+  @override
+  void dispose() {
+    AudioManager().playBgm('bgm.mp3');
+    _confettiController.dispose();
+    _entranceController.dispose();
+    super.dispose();
+  }
+
+  // --- LOGIC GAME ---
+  void _checkAnswer(bool userPickedLeft) {
+    if (_isGameFinished) return;
+
+    bool correctAnswer = _levels[_currentIndex].isLeftCorrect;
+
+    if (userPickedLeft == correctAnswer) {
+      AudioManager().playSfx('pop.mp3');
+      _showWinDialog();
+    } else {
+      AudioManager().playSfx('bubble-pop.mp3');
+      HapticFeedback.heavyImpact();
+      _showWrongDialog();
+    }
+  }
+
+  void _nextLevel() {
+    if (_currentIndex < _levels.length - 1) {
+      setState(() => _currentIndex++);
+    } else {
+      _showFinishAllDialog();
+    }
+  }
+
+  // --- DIALOGS ---
+  void _showWinDialog() {
+    bool isLastLevel = _currentIndex == _levels.length - 1;
+    _confettiController.play();
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.8),
+      transitionDuration: const Duration(milliseconds: 600),
+      pageBuilder: (ctx, anim1, anim2) {
+        return WinGames(
+          isLastLevel: isLastLevel,
+          confettiController: _confettiController,
+          onActionPressed: () {
+            Navigator.of(ctx).pop();
+            Future.delayed(const Duration(milliseconds: 300), () {
+              _nextLevel();
+            });
+          },
+        );
+      },
+    );
+  }
+
+  void _showWrongDialog() {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: "Wrong",
+      barrierColor: Colors.black.withOpacity(0.6),
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (context, anim1, anim2) {
+        return WrongGames(
+          onRetryPressed: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+  }
+
+  void _showFinishAllDialog() {
+    _confettiController.play();
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.8),
+      transitionDuration: const Duration(milliseconds: 600),
+      pageBuilder: (ctx, anim1, anim2) {
+        return FinishGames(
+          confettiController: _confettiController,
+          onMainMenuPressed: () {
+            Navigator.of(ctx).pop();
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+  }
+
+  // --- UI BUILD ---
+  @override
+  Widget build(BuildContext context) {
+    AppSize.init(context);
+    final level = _levels[_currentIndex];
+
+    return Scaffold(
+      backgroundColor: AppColors.gameSkyBlue,
+      body: Stack(
+        children: [
+          // Background Pattern
+          Positioned.fill(
+            child: Opacity(
+              opacity: 1,
+              child: Image.asset(
+                "assets/images/bg_right.jpeg",
+                fit: BoxFit.cover,
+                repeat: ImageRepeat.repeat,
+              ),
+            ),
+          ),
+
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                double h = constraints.maxHeight;
+                double w = constraints.maxWidth;
+
+                // Proporsi Tinggi
+                double headerH = max(h * 0.1, 70.0);
+                double questionH = max(h * 0.1, 90.0);
+
+                // Sisa tinggi untuk gambar
+                double availableH =
+                    h - headerH - questionH - 40; // 40 untuk margin
+
+                return Column(
+                  children: [
+                    // A. HEADER
+                    SizedBox(height: headerH, child: _buildHeader()),
+
+                    // B. QUESTION BUBBLE
+                    SizedBox(
+                      height: questionH,
+                      child: Center(
+                        child: ScaleTransition(
+                          scale: _questionEntranceAnimation,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 400),
+                              child: Container(
+                                key: ValueKey(level.question),
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  level.question,
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.fredoka(
+                                    fontSize: 20,
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.bold,
+                                    height: 1.2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // C. CARDS AREA (ROW LAYOUT - SIDE BY SIDE)
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          transitionBuilder:
+                              (Widget child, Animation<double> animation) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: ScaleTransition(
+                                    scale: CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.elasticOut,
+                                      reverseCurve: Curves.easeIn,
+                                    ),
+                                    child: child,
+                                  ),
+                                );
+                              },
+                          child: Container(
+                            key: ValueKey<int>(_currentIndex),
+                            alignment: Alignment.center,
+                            child: ScaleTransition(
+                              scale: _cardsEntranceAnimation,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // LEFT CARD
+                                  Expanded(
+                                    child: _BouncingButton(
+                                      onTap: () => _checkAnswer(true),
+                                      child: _buildImageCard(
+                                        level.leftImage,
+                                        availableH, // Pass tinggi max
+                                      ),
+                                    ),
+                                  ),
+
+                                  // VS / OR Spacer
+                                  Container(
+                                    width: 40,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "OR",
+                                      style: GoogleFonts.fredoka(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                        shadows: [
+                                          const Shadow(
+                                            color: Colors.black26,
+                                            blurRadius: 4,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+
+                                  // RIGHT CARD
+                                  Expanded(
+                                    child: _BouncingButton(
+                                      onTap: () => _checkAnswer(false),
+                                      child: _buildImageCard(
+                                        level.rightImage,
+                                        availableH, // Pass tinggi max
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: const CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.white,
+              child: Icon(Icons.arrow_back, color: AppColors.gameRed, size: 24),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Which is right?",
+                  style: GoogleFonts.fredoka(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    shadows: const [
+                      Shadow(color: Colors.black45, blurRadius: 7),
+                    ],
+                  ),
+                ),
+                Text(
+                  "Think fast and choose wisely!",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.fredoka(
+                    fontSize: 16,
+                    color: Colors.white,
+                    shadows: const [
+                      Shadow(color: Colors.black45, blurRadius: 7),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white24,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white30),
+            ),
+            child: Text(
+              "Level ${_currentIndex + 1} / ${_levels.length}",
+              style: GoogleFonts.fredoka(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImageCard(String imagePath, double availableHeight) {
+    // Logic Responsif:
+    // Kita batasi tinggi kartu agar tidak melebihi area yang tersedia.
+    // Tapi kita ingin bentuknya agak persegi panjang (tinggi > lebar) atau kotak.
+
+    return Container(
+      // Tinggi dibatasi maksimal 70% dari area sisa agar tidak mepet
+      height: min(availableHeight * 1, 400.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: Colors.white, width: 4),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 15,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.gameSkyBlue.withOpacity(0.1),
+          ),
+          child: Image.asset(
+            imagePath,
+            fit: BoxFit.contain, // Gambar akan pas di dalam kotak
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// --- WIDGET HELPER ANIMASI (BOUNCING BUTTON) ---
+class _BouncingButton extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+
+  const _BouncingButton({required this.child, required this.onTap});
+
+  @override
+  State<_BouncingButton> createState() => _BouncingButtonState();
+}
+
+class _BouncingButtonState extends State<_BouncingButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+      lowerBound: 0.0,
+      upperBound: 0.1,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() async {
+    await _controller.forward();
+    await _controller.reverse();
+    widget.onTap();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) => _controller.reverse(),
+      onTapCancel: () => _controller.reverse(),
+      onTap: _handleTap,
+      child: ScaleTransition(scale: _scaleAnimation, child: widget.child),
+    );
+  }
+}

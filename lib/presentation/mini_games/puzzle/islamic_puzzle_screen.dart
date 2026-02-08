@@ -118,7 +118,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
 
     _handController.dispose();
     _confettiController.dispose();
-    _entranceController.dispose(); 
+    _entranceController.dispose();
     super.dispose();
   }
 
@@ -268,18 +268,11 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
   // Dialogs
   void _showWinDialog() {
     bool isLastLevel = _currentIndex == _levels.length - 1;
-
-    _confettiController.stop();
     _confettiController.play();
-
-    Future.delayed(const Duration(seconds: 1), () {
-      _confettiController.stop();
-    });
 
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
-      barrierLabel: "Win",
       barrierColor: Colors.black.withOpacity(0.8),
       transitionDuration: const Duration(milliseconds: 600),
       pageBuilder: (ctx, anim1, anim2) {
@@ -345,7 +338,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                 double w = constraints.maxWidth;
                 double h = constraints.maxHeight;
 
-                double headerHeight = h * 0.15;
+                double headerHeight = h * 0.1;
                 double footerHeight = h * 0.15;
 
                 if (headerHeight < 70) headerHeight = 70;
@@ -376,10 +369,10 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                       child: _buildCompactHeader(level),
                     ),
 
-                    // Puzzle Area 
+                    // Puzzle Area
                     Center(
                       child: ScaleTransition(
-                        scale: _puzzleEntranceAnimation, 
+                        scale: _puzzleEntranceAnimation,
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 600),
                           transitionBuilder:
@@ -408,9 +401,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                                   ),
                                 )
                               : SizedBox(
-                                  key: ValueKey<int>(
-                                    _currentIndex,
-                                  ), 
+                                  key: ValueKey<int>(_currentIndex),
                                   width: puzzleSize,
                                   height: puzzleSize,
                                   child: AnimatedScale(
