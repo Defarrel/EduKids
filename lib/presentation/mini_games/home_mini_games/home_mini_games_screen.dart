@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:edukids_app/presentation/mini_games/alphabet_sort/alphabet_sort_screen.dart';
-import 'package:edukids_app/presentation/mini_games/coloring/halal_coloring_menu_screen.dart';
+import 'package:edukids_app/presentation/mini_games/halal_haram/halal_haram_game_screen.dart';
 import 'package:edukids_app/presentation/mini_games/learn_to_draw/learn_to_draw_menu_screen.dart';
 import 'package:edukids_app/presentation/mini_games/true_and_false/true_false_screen.dart';
 import 'package:edukids_app/presentation/mini_games/which_is_right/which_is_right_screen.dart';
@@ -37,11 +37,11 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
       "image": "assets/images/bg_true_false.jpeg",
     },
     {
-      "title": "Halal\nColoring",
+      "title": "Halal\nHaram",
       "color": AppColors.gameYellow,
-      "icon": Icons.palette_rounded,
-      "route": "/game-coloring",
-      "image": "assets/images/bg_halal.jpeg",
+      "icon": Icons.checklist_rtl_rounded,
+      "route": "/halal-hara,",
+      "image": "assets/images/bg_halal_haram.jpeg",
     },
     {
       "title": "Learn to\nDraw",
@@ -265,13 +265,6 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                     builder: (context) => const TrueFalseScreen(),
                   ),
                 );
-              } else if (title.contains("Coloring")) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HalalColoringMenuScreen(),
-                  ),
-                );
               } else if (title.contains("Learn")) {
                 Navigator.push(
                   context,
@@ -284,6 +277,13 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const WhichIsRightScreen(),
+                  ),
+                );
+              } else if (title.contains("Halal")) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HalalHaramGameScreen(),
                   ),
                 );
               } else {

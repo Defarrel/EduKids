@@ -402,7 +402,7 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
           width: 50,
           height: 60,
           decoration: BoxDecoration(
-            color: const Color(0xFFB71C1C), // Dark Red
+            color: const Color(0xFFB71C1C), 
             gradient: LinearGradient(
               colors: [const Color(0xFFB71C1C), const Color(0xFFC62828)],
               begin: isLeft ? Alignment.centerRight : Alignment.centerLeft,
@@ -420,7 +420,7 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
       child: Container(
         width: 10,
         height: 10,
-        color: const Color(0xFF8E0000), // Very Dark Red
+        color: const Color(0xFF8E0000), 
       ),
     );
   }
