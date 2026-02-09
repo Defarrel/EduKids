@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:ui' as ui;
+import 'dart:typed_data';
 import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/data/drawing/drawing_model.dart';
 import 'package:flutter/material.dart';
@@ -15,40 +16,40 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class LearnToDrawScreen extends StatefulWidget {
   final String templateImage;
-  const LearnToDrawScreen({super.key, required this.templateImage});
+  final Uint8List? initialImage;
+
+  const LearnToDrawScreen({
+    super.key,
+    required this.templateImage,
+    this.initialImage,
+  });
 
   @override
   State<LearnToDrawScreen> createState() => _LearnToDrawScreenState();
 }
 
 class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
-  // Global Keys
   final GlobalKey _canvasKey = GlobalKey();
   final GlobalKey _interactiveViewerKey = GlobalKey();
-
-  // Controllers
   final TransformationController _transformationController =
       TransformationController();
   late ConfettiController _confettiController;
 
-  // Drawing Layers
   ui.Image? _filledImage;
   List<ui.Image?> _fillHistory = [];
   List<DrawingPoint?> points = [];
   List<String> _actionStack = [];
 
-  // Tools State
+  double _currentPixelRatio = 1.0;
+
   Color selectedColor = Colors.black;
   double strokeWidth = 5.0;
   bool isEraser = false;
   bool isHandMode = false;
-
-  // Fill Tool State
   bool showFillPopup = false;
   Color fillSelectedColor = Colors.blue;
   bool isProcessingFill = false;
 
-  // Colors Palette
   final List<Color> colors = [
     Colors.black,
     Colors.red,
@@ -71,6 +72,25 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
       duration: const Duration(seconds: 2),
     );
     AudioManager().playBgm('puzzle_bgm.mp3');
+
+    if (widget.initialImage != null) {
+      _loadInitialImage();
+    }
+  }
+
+  Future<void> _loadInitialImage() async {
+    try {
+      final ui.Codec codec = await ui.instantiateImageCodec(
+        widget.initialImage!,
+      );
+      final ui.FrameInfo frameInfo = await codec.getNextFrame();
+      setState(() {
+        _filledImage = frameInfo.image;
+        _currentPixelRatio = 1.0;
+      });
+    } catch (e) {
+      debugPrint("Error loading initial image: $e");
+    }
   }
 
   @override
@@ -80,7 +100,6 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     super.dispose();
   }
 
-  // Drawing Logic
   void _addPoint(Offset globalPos) {
     if (isHandMode) return;
     if (showFillPopup) setState(() => showFillPopup = false);
@@ -90,12 +109,14 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     if (renderBox == null) return;
 
     Offset localPos = renderBox.globalToLocal(globalPos);
+
     setState(() {
       points.add(
         DrawingPoint(
           offset: localPos,
           paint: Paint()
-            ..color = isEraser ? Colors.white : selectedColor
+            ..color = isEraser ? Colors.transparent : selectedColor
+            ..blendMode = isEraser ? BlendMode.clear : BlendMode.srcOver
             ..strokeWidth = strokeWidth
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
@@ -105,23 +126,19 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     });
   }
 
-  // Zoom Logic
   void _handleZoom(double scaleFactor) {
     final RenderBox? box =
         _interactiveViewerKey.currentContext?.findRenderObject() as RenderBox?;
     if (box == null) return;
-
     final Offset center = Offset(box.size.width / 2, box.size.height / 2);
     final Matrix4 currentMatrix = _transformationController.value;
     final double currentScale = currentMatrix.getMaxScaleOnAxis();
     final double newScale = (currentScale * scaleFactor).clamp(0.5, 5.0);
     final double effectiveScale = newScale / currentScale;
-
     final Matrix4 scaleMatrix = Matrix4.identity()
       ..translate(center.dx, center.dy)
       ..scale(effectiveScale)
       ..translate(-center.dx, -center.dy);
-
     setState(() {
       _transformationController.value = scaleMatrix.multiplied(currentMatrix);
     });
@@ -130,7 +147,6 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
   void _zoomIn() => _handleZoom(1.2);
   void _zoomOut() => _handleZoom(0.8);
 
-  // Color Picker Logic
   void _openColorPickerDialog({
     required String title,
     required Color currentColor,
@@ -182,6 +198,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
                   enableAlpha: false,
                   displayThumbColor: true,
                   hexInputBar: false,
+                  labelTypes: const [],
                 ),
               ),
               actions: <Widget>[
@@ -202,7 +219,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          'PILIH (SELECT)',
+                          'SELECT',
                           style: GoogleFonts.fredoka(
                             color: Colors.white,
                             fontSize: 18,
@@ -240,43 +257,50 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
   void _showFillColorPicker() {
     Color tempColor = fillSelectedColor;
     _openColorPickerDialog(
-      title: 'Warna Isi',
+      title: 'Pick a Fill Color!',
       currentColor: fillSelectedColor,
       onColorChanged: (color) => tempColor = color,
       onSelect: () => setState(() => fillSelectedColor = tempColor),
     );
   }
 
-  // Flood Fill Logic
   Future<void> _performFloodFill(Offset tapPosition) async {
     if (isProcessingFill || isHandMode) return;
-    setState(() => isProcessingFill = true);
-    AudioManager().playSfx('bubble-pop.mp3');
 
     try {
+      isProcessingFill = true;
+
       RenderRepaintBoundary? boundary =
           _canvasKey.currentContext?.findRenderObject()
               as RenderRepaintBoundary?;
       if (boundary == null) return;
 
-      ui.Image sourceImage = await boundary.toImage(pixelRatio: 1.0);
+      AudioManager().playSfx('bubble-pop.mp3');
+
+      double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+      if (pixelRatio > 3.0) pixelRatio = 3.0;
+
+      ui.Image sourceImage = await boundary.toImage(pixelRatio: pixelRatio);
       ByteData? byteData = await sourceImage.toByteData(
         format: ui.ImageByteFormat.rawRgba,
       );
+
       if (byteData == null) return;
 
       Uint8List pixels = byteData.buffer.asUint8List();
       int width = sourceImage.width;
       int height = sourceImage.height;
-      int x = tapPosition.dx.toInt();
-      int y = tapPosition.dy.toInt();
 
-      if (x < 0 || x >= width || y < 0 || y >= height) {
-        setState(() => isProcessingFill = false);
-        return;
-      }
+      int x = (tapPosition.dx * pixelRatio).toInt();
+      int y = (tapPosition.dy * pixelRatio).toInt();
+
+      if (x < 0) x = 0;
+      if (x >= width) x = width - 1;
+      if (y < 0) y = 0;
+      if (y >= height) y = height - 1;
 
       _fillHistory.add(_filledImage);
+
       _floodFillAlgorithm(pixels, width, height, x, y, fillSelectedColor);
 
       ui.ImmutableBuffer buffer = await ui.ImmutableBuffer.fromUint8List(
@@ -293,13 +317,14 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
 
       setState(() {
         _filledImage = frameInfo.image;
-        isProcessingFill = false;
+        _currentPixelRatio = pixelRatio;
         showFillPopup = false;
         _actionStack.add('fill');
       });
     } catch (e) {
       debugPrint("Error Fill: $e");
-      setState(() => isProcessingFill = false);
+    } finally {
+      isProcessingFill = false;
     }
   }
 
@@ -312,44 +337,78 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     Color newColor,
   ) {
     int startIndex = (startY * width + startX) * 4;
-    int r = pixels[startIndex];
-    int g = pixels[startIndex + 1];
-    int b = pixels[startIndex + 2];
-    int a = pixels[startIndex + 3];
+
+    int startR = pixels[startIndex];
+    int startG = pixels[startIndex + 1];
+    int startB = pixels[startIndex + 2];
+    int startA = pixels[startIndex + 3];
+
     int newR = newColor.red;
     int newG = newColor.green;
     int newB = newColor.blue;
     int newA = newColor.alpha;
 
-    if (r == newR && g == newG && b == newB && a == newA) return;
+    if (startR == newR && startG == newG && startB == newB && startA == newA)
+      return;
 
     Queue<int> queue = Queue<int>();
     queue.add(startIndex);
 
+    const int tolerance = 120;
+
     while (queue.isNotEmpty) {
       int idx = queue.removeFirst();
       if (idx < 0 || idx >= pixels.length) continue;
-      if (pixels[idx] == r &&
-          pixels[idx + 1] == g &&
-          pixels[idx + 2] == b &&
-          pixels[idx + 3] == a) {
+
+      int r = pixels[idx];
+      int g = pixels[idx + 1];
+      int b = pixels[idx + 2];
+
+      int diff = (r - startR).abs() + (g - startG).abs() + (b - startB).abs();
+      bool isSimilar = diff <= tolerance;
+      bool isColored = (r == newR && g == newG && b == newB);
+
+      if (isSimilar && !isColored) {
         pixels[idx] = newR;
         pixels[idx + 1] = newG;
         pixels[idx + 2] = newB;
         pixels[idx + 3] = newA;
-        int currentX = (idx ~/ 4) % width;
-        int currentY = (idx ~/ 4) ~/ width;
-        if (currentX > 0) queue.add(idx - 4);
-        if (currentX < width - 1) queue.add(idx + 4);
-        if (currentY > 0) queue.add(idx - width * 4);
-        if (currentY < height - 1) queue.add(idx + width * 4);
+
+        int cx = (idx ~/ 4) % width;
+        int cy = (idx ~/ 4) ~/ width;
+
+        if (cx > 0) queue.add(idx - 4);
+        if (cx < width - 1) queue.add(idx + 4);
+        if (cy > 0) queue.add(idx - width * 4);
+        if (cy < height - 1) queue.add(idx + width * 4);
       }
     }
   }
 
-  void _onFinish() {
+  Future<void> _onFinish() async {
+    Uint8List? capturedImageBytes;
+    try {
+      RenderRepaintBoundary? boundary =
+          _canvasKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
+      if (boundary != null) {
+        double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+        if (pixelRatio > 3.0) pixelRatio = 3.0;
+
+        ui.Image image = await boundary.toImage(pixelRatio: pixelRatio);
+        ByteData? byteData = await image.toByteData(
+          format: ui.ImageByteFormat.png,
+        );
+        capturedImageBytes = byteData?.buffer.asUint8List();
+      }
+    } catch (e) {
+      debugPrint("Error saving: $e");
+    }
+
     AudioManager().playSfx('pop.mp3');
     _confettiController.play();
+
+    if (!mounted) return;
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -359,13 +418,19 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
       pageBuilder: (ctx, anim1, anim2) => WinGames(
         isLastLevel: false,
         confettiController: _confettiController,
-        onActionPressed: () => Navigator.pop(ctx),
+        onActionPressed: () {
+          Navigator.pop(ctx);
+          Navigator.pop(context, capturedImageBytes);
+        },
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height * 0.7;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -373,10 +438,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
           children: [
             Column(
               children: [
-                // Header Section
                 _buildHeader(),
-
-                // Canvas Section
                 Expanded(
                   child: Container(
                     key: _interactiveViewerKey,
@@ -392,24 +454,26 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
                         child: RepaintBoundary(
                           key: _canvasKey,
                           child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height * 0.7,
+                            width: screenWidth,
+                            height: screenHeight,
                             color: Colors.white,
                             child: Stack(
                               children: [
-                                // Fill Result
                                 if (_filledImage != null)
                                   Positioned.fill(
                                     child: RawImage(
                                       image: _filledImage,
-                                      fit: BoxFit.cover,
+                                      width: screenWidth,
+                                      height: screenHeight,
+                                      scale: _currentPixelRatio,
+                                      fit: BoxFit.fill,
+                                      filterQuality: FilterQuality.none,
                                     ),
                                   ),
 
-                                // Template Image
                                 Center(
                                   child: Opacity(
-                                    opacity: 0.3,
+                                    opacity: _filledImage == null ? 0.3 : 0.0,
                                     child: Padding(
                                       padding: const EdgeInsets.all(20.0),
                                       child: SvgPicture.asset(
@@ -420,20 +484,26 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
                                   ),
                                 ),
 
-                                // Gestures & Drawing
-                                IgnorePointer(
-                                  ignoring:
-                                      isHandMode, 
+                                CustomPaint(
+                                  size: Size(screenWidth, screenHeight),
+                                  painter: DrawingPainter(pointsList: points),
+                                ),
+
+                                Positioned.fill(
                                   child: GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    onPanStart: (d) =>
-                                        _addPoint(d.globalPosition),
-                                    onPanUpdate: (d) =>
-                                        _addPoint(d.globalPosition),
-                                    onPanEnd: (_) => setState(() {
-                                      points.add(null);
-                                      _actionStack.add('draw');
-                                    }),
+                                    behavior: HitTestBehavior.translucent,
+                                    onPanStart: isHandMode
+                                        ? null
+                                        : (d) => _addPoint(d.globalPosition),
+                                    onPanUpdate: isHandMode
+                                        ? null
+                                        : (d) => _addPoint(d.globalPosition),
+                                    onPanEnd: isHandMode
+                                        ? null
+                                        : (_) => setState(() {
+                                            points.add(null);
+                                            _actionStack.add('draw');
+                                          }),
                                     onTapUp: (details) {
                                       if (showFillPopup && !isHandMode) {
                                         RenderBox box =
@@ -446,18 +516,8 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
                                         _performFloodFill(localPos);
                                       }
                                     },
-                                    child: CustomPaint(
-                                      size: Size.infinite,
-                                      painter: DrawingPainter(
-                                        pointsList: points,
-                                      ),
-                                    ),
                                   ),
                                 ),
-                                if (isProcessingFill)
-                                  const Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
                               ],
                             ),
                           ),
@@ -466,14 +526,10 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
                     ),
                   ),
                 ),
-
-                // Bottom Controls Section
                 _buildBottomControls(),
               ],
             ),
-
             Positioned(right: 15, top: 80, child: _buildZoomControls()),
-
             if (showFillPopup)
               Positioned(bottom: 130, left: 20, child: _buildFillPopup()),
           ],
@@ -482,7 +538,6 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     );
   }
 
-  // Widgets Helpers
   Widget _buildZoomControls() {
     return Column(
       children: [
@@ -490,7 +545,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
           onTap: _zoomIn,
           child: Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
               boxShadow: [
@@ -509,7 +564,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
           onTap: _zoomOut,
           child: Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
               boxShadow: [
@@ -907,7 +962,6 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
           child: Icon(icon, color: color, size: 24),
         ),
       );
-
   Widget _toolButton(IconData icon, bool isActive, Color color) =>
       AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -929,18 +983,22 @@ class DrawingPainter extends CustomPainter {
   DrawingPainter({required this.pointsList});
   @override
   void paint(Canvas canvas, Size size) {
+    canvas.saveLayer(Rect.fromLTWH(0, 0, size.width, size.height), Paint());
+
     for (int i = 0; i < pointsList.length - 1; i++) {
-      if (pointsList[i] != null && pointsList[i + 1] != null)
+      if (pointsList[i] != null && pointsList[i + 1] != null) {
         canvas.drawLine(
           pointsList[i]!.offset,
           pointsList[i + 1]!.offset,
           pointsList[i]!.paint,
         );
-      else if (pointsList[i] != null && pointsList[i + 1] == null)
+      } else if (pointsList[i] != null && pointsList[i + 1] == null) {
         canvas.drawPoints(ui.PointMode.points, [
           pointsList[i]!.offset,
         ], pointsList[i]!.paint);
+      }
     }
+    canvas.restore();
   }
 
   @override

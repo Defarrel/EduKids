@@ -1,3 +1,4 @@
+import 'dart:typed_data'; 
 import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/core/constant/sizes.dart';
@@ -15,13 +16,15 @@ class LearnToDrawMenuScreen extends StatefulWidget {
 }
 
 class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen> {
-  // Data
+  // Data Template
   final List<Map<String, String>> _tracingPages = [
     {'title': 'Alif, Ba, Ta', 'image': 'assets/images/alif.svg'},
     {'title': 'Sa, Zaa', 'image': 'assets/images/sa.svg'},
     {'title': 'Allah', 'image': 'assets/images/allah.svg'},
     {'title': 'Muhammad', 'image': 'assets/images/muhammad.svg'},
   ];
+
+  final Map<String, Uint8List> _savedDrawings = {};
 
   @override
   void initState() {
@@ -87,11 +90,11 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen> {
                           child: Icon(
                             Icons.arrow_back_rounded,
                             color: primaryGreen,
-                            size: 28,
+                            size: 24,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +102,7 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen> {
                             Text(
                               "Let's Draw!",
                               style: GoogleFonts.fredoka(
-                                fontSize: 28,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
@@ -107,7 +110,7 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen> {
                             Text(
                               "Choose a pattern to start",
                               style: GoogleFonts.fredoka(
-                                fontSize: 16,
+                                fontSize: 18,
                                 color: Colors.white.withOpacity(0.9),
                               ),
                             ),
@@ -134,7 +137,9 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen> {
                     itemCount: _tracingPages.length,
                     itemBuilder: (context, index) {
                       final item = _tracingPages[index];
-                      return _buildMenuCard(item, primaryGreen);
+                      final savedImage = _savedDrawings[item['title']];
+
+                      return _buildMenuCard(item, primaryGreen, savedImage);
                     },
                   ),
                 ),
@@ -146,18 +151,31 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen> {
     );
   }
 
-  Widget _buildMenuCard(Map<String, String> item, Color themeColor) {
+  Widget _buildMenuCard(
+    Map<String, String> item,
+    Color themeColor,
+    Uint8List? savedImage, 
+  ) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         HapticFeedback.mediumImpact();
         AudioManager().playSfx('bubble-pop.mp3');
-        Navigator.push(
+
+        final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                LearnToDrawScreen(templateImage: item['image']!),
+            builder: (context) => LearnToDrawScreen(
+              templateImage: item['image']!,
+              initialImage: savedImage, 
+            ),
           ),
         );
+
+        if (result != null && result is Uint8List) {
+          setState(() {
+            _savedDrawings[item['title']!] = result;
+          });
+        }
       },
       child: Container(
         decoration: BoxDecoration(
@@ -174,25 +192,38 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen> {
         ),
         child: Column(
           children: [
-            // Image
+            // Image Area
             Expanded(
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(25.0),
+                padding: savedImage != null
+                    ? EdgeInsets
+                          .zero 
+                    : const EdgeInsets.all(25.0), 
                 decoration: BoxDecoration(
                   color: themeColor.withOpacity(0.05),
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(23),
                   ),
                 ),
-                child: Hero(
-                  tag: item['image']!,
-                  child: SvgPicture.asset(item['image']!, fit: BoxFit.contain),
-                ),
+                child: savedImage != null
+                    ? ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(23),
+                        ),
+                        child: Image.memory(savedImage, fit: BoxFit.cover),
+                      )
+                    : Hero(
+                        tag: item['image']!,
+                        child: SvgPicture.asset(
+                          item['image']!,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
               ),
             ),
 
-            // Title
+            // Title Area
             Container(
               padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
               child: Row(
@@ -211,9 +242,12 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen> {
                       ),
                     ),
                   ),
+                  // Ubah icon jika sudah selesai
                   Icon(
-                    Icons.play_circle_fill_rounded,
-                    color: themeColor,
+                    savedImage != null
+                        ? Icons.check_circle_rounded
+                        : Icons.play_circle_fill_rounded,
+                    color: savedImage != null ? Colors.orange : themeColor,
                     size: 24,
                   ),
                 ],
