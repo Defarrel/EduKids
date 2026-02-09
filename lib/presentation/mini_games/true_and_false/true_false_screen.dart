@@ -301,18 +301,18 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white24,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white30),
             ),
             child: Text(
-              "${_currentIndex + 1} / ${_levels.length}",
+              "Level ${_currentIndex + 1}",
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 18,
               ),
             ),
           ),

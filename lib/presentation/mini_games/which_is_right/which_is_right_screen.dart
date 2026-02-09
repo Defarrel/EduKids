@@ -399,11 +399,11 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
               border: Border.all(color: Colors.white30),
             ),
             child: Text(
-              "Level ${_currentIndex + 1} / ${_levels.length}",
+              "Level ${_currentIndex + 1}",
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 18,
               ),
             ),
           ),

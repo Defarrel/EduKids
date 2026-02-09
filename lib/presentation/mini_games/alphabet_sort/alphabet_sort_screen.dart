@@ -113,7 +113,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
     AudioManager().playBgm('bgm.mp3');
     _confettiController.dispose();
     _handController.dispose();
-    _entranceController.dispose(); 
+    _entranceController.dispose();
     super.dispose();
   }
 
@@ -228,9 +228,9 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
                       child: _buildHeaderWithHint(level),
                     ),
 
-                    // Image Area 
+                    // Image Area
                     ScaleTransition(
-                      scale: _imageEntranceAnimation, 
+                      scale: _imageEntranceAnimation,
                       child: AnimatedSwitcher(
                         duration: const Duration(milliseconds: 600),
                         transitionBuilder:
@@ -255,7 +255,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
                     ),
 
                     ScaleTransition(
-                      scale: _lettersEntranceAnimation, 
+                      scale: _lettersEntranceAnimation,
                       child: _buildLetterSlotsWithHand(letterSize),
                     ),
 
@@ -318,17 +318,18 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
           ),
 
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white24,
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white30),
             ),
             child: Text(
               "Level ${_currentIndex + 1}",
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 18,
               ),
             ),
           ),

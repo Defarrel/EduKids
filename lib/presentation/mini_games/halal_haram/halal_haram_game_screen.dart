@@ -117,13 +117,13 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.gameGreen,
+      backgroundColor: AppColors.gameYellow,
       body: Stack(
         children: [
           // Background pattern
           Positioned.fill(
             child: Opacity(
-              opacity: 1,
+              opacity: 0.8,
               child: Image.asset(
                 "assets/images/bg_halal_haram.jpeg",
                 repeat: ImageRepeat.repeat,
@@ -166,7 +166,28 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
             AppColors.gameYellow,
             () => Navigator.pop(context),
           ),
-          _scoreBadge("$score", Icons.star_rounded, AppColors.gameGreen),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Halal or Haram?",
+                  style: GoogleFonts.fredoka(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  "Think carefully!",
+                  style: GoogleFonts.fredoka(fontSize: 18, color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+          _scoreBadge("$score", Icons.star_rounded, AppColors.white),
         ],
       ),
     );
@@ -318,8 +339,9 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
   Widget _scoreBadge(String val, IconData icon, Color color) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: Colors.white24,
       borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: Colors.white30),
     ),
     child: Row(
       children: [

@@ -324,7 +324,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
           // Background
           Positioned.fill(
             child: Opacity(
-              opacity: 1,
+              opacity: 0.9,
               child: Image.asset(
                 "assets/images/bg_puzzle.jpeg",
                 fit: BoxFit.cover,
@@ -750,39 +750,23 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    shadows: const [
-                      Shadow(color: Colors.black45, blurRadius: 7),
-                    ],
                   ),
                 ),
                 Text(
                   level.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.fredoka(
-                    fontSize: 16,
-                    color: Colors.white,
-                    shadows: const [
-                      Shadow(color: Colors.black45, blurRadius: 7),
-                    ],
-                  ),
+                  style: GoogleFonts.fredoka(fontSize: 18, color: Colors.white),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white24,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: Colors.white30),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  offset: Offset(0, 4),
-                  blurRadius: 1,
-                ),
-              ],
             ),
             child: Text(
               "Level ${_currentIndex + 1}",
