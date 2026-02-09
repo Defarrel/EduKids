@@ -21,7 +21,7 @@ class WhichIsRightScreen extends StatefulWidget {
 
 class _WhichIsRightScreenState extends State<WhichIsRightScreen>
     with TickerProviderStateMixin {
-  // DATA LEVEL
+  // Data Level
   final List<WhichLevel> _levels = [
     WhichLevel(
       question: "Which one is Allah's creation?",
@@ -47,6 +47,12 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
       rightImage: 'assets/images/quran.png',
       isLeftCorrect: false,
     ),
+    WhichLevel(
+      question: "Which is Sunnah food?",
+      leftImage: 'assets/images/burger.png',
+      rightImage: 'assets/images/kurma.png',
+      isLeftCorrect: false,
+    ),
   ];
 
   // State
@@ -54,7 +60,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
   bool _isGameFinished = false;
   late ConfettiController _confettiController;
 
-  // Animasi Controller
+  // Animation Controllers
   late AnimationController _entranceController;
   late Animation<double> _questionEntranceAnimation;
   late Animation<double> _cardsEntranceAnimation;
@@ -68,7 +74,6 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
       duration: const Duration(seconds: 3),
     );
 
-    // Setup Animasi Masuk (Membal)
     _entranceController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -95,7 +100,6 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
     super.dispose();
   }
 
-  // --- LOGIC GAME ---
   void _checkAnswer(bool userPickedLeft) {
     if (_isGameFinished) return;
 
@@ -119,7 +123,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
     }
   }
 
-  // --- DIALOGS ---
+  // Dialogs
   void _showWinDialog() {
     bool isLastLevel = _currentIndex == _levels.length - 1;
     _confettiController.play();
@@ -180,7 +184,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
     );
   }
 
-  // --- UI BUILD ---
+  // UI Build
   @override
   Widget build(BuildContext context) {
     AppSize.init(context);
@@ -190,7 +194,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
       backgroundColor: AppColors.gameSkyBlue,
       body: Stack(
         children: [
-          // Background Pattern
+          // Background
           Positioned.fill(
             child: Opacity(
               opacity: 1,
@@ -206,22 +210,14 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
             child: LayoutBuilder(
               builder: (context, constraints) {
                 double h = constraints.maxHeight;
-                double w = constraints.maxWidth;
-
-                // Proporsi Tinggi
                 double headerH = max(h * 0.1, 70.0);
                 double questionH = max(h * 0.1, 90.0);
-
-                // Sisa tinggi untuk gambar
-                double availableH =
-                    h - headerH - questionH - 40; // 40 untuk margin
+                double availableH = h - headerH - questionH - 40;
 
                 return Column(
                   children: [
-                    // A. HEADER
                     SizedBox(height: headerH, child: _buildHeader()),
 
-                    // B. QUESTION BUBBLE
                     SizedBox(
                       height: questionH,
                       child: Center(
@@ -262,10 +258,9 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                       ),
                     ),
 
-                    // C. CARDS AREA (ROW LAYOUT - SIDE BY SIDE)
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 50),
                         child: AnimatedSwitcher(
                           duration: const Duration(milliseconds: 500),
                           transitionBuilder:
@@ -290,27 +285,27 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  // LEFT CARD
+                                  // Left Card
                                   Expanded(
                                     child: _BouncingButton(
                                       onTap: () => _checkAnswer(true),
                                       child: _buildImageCard(
                                         level.leftImage,
-                                        availableH, // Pass tinggi max
+                                        availableH,
                                       ),
                                     ),
                                   ),
 
-                                  // VS / OR Spacer
+                                  // OR Spacer
                                   Container(
-                                    width: 40,
+                                    width: 70,
                                     alignment: Alignment.center,
                                     child: Text(
                                       "OR",
                                       style: GoogleFonts.fredoka(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 20,
+                                        fontSize: 24,
                                         shadows: [
                                           const Shadow(
                                             color: Colors.black26,
@@ -321,13 +316,13 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                                     ),
                                   ),
 
-                                  // RIGHT CARD
+                                  // Right Card
                                   Expanded(
                                     child: _BouncingButton(
                                       onTap: () => _checkAnswer(false),
                                       child: _buildImageCard(
                                         level.rightImage,
-                                        availableH, // Pass tinggi max
+                                        availableH,
                                       ),
                                     ),
                                   ),
@@ -418,13 +413,8 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
   }
 
   Widget _buildImageCard(String imagePath, double availableHeight) {
-    // Logic Responsif:
-    // Kita batasi tinggi kartu agar tidak melebihi area yang tersedia.
-    // Tapi kita ingin bentuknya agak persegi panjang (tinggi > lebar) atau kotak.
-
     return Container(
-      // Tinggi dibatasi maksimal 70% dari area sisa agar tidak mepet
-      height: min(availableHeight * 1, 400.0),
+      height: min(availableHeight * 0.6, 400.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
@@ -444,17 +434,14 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
           decoration: BoxDecoration(
             color: AppColors.gameSkyBlue.withOpacity(0.1),
           ),
-          child: Image.asset(
-            imagePath,
-            fit: BoxFit.contain, // Gambar akan pas di dalam kotak
-          ),
+          child: Image.asset(imagePath, fit: BoxFit.contain),
         ),
       ),
     );
   }
 }
 
-// --- WIDGET HELPER ANIMASI (BOUNCING BUTTON) ---
+// Bouncing Button Helper
 class _BouncingButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onTap;
