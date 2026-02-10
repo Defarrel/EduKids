@@ -34,7 +34,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
       "color": AppColors.gamePink,
       "icon": Icons.check_circle_rounded,
       "route": "/game-true-false",
-      "image": "assets/images/bg_true_false.jpeg",
+      "image": "assets/images/bg_true.jpeg",
     },
     {
       "title": "Halal\nHaram",

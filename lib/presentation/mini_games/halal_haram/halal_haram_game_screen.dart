@@ -80,7 +80,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
     _handSlideAnimation =
         Tween<Offset>(
           begin: const Offset(0.0, 0.0),
-          end: const Offset(-3.3, 0.9), 
+          end: const Offset(-5.3, 1), 
         ).animate(
           CurvedAnimation(
             parent: _handController,
@@ -182,8 +182,8 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
 
                 double cardSize = w * 0.20;
 
-                double binWidth = w * 0.28;
-                double binHeight = h * 0.34;
+                double binWidth = w * 0.23;
+                double binHeight = h * 0.32;
 
                 return Stack(
                   children: [
@@ -197,7 +197,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
 
                     Positioned(
                       left: -20,
-                      bottom: h * 0.1, 
+                      bottom: h * 0.2, 
                       child: _buildBinDropZone(
                         "HALAL",
                         "assets/images/keranjang.png",
@@ -209,7 +209,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
 
                     Positioned(
                       right: -20,
-                      bottom: h * 0.1,
+                      bottom: h * 0.2,
                       child: _buildBinDropZone(
                         "HARAM",
                         "assets/images/trash_red.png",

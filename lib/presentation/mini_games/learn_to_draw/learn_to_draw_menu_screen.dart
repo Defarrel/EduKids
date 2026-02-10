@@ -92,7 +92,6 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
                         child: _buildHeader(primaryGreen),
                       ),
                     ),
-
                     Expanded(
                       child: ScaleTransition(
                         scale: _gridAnimation,
@@ -113,6 +112,7 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
                               item,
                               primaryGreen,
                               savedImage,
+                              index,
                             );
                           },
                         ),
@@ -128,7 +128,6 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
     );
   }
 
-  // Header dan Menu Card 
   Widget _buildHeader(Color themeColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -136,9 +135,7 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
+            onTap: () => Navigator.pop(context),
             child: CircleAvatar(
               radius: 20,
               backgroundColor: Colors.white,
@@ -200,25 +197,41 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
     Map<String, String> item,
     Color themeColor,
     Uint8List? savedImage,
+    int index,
   ) {
     return GestureDetector(
       onTap: () async {
         HapticFeedback.mediumImpact();
         AudioManager().playSfx('bubble-pop.mp3');
+        List<String> allImagePaths = _tracingPages
+            .map((e) => e['image']!)
+            .toList();
+
+        Set<int> previouslyCompletedIndices = {};
+        for (int i = 0; i < _tracingPages.length; i++) {
+          if (_savedDrawings.containsKey(_tracingPages[i]['title'])) {
+            previouslyCompletedIndices.add(i);
+          }
+        }
 
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => LearnToDrawScreen(
-              templateImage: item['image']!,
-              initialImage: savedImage,
+              allImagePaths: allImagePaths,
+              initialIndex: index,
+              completedIndices:
+                  previouslyCompletedIndices, 
             ),
           ),
         );
 
-        if (result != null && result is Uint8List) {
+        if (result != null && result is Map<int, Uint8List>) {
           setState(() {
-            _savedDrawings[item['title']!] = result;
+            result.forEach((levelIndex, imageBytes) {
+              String title = _tracingPages[levelIndex]['title']!;
+              _savedDrawings[title] = imageBytes;
+            });
           });
         }
       },
