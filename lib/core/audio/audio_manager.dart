@@ -64,7 +64,7 @@ class AudioManager {
     }
   }
 
-  // FUNGSI UNTUK GANTI LAGU BGM 
+  // FUNGSI UNTUK GANTI LAGU BGM
   Future<void> playBgm(String fileName) async {
     if (!_initialized) return;
 

@@ -1,5 +1,4 @@
-import 'dart:async';
-import 'dart:collection';
+import 'dart:math';
 import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/components/wrong_games.dart';
 import 'package:edukids_app/core/constant/colors.dart';
@@ -8,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:edukids_app/core/constant/sizes.dart';
 
 class HalalHaramGameScreen extends StatefulWidget {
   const HalalHaramGameScreen({super.key});
@@ -33,7 +33,6 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
       'image': 'assets/images/wine.png',
       'isHalal': false,
     },
-
     {'name': 'Cow Milk', 'image': 'assets/images/milk.png', 'isHalal': true},
     {'name': 'Snake', 'image': 'assets/images/snake.png', 'isHalal': false},
     {'name': 'Fish', 'image': 'assets/images/fish.png', 'isHalal': true},
@@ -58,17 +57,20 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 2),
     );
-    AudioManager().playBgm('puzzle_bgm.mp3');
+    AudioManager().playBgm('bgm_halal.mp3');
   }
 
   @override
   void dispose() {
+    AudioManager().playBgm('bgm.mp3');
     _confettiController.dispose();
     super.dispose();
   }
 
   void _handleCorrectDrop() {
     AudioManager().playSfx('correct.mp3');
+    HapticFeedback.lightImpact();
+
     setState(() {
       score += 10;
       if (currentIndex < _foodItems.length - 1) {
@@ -81,6 +83,9 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
   }
 
   void _handleWrongDrop() {
+    AudioManager().playSfx('wrong.mp3');
+    HapticFeedback.heavyImpact();
+
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -88,11 +93,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
       barrierColor: Colors.black.withOpacity(0.6),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
-        return WrongGames(
-          onRetryPressed: () {
-            Navigator.of(context).pop();
-          },
-        );
+        return WrongGames(onRetryPressed: () => Navigator.of(context).pop());
       },
     );
   }
@@ -100,6 +101,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
   void _showWinDialog() {
     AudioManager().playSfx('win.mp3');
     _confettiController.play();
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -116,11 +118,12 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppSize.init(context);
+
     return Scaffold(
       backgroundColor: AppColors.gameYellow,
       body: Stack(
         children: [
-          // Background pattern
           Positioned.fill(
             child: Opacity(
               opacity: 0.8,
@@ -132,21 +135,32 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
             ),
           ),
           SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 20),
-                _buildInstruction(),
-                Expanded(
-                  child: Center(
-                    child: isGameOver
-                        ? const SizedBox()
-                        : _buildDraggableItem(),
-                  ),
-                ),
-                _buildBinsArea(),
-                const SizedBox(height: 40),
-              ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                double w = constraints.maxWidth;
+                double h = constraints.maxHeight;
+
+                double headerH = max(h * 0.1, 70.0);
+                double binsH = max(h * 0.25, 140.0);
+                double availableForCard = h - headerH - binsH;
+
+                return Column(
+                  children: [
+                    SizedBox(height: headerH, child: _buildHeader()),
+                    Expanded(
+                      child: Center(
+                        child: isGameOver
+                            ? const SizedBox()
+                            : _buildDraggableItem(
+                                min(w * 0.6, availableForCard),
+                              ),
+                      ),
+                    ),
+                    SizedBox(height: binsH, child: _buildBinsArea(w, binsH)),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -154,17 +168,22 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
     );
   }
 
-  // content: UI Widgets
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _circleBtn(
-            Icons.arrow_back_rounded,
-            AppColors.gameYellow,
-            () => Navigator.pop(context),
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: const CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.white,
+              child: Icon(
+                Icons.arrow_back,
+                color: AppColors.gameYellow,
+                size: 24,
+              ),
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -175,95 +194,63 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
                 Text(
                   "Halal or Haram?",
                   style: GoogleFonts.fredoka(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
                 Text(
-                  "Think carefully!",
-                  style: GoogleFonts.fredoka(fontSize: 18, color: Colors.white),
+                  "Drag The Food!",
+                  style: GoogleFonts.fredoka(fontSize: 16, color: Colors.white),
                 ),
               ],
             ),
           ),
-          _scoreBadge("$score", Icons.star_rounded, AppColors.white),
+          _scoreBadge("$score", Icons.star_rounded, Colors.white),
         ],
       ),
     );
   }
 
-  Widget _buildInstruction() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.gameOrange.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Text(
-        "Drag the food to the right place!",
-        style: GoogleFonts.fredoka(
-          fontSize: 24,
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDraggableItem() {
+  Widget _buildDraggableItem(double size) {
     final item = _foodItems[currentIndex];
     return Draggable<bool>(
       data: item['isHalal'],
-      feedback: Transform.scale(scale: 1.1, child: _foodCard(item, true)),
-      childWhenDragging: Opacity(opacity: 0.0, child: _foodCard(item)),
-      child: _foodCard(item),
+      onDragStarted: () => AudioManager().playSfx('bubble-pop.mp3'),
+      feedback: Transform.scale(scale: 1.1, child: _foodCard(item, size)),
+      childWhenDragging: Opacity(opacity: 0.0, child: _foodCard(item, size)),
+      child: _foodCard(item, size),
     );
   }
 
-  Widget _foodCard(Map<String, dynamic> item, [bool isDragging = false]) {
+  Widget _foodCard(Map<String, dynamic> item, double size) {
     return Material(
       color: Colors.transparent,
-      child: Container(
-        width: 350,
-        height: 350,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Image.asset(item['image'], fit: BoxFit.contain),
-              ),
-            ),
-          ],
-        ),
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Image.asset(item['image'], fit: BoxFit.contain),
       ),
     );
   }
 
-  Widget _buildBinsArea() {
+  Widget _buildBinsArea(double screenWidth, double areaHeight) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _buildBinDropZone(
           "HALAL",
           "assets/images/keranjang.png",
-          Icons.check_circle_outline,
           true,
+          screenWidth * 0.4,
+          areaHeight,
         ),
         _buildBinDropZone(
           "HARAM",
           "assets/images/trash_red.png",
-          Icons.dangerous_outlined,
           false,
+          screenWidth * 0.4,
+          areaHeight,
         ),
       ],
     );
@@ -272,8 +259,9 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
   Widget _buildBinDropZone(
     String label,
     String asset,
-    IconData icon,
     bool accepts,
+    double width,
+    double height,
   ) {
     return DragTarget<bool>(
       onAccept: (data) =>
@@ -281,40 +269,25 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
       builder: (context, candidate, rejected) {
         bool hovering = candidate.isNotEmpty;
         return AnimatedScale(
-          scale: hovering ? 1.2 : 1.0,
+          scale: hovering ? 1.1 : 1.0,
           duration: const Duration(milliseconds: 200),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Text(
-                  label,
-                  style: GoogleFonts.fredoka(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    shadows: const [
-                      Shadow(color: Colors.black45, blurRadius: 7),
-                    ],
-                  ),
+              Text(
+                label,
+                style: GoogleFonts.fredoka(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: width > 200 ? 24 : 18,
+                  shadows: const [Shadow(color: Colors.black45, blurRadius: 7)],
                 ),
               ),
-              const SizedBox(height: 5),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Image.asset(
-                    asset,
-                    width: 250,
-                    colorBlendMode: BlendMode.srcATop,
-                  ),
-                ],
+              Image.asset(
+                asset,
+                width: width,
+                height: height * 0.75,
+                fit: BoxFit.contain,
               ),
             ],
           ),
@@ -323,35 +296,23 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen> {
     );
   }
 
-  Widget _circleBtn(IconData icon, Color color, VoidCallback onTap) =>
-      GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: color),
-        ),
-      );
-
   Widget _scoreBadge(String val, IconData icon, Color color) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     decoration: BoxDecoration(
       color: Colors.white24,
       borderRadius: BorderRadius.circular(20),
       border: Border.all(color: Colors.white30),
     ),
     child: Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: Colors.orange),
+        Icon(icon, color: Colors.orange, size: 24),
         const SizedBox(width: 8),
         Text(
           val,
           style: GoogleFonts.fredoka(
             color: color,
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),

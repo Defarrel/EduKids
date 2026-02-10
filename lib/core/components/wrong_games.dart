@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:edukids_app/core/constant/colors.dart';
@@ -20,6 +21,7 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    AudioManager().playSfx('wrong.mp3');
     super.initState();
 
     _mainController = AnimationController(

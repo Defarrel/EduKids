@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:confetti/confetti.dart';
 import 'package:edukids_app/core/constant/colors.dart';
+import 'package:edukids_app/core/audio/audio_manager.dart';
 
 class WinGames extends StatefulWidget {
   final bool isLastLevel;
@@ -32,6 +33,13 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    AudioManager().playSfx('win_sfx.mp3'); 
+    widget.confettiController.stop(); 
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        widget.confettiController.play();
+      }
+    });
 
     _mainController = AnimationController(
       vsync: this,
@@ -89,7 +97,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
               alignment: Alignment.center,
               clipBehavior: Clip.none,
               children: [
-                // Ribbon Tails
                 Positioned(
                   top: 25,
                   child: ScaleTransition(
@@ -106,8 +113,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-
-                // Main Card
                 ScaleTransition(
                   scale: _dialogScale,
                   child: Container(
@@ -127,7 +132,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                     ),
                     child: Stack(
                       children: [
-                        // Background Accents
                         Positioned.fill(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(31),
@@ -216,8 +220,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-
-                        // Content
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -225,7 +227,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const SizedBox(height: 50),
-
                                 Text(
                                   "Level Completed!",
                                   style: GoogleFonts.fredoka(
@@ -235,9 +236,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                                     decoration: TextDecoration.none,
                                   ),
                                 ),
-
                                 const SizedBox(height: 15),
-
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -259,8 +258,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-
-                // Ribbon Front
                 Positioned(
                   top: -15,
                   child: ScaleTransition(
@@ -272,7 +269,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                         alignment: Alignment.center,
                         clipBehavior: Clip.none,
                         children: [
-                          // Banner
                           Container(
                             width: cardWidth + 20,
                             padding: const EdgeInsets.symmetric(vertical: 10),
@@ -310,8 +306,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-
-                          // Folds
                           Positioned(
                             bottom: -8,
                             left: 0,
@@ -327,8 +321,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-
-                // Trophy
                 Positioned(
                   top: -125,
                   child: ScaleTransition(
@@ -382,8 +374,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-
-                // Button
                 Positioned(
                   bottom: -25,
                   child: ScaleTransition(
@@ -434,8 +424,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-
-                // Confetti
                 Positioned(
                   top: -220,
                   child: ConfettiWidget(
@@ -464,8 +452,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
     );
   }
 
-  // Helpers
-
   Widget _buildRibbonTail(bool isLeft) {
     return Transform.rotate(
       angle: isLeft ? -0.2 : 0.2,
@@ -487,12 +473,10 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildRibbonFold(bool isLeft) {
-    return ClipPath(
-      clipper: SimpleTriangleClipper(isLeft),
-      child: Container(width: 10, height: 10, color: const Color(0xFF6A0D41)),
-    );
-  }
+  Widget _buildRibbonFold(bool isLeft) => ClipPath(
+    clipper: SimpleTriangleClipper(isLeft),
+    child: Container(width: 10, height: 10, color: const Color(0xFF6A0D41)),
+  );
 
   Widget _buildStar(Animation<double> animation, double size, double rotate) {
     return ScaleTransition(
@@ -556,8 +540,6 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
   }
 }
 
-// Clippers
-
 class RibbonTailClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -577,7 +559,6 @@ class RibbonTailClipper extends CustomClipper<Path> {
 class SimpleTriangleClipper extends CustomClipper<Path> {
   final bool isLeft;
   SimpleTriangleClipper(this.isLeft);
-
   @override
   Path getClip(Size size) {
     final path = Path();

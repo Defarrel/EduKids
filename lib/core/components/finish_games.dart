@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:confetti/confetti.dart';
 import 'package:edukids_app/core/constant/colors.dart';
+import 'package:edukids_app/core/audio/audio_manager.dart'; 
 
 class FinishGames extends StatefulWidget {
   final ConfettiController confettiController;
@@ -31,6 +32,13 @@ class _FinishGamesState extends State<FinishGames>
   @override
   void initState() {
     super.initState();
+    AudioManager().playSfx('finish_sfx.mp3'); 
+    widget.confettiController.stop(); 
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        widget.confettiController.play(); 
+      }
+    });
 
     _mainController = AnimationController(
       vsync: this,
@@ -208,7 +216,6 @@ class _FinishGamesState extends State<FinishGames>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const SizedBox(height: 50),
-
                                 Text(
                                   "All Levels Done!",
                                   style: GoogleFonts.fredoka(
@@ -218,9 +225,7 @@ class _FinishGamesState extends State<FinishGames>
                                     decoration: TextDecoration.none,
                                   ),
                                 ),
-
                                 const SizedBox(height: 15),
-
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -255,7 +260,6 @@ class _FinishGamesState extends State<FinishGames>
                         alignment: Alignment.center,
                         clipBehavior: Clip.none,
                         children: [
-                          // Banner
                           Container(
                             width: cardWidth + 20,
                             padding: const EdgeInsets.symmetric(vertical: 10),
@@ -293,8 +297,6 @@ class _FinishGamesState extends State<FinishGames>
                               ),
                             ),
                           ),
-
-                          // Folds
                           Positioned(
                             bottom: -8,
                             left: 0,
@@ -432,8 +434,6 @@ class _FinishGamesState extends State<FinishGames>
                     ],
                     gravity: 0.3,
                     numberOfParticles: 50,
-                    minBlastForce: 20,
-                    maxBlastForce: 60,
                   ),
                 ),
               ],
@@ -445,7 +445,6 @@ class _FinishGamesState extends State<FinishGames>
   }
 
   // Helpers
-
   Widget _buildRibbonTail(bool isLeft) {
     return Transform.rotate(
       angle: isLeft ? -0.2 : 0.2,
@@ -467,12 +466,10 @@ class _FinishGamesState extends State<FinishGames>
     );
   }
 
-  Widget _buildRibbonFold(bool isLeft) {
-    return ClipPath(
-      clipper: SimpleTriangleClipper(isLeft),
-      child: Container(width: 10, height: 10, color: const Color(0xFF00332C)),
-    );
-  }
+  Widget _buildRibbonFold(bool isLeft) => ClipPath(
+    clipper: SimpleTriangleClipper(isLeft),
+    child: Container(width: 10, height: 10, color: const Color(0xFF00332C)),
+  );
 
   Widget _buildStar(Animation<double> animation, double size, double rotate) {
     return ScaleTransition(
@@ -537,7 +534,6 @@ class _FinishGamesState extends State<FinishGames>
 }
 
 // Clippers
-
 class RibbonTailClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -557,7 +553,6 @@ class RibbonTailClipper extends CustomClipper<Path> {
 class SimpleTriangleClipper extends CustomClipper<Path> {
   final bool isLeft;
   SimpleTriangleClipper(this.isLeft);
-
   @override
   Path getClip(Size size) {
     final path = Path();

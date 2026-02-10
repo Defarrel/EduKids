@@ -71,7 +71,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 2),
     );
-    AudioManager().playBgm('puzzle_bgm.mp3');
+    AudioManager().playBgm('bgm_draw.mp3');
 
     if (widget.initialImage != null) {
       _loadInitialImage();

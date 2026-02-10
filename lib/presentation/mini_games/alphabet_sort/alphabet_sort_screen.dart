@@ -68,7 +68,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
   @override
   void initState() {
     super.initState();
-    AudioManager().playBgm('puzzle_bgm.mp3');
+    AudioManager().playBgm('bgm_alphabet.mp3');
 
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 3),

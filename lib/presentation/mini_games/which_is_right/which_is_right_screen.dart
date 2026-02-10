@@ -42,7 +42,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
       isLeftCorrect: true,
     ),
     WhichLevel(
-      question: "Which is the Holy Book?",
+      question: "Which is the Qur'an?",
       leftImage: 'assets/images/buku.png',
       rightImage: 'assets/images/quran.png',
       isLeftCorrect: false,
@@ -68,7 +68,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
   @override
   void initState() {
     super.initState();
-    AudioManager().playBgm('puzzle_bgm.mp3');
+    AudioManager().playBgm('bgm_which.mp3');
 
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 3),
@@ -414,7 +414,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
 
   Widget _buildImageCard(String imagePath, double availableHeight) {
     return Container(
-      height: min(availableHeight * 0.6, 400.0),
+      height: min(availableHeight * 0.9, 400.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),

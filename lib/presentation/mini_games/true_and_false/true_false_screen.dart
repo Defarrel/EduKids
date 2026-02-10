@@ -61,7 +61,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
   @override
   void initState() {
     super.initState();
-    AudioManager().playBgm('puzzle_bgm.mp3');
+    AudioManager().playBgm('bgm_true.mp3');
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 3),
     );
