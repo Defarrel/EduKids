@@ -56,8 +56,14 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        double cardWidth = min(constraints.maxWidth * 0.85, 320.0);
-        double cardHeight = 260;
+        double cardHeight = min(constraints.maxHeight * 0.35, 260.0);
+        if (cardHeight < 190) cardHeight = 190;
+
+        double scale = cardHeight / 260.0;
+        double cardWidth = min(
+          constraints.maxWidth * 0.85,
+          320.0 * (scale > 1 ? 1 : scale + 0.1),
+        );
 
         return Center(
           child: SizedBox(
@@ -69,16 +75,16 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
               children: [
                 // Ribbon Tails (Back)
                 Positioned(
-                  top: 25,
+                  top: 25 * scale,
                   child: ScaleTransition(
                     scale: _dialogScale,
                     child: SizedBox(
-                      width: cardWidth + 50,
+                      width: cardWidth + (50 * scale),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildRibbonTail(true),
-                          _buildRibbonTail(false),
+                          _buildRibbonTail(true, scale),
+                          _buildRibbonTail(false, scale),
                         ],
                       ),
                     ),
@@ -93,13 +99,13 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
                     height: cardHeight,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(35),
-                      border: Border.all(color: Colors.white, width: 4),
+                      borderRadius: BorderRadius.circular(35 * scale),
+                      border: Border.all(color: Colors.white, width: 4 * scale),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.red.withOpacity(0.3),
-                          blurRadius: 40,
-                          offset: const Offset(0, 20),
+                          blurRadius: 40 * scale,
+                          offset: Offset(0, 20 * scale),
                         ),
                       ],
                     ),
@@ -108,62 +114,62 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
                         // Background Accents
                         Positioned.fill(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(31),
+                            borderRadius: BorderRadius.circular(31 * scale),
                             child: Stack(
                               children: [
                                 _buildAccent(
-                                  top: 60,
-                                  left: 10,
+                                  top: 60 * scale,
+                                  left: 10 * scale,
                                   icon: Icons.close_rounded,
                                   color: Colors.redAccent.withOpacity(0.2),
-                                  size: 30,
+                                  size: 30 * scale,
                                   rotate: -0.2,
                                 ),
                                 _buildAccent(
-                                  top: 50,
-                                  right: -10,
+                                  top: 50 * scale,
+                                  right: -10 * scale,
                                   icon: Icons.warning_rounded,
                                   color: Colors.orange.withOpacity(0.3),
-                                  size: 40,
+                                  size: 40 * scale,
                                   rotate: 0.3,
                                 ),
                                 _buildAccent(
-                                  top: 80,
-                                  left: 50,
+                                  top: 80 * scale,
+                                  left: 50 * scale,
                                   icon: Icons.circle,
                                   color: Colors.grey.withOpacity(0.4),
-                                  size: 10,
+                                  size: 10 * scale,
                                 ),
                                 _buildAccent(
-                                  top: 110,
-                                  right: 30,
+                                  top: 110 * scale,
+                                  right: 30 * scale,
                                   icon: Icons.change_history,
                                   color: Colors.red.withOpacity(0.5),
-                                  size: 20,
+                                  size: 20 * scale,
                                   rotate: 1.0,
                                 ),
                                 _buildAccent(
-                                  top: 120,
-                                  left: -15,
+                                  top: 120 * scale,
+                                  left: -15 * scale,
                                   icon: Icons.bolt_rounded,
                                   color: Colors.yellow.withOpacity(0.5),
-                                  size: 50,
+                                  size: 50 * scale,
                                   rotate: -0.5,
                                 ),
                                 _buildAccent(
-                                  bottom: 50,
-                                  left: -5,
+                                  bottom: 50 * scale,
+                                  left: -5 * scale,
                                   icon: Icons.circle_outlined,
                                   color: Colors.redAccent,
-                                  size: 35,
+                                  size: 35 * scale,
                                   rotate: 0.1,
                                 ),
                                 _buildAccent(
-                                  bottom: 40,
-                                  right: 10,
+                                  bottom: 40 * scale,
+                                  right: 10 * scale,
                                   icon: Icons.square_rounded,
                                   color: Colors.orangeAccent,
-                                  size: 20,
+                                  size: 20 * scale,
                                   rotate: 0.8,
                                 ),
                               ],
@@ -174,29 +180,28 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
                         // Content
                         Center(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20 * scale,
+                            ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const SizedBox(height: 50),
-
+                                SizedBox(height: 50 * scale),
                                 Text(
                                   "Wrong Answer",
                                   style: GoogleFonts.fredoka(
-                                    fontSize: 22,
+                                    fontSize: 28 * scale,
                                     color: Colors.redAccent,
                                     fontWeight: FontWeight.w800,
                                     decoration: TextDecoration.none,
                                   ),
                                 ),
-
-                                const SizedBox(height: 10),
-
+                                SizedBox(height: 10 * scale),
                                 Text(
                                   "Don't give up!",
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.fredoka(
-                                    fontSize: 16,
+                                    fontSize: 20 * scale,
                                     color: Colors.grey[600],
                                     fontWeight: FontWeight.w600,
                                     decoration: TextDecoration.none,
@@ -213,30 +218,26 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
 
                 // Ribbon Front
                 Positioned(
-                  top: -15,
+                  top: -15 * scale,
                   child: ScaleTransition(
                     scale: _dialogScale,
                     child: SizedBox(
-                      width: cardWidth + 20,
-                      height: 60,
+                      width: cardWidth + (20 * scale),
+                      height: 60 * scale,
                       child: Stack(
                         alignment: Alignment.center,
                         clipBehavior: Clip.none,
                         children: [
-                          // Banner
                           Container(
-                            width: cardWidth + 20,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            width: cardWidth + (20 * scale),
+                            padding: EdgeInsets.symmetric(vertical: 10 * scale),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFFE53935),
-                                  Color(0xFFFF5252),
-                                ], // Red Gradient
+                                colors: [Color(0xFFE53935), Color(0xFFFF5252)],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                               ),
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10 * scale),
                               boxShadow: const [
                                 BoxShadow(
                                   color: Colors.black26,
@@ -249,10 +250,10 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
                             child: Text(
                               "OOPS!",
                               style: GoogleFonts.fredoka(
-                                fontSize: 20,
+                                fontSize: 20 * scale,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.white,
-                                letterSpacing: 2.0,
+                                letterSpacing: 2.0 * scale,
                                 decoration: TextDecoration.none,
                                 shadows: [
                                   const Shadow(
@@ -264,17 +265,15 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-
-                          // Folds
                           Positioned(
-                            bottom: -8,
+                            bottom: -8 * scale,
                             left: 0,
-                            child: _buildRibbonFold(true),
+                            child: _buildRibbonFold(true, scale),
                           ),
                           Positioned(
-                            bottom: -8,
+                            bottom: -8 * scale,
                             right: 0,
-                            child: _buildRibbonFold(false),
+                            child: _buildRibbonFold(false, scale),
                           ),
                         ],
                       ),
@@ -284,47 +283,47 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
 
                 // Floating Icon (X Mark)
                 Positioned(
-                  top: -125,
+                  top: -125 * scale,
                   child: ScaleTransition(
                     scale: _iconScale,
                     child: SizedBox(
-                      width: 140,
-                      height: 140,
+                      width: 140 * scale,
+                      height: 140 * scale,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
                           Container(
-                            width: 100,
-                            height: 100,
+                            width: 100 * scale,
+                            height: 100 * scale,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.red.withOpacity(0.5),
-                                  blurRadius: 50,
-                                  spreadRadius: 10,
+                                  blurRadius: 50 * scale,
+                                  spreadRadius: 10 * scale,
                                 ),
                               ],
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.cancel_rounded,
-                            size: 130,
-                            color: Color(0xFFD32F2F),
+                            size: 130 * scale,
+                            color: const Color(0xFFD32F2F),
                             shadows: [
                               Shadow(
                                 color: Colors.black26,
                                 blurRadius: 0,
-                                offset: Offset(0, 5),
+                                offset: Offset(0, 5 * scale),
                               ),
                             ],
                           ),
                           Positioned(
-                            top: 35,
-                            right: 35,
+                            top: 35 * scale,
+                            right: 35 * scale,
                             child: Container(
-                              width: 18,
-                              height: 18,
+                              width: 18 * scale,
+                              height: 18 * scale,
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.4),
                                 shape: BoxShape.circle,
@@ -339,27 +338,30 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
 
                 // Button
                 Positioned(
-                  bottom: -25,
+                  bottom: -25 * scale,
                   child: ScaleTransition(
                     scale: _dialogScale,
                     child: GestureDetector(
                       onTap: widget.onRetryPressed,
                       child: Container(
                         width: cardWidth * 0.7,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14 * scale),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [AppColors.gameSkyBlue, Colors.blueAccent],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(color: Colors.white, width: 3),
+                          borderRadius: BorderRadius.circular(50 * scale),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 3 * scale,
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.blue.withOpacity(0.5),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
+                              blurRadius: 15 * scale,
+                              offset: Offset(0, 8 * scale),
                             ),
                           ],
                         ),
@@ -368,17 +370,10 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
                           "TRY AGAIN",
                           style: GoogleFonts.fredoka(
                             color: Colors.white,
-                            fontSize: 20,
+                            fontSize: 20 * scale,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: 1.5,
+                            letterSpacing: 1.5 * scale,
                             decoration: TextDecoration.none,
-                            shadows: [
-                              const Shadow(
-                                color: Colors.black26,
-                                offset: Offset(0, 2),
-                                blurRadius: 2,
-                              ),
-                            ],
                           ),
                         ),
                       ),
@@ -395,16 +390,16 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
 
   // Helpers
 
-  Widget _buildRibbonTail(bool isLeft) {
+  Widget _buildRibbonTail(bool isLeft, double scale) {
     return Transform.rotate(
       angle: isLeft ? -0.2 : 0.2,
       child: ClipPath(
         clipper: RibbonTailClipper(),
         child: Container(
-          width: 50,
-          height: 60,
+          width: 50 * scale,
+          height: 60 * scale,
           decoration: BoxDecoration(
-            color: const Color(0xFFB71C1C), 
+            color: const Color(0xFFB71C1C),
             gradient: LinearGradient(
               colors: [const Color(0xFFB71C1C), const Color(0xFFC62828)],
               begin: isLeft ? Alignment.centerRight : Alignment.centerLeft,
@@ -416,13 +411,13 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildRibbonFold(bool isLeft) {
+  Widget _buildRibbonFold(bool isLeft, double scale) {
     return ClipPath(
       clipper: SimpleTriangleClipper(isLeft),
       child: Container(
-        width: 10,
-        height: 10,
-        color: const Color(0xFF8E0000), 
+        width: 10 * scale,
+        height: 10 * scale,
+        color: const Color(0xFF8E0000),
       ),
     );
   }
@@ -464,7 +459,7 @@ class RibbonTailClipper extends CustomClipper<Path> {
     final path = Path();
     path.lineTo(size.width, 0);
     path.lineTo(size.width, size.height);
-    path.lineTo(size.width / 2, size.height - 15);
+    path.lineTo(size.width / 2, size.height - (size.height * 0.25));
     path.lineTo(0, size.height);
     path.close();
     return path;

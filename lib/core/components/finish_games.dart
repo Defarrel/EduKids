@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:confetti/confetti.dart';
 import 'package:edukids_app/core/constant/colors.dart';
-import 'package:edukids_app/core/audio/audio_manager.dart'; 
+import 'package:edukids_app/core/audio/audio_manager.dart';
 
 class FinishGames extends StatefulWidget {
   final ConfettiController confettiController;
@@ -32,11 +32,11 @@ class _FinishGamesState extends State<FinishGames>
   @override
   void initState() {
     super.initState();
-    AudioManager().playSfx('finish_sfx.mp3'); 
-    widget.confettiController.stop(); 
+    AudioManager().playSfx('finish_sfx.mp3');
+    widget.confettiController.stop();
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
-        widget.confettiController.play(); 
+        widget.confettiController.play();
       }
     });
 
@@ -85,8 +85,14 @@ class _FinishGamesState extends State<FinishGames>
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        double cardWidth = min(constraints.maxWidth * 0.85, 320.0);
-        double cardHeight = 260;
+        double cardHeight = min(constraints.maxHeight * 0.35, 260.0);
+        if (cardHeight < 190) cardHeight = 190;
+
+        double scale = cardHeight / 260.0;
+        double cardWidth = min(
+          constraints.maxWidth * 0.85,
+          320.0 * (scale > 1 ? 1 : scale + 0.1),
+        );
 
         return Center(
           child: SizedBox(
@@ -98,16 +104,16 @@ class _FinishGamesState extends State<FinishGames>
               children: [
                 // Ribbon Tails
                 Positioned(
-                  top: 25,
+                  top: 25 * scale,
                   child: ScaleTransition(
                     scale: _dialogScale,
                     child: SizedBox(
-                      width: cardWidth + 50,
+                      width: cardWidth + (50 * scale),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildRibbonTail(true),
-                          _buildRibbonTail(false),
+                          _buildRibbonTail(true, scale),
+                          _buildRibbonTail(false, scale),
                         ],
                       ),
                     ),
@@ -122,13 +128,13 @@ class _FinishGamesState extends State<FinishGames>
                     height: cardHeight,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(35),
-                      border: Border.all(color: Colors.white, width: 4),
+                      borderRadius: BorderRadius.circular(35 * scale),
+                      border: Border.all(color: Colors.white, width: 4 * scale),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.teal.withOpacity(0.3),
-                          blurRadius: 40,
-                          offset: const Offset(0, 20),
+                          blurRadius: 40 * scale,
+                          offset: Offset(0, 20 * scale),
                         ),
                       ],
                     ),
@@ -137,71 +143,63 @@ class _FinishGamesState extends State<FinishGames>
                         // Background Accents
                         Positioned.fill(
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(31),
+                            borderRadius: BorderRadius.circular(31 * scale),
                             child: Stack(
                               children: [
                                 _buildAccent(
-                                  top: 60,
-                                  left: 10,
+                                  top: 60 * scale,
+                                  left: 10 * scale,
                                   icon: Icons.celebration_rounded,
                                   color: Colors.orange,
-                                  size: 30,
+                                  size: 30 * scale,
                                   rotate: -0.2,
                                 ),
                                 _buildAccent(
-                                  top: 50,
-                                  right: -10,
+                                  top: 50 * scale,
+                                  right: -10 * scale,
                                   icon: Icons.favorite_rounded,
                                   color: Colors.teal.withOpacity(0.3),
-                                  size: 40,
+                                  size: 40 * scale,
                                   rotate: 0.3,
                                 ),
                                 _buildAccent(
-                                  top: 80,
-                                  left: 50,
+                                  top: 80 * scale,
+                                  left: 50 * scale,
                                   icon: Icons.circle,
                                   color: Colors.lightBlue.withOpacity(0.4),
-                                  size: 10,
+                                  size: 10 * scale,
                                 ),
                                 _buildAccent(
-                                  top: 110,
-                                  right: 30,
+                                  top: 110 * scale,
+                                  right: 30 * scale,
                                   icon: Icons.change_history,
                                   color: Colors.green.withOpacity(0.5),
-                                  size: 20,
+                                  size: 20 * scale,
                                   rotate: 1.0,
                                 ),
                                 _buildAccent(
-                                  top: 120,
-                                  left: -15,
+                                  top: 120 * scale,
+                                  left: -15 * scale,
                                   icon: Icons.bolt_rounded,
                                   color: Colors.amber.withOpacity(0.5),
-                                  size: 50,
+                                  size: 50 * scale,
                                   rotate: -0.5,
                                 ),
                                 _buildAccent(
-                                  bottom: 50,
-                                  left: -5,
+                                  bottom: 50 * scale,
+                                  left: -5 * scale,
                                   icon: Icons.circle_outlined,
                                   color: Colors.teal,
-                                  size: 35,
+                                  size: 35 * scale,
                                   rotate: 0.1,
                                 ),
                                 _buildAccent(
-                                  bottom: 40,
-                                  right: 10,
+                                  bottom: 40 * scale,
+                                  right: 10 * scale,
                                   icon: Icons.square_rounded,
                                   color: Colors.indigoAccent,
-                                  size: 20,
+                                  size: 20 * scale,
                                   rotate: 0.8,
-                                ),
-                                _buildAccent(
-                                  bottom: 20,
-                                  left: 30,
-                                  icon: Icons.diamond_outlined,
-                                  color: Colors.purple.withOpacity(0.5),
-                                  size: 25,
-                                  rotate: 0.4,
                                 ),
                               ],
                             ),
@@ -211,32 +209,39 @@ class _FinishGamesState extends State<FinishGames>
                         // Content
                         Center(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20 * scale,
+                            ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const SizedBox(height: 50),
+                                SizedBox(height: 50 * scale),
                                 Text(
                                   "All Levels Done!",
+                                  textAlign: TextAlign.center,
                                   style: GoogleFonts.fredoka(
-                                    fontSize: 22,
+                                    fontSize: 22 * scale,
                                     color: AppColors.textSecondary,
                                     fontWeight: FontWeight.w800,
                                     decoration: TextDecoration.none,
                                   ),
                                 ),
-                                const SizedBox(height: 15),
+                                SizedBox(height: 15 * scale),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    _buildStar(_star1Scale, 45, -0.2),
+                                    _buildStar(_star1Scale, 45 * scale, -0.2),
                                     Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 20,
+                                      padding: EdgeInsets.only(
+                                        bottom: 20 * scale,
                                       ),
-                                      child: _buildStar(_star2Scale, 60, 0),
+                                      child: _buildStar(
+                                        _star2Scale,
+                                        60 * scale,
+                                        0,
+                                      ),
                                     ),
-                                    _buildStar(_star3Scale, 45, 0.2),
+                                    _buildStar(_star3Scale, 45 * scale, 0.2),
                                   ],
                                 ),
                               ],
@@ -250,26 +255,26 @@ class _FinishGamesState extends State<FinishGames>
 
                 // Ribbon Front
                 Positioned(
-                  top: -15,
+                  top: -15 * scale,
                   child: ScaleTransition(
                     scale: _dialogScale,
                     child: SizedBox(
-                      width: cardWidth + 20,
-                      height: 60,
+                      width: cardWidth + (20 * scale),
+                      height: 60 * scale,
                       child: Stack(
                         alignment: Alignment.center,
                         clipBehavior: Clip.none,
                         children: [
                           Container(
-                            width: cardWidth + 20,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            width: cardWidth + (20 * scale),
+                            padding: EdgeInsets.symmetric(vertical: 10 * scale),
                             decoration: BoxDecoration(
                               gradient: const LinearGradient(
                                 colors: [Color(0xFF00897B), Color(0xFF4DB6AC)],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                               ),
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10 * scale),
                               boxShadow: const [
                                 BoxShadow(
                                   color: Colors.black26,
@@ -282,10 +287,10 @@ class _FinishGamesState extends State<FinishGames>
                             child: Text(
                               "CONGRATS!",
                               style: GoogleFonts.fredoka(
-                                fontSize: 20,
+                                fontSize: 20 * scale,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.white,
-                                letterSpacing: 2.0,
+                                letterSpacing: 2.0 * scale,
                                 decoration: TextDecoration.none,
                                 shadows: [
                                   const Shadow(
@@ -298,14 +303,14 @@ class _FinishGamesState extends State<FinishGames>
                             ),
                           ),
                           Positioned(
-                            bottom: -8,
+                            bottom: -8 * scale,
                             left: 0,
-                            child: _buildRibbonFold(true),
+                            child: _buildRibbonFold(true, scale),
                           ),
                           Positioned(
-                            bottom: -8,
+                            bottom: -8 * scale,
                             right: 0,
-                            child: _buildRibbonFold(false),
+                            child: _buildRibbonFold(false, scale),
                           ),
                         ],
                       ),
@@ -315,47 +320,47 @@ class _FinishGamesState extends State<FinishGames>
 
                 // Medal Icon
                 Positioned(
-                  top: -125,
+                  top: -125 * scale,
                   child: ScaleTransition(
                     scale: _iconScale,
                     child: SizedBox(
-                      width: 140,
-                      height: 140,
+                      width: 140 * scale,
+                      height: 140 * scale,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
                           Container(
-                            width: 100,
-                            height: 100,
+                            width: 100 * scale,
+                            height: 100 * scale,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.purpleAccent.withOpacity(0.5),
-                                  blurRadius: 50,
-                                  spreadRadius: 10,
+                                  blurRadius: 50 * scale,
+                                  spreadRadius: 10 * scale,
                                 ),
                               ],
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.workspace_premium_rounded,
-                            size: 130,
-                            color: Color(0xFFFFD700),
+                            size: 130 * scale,
+                            color: const Color(0xFFFFD700),
                             shadows: [
                               Shadow(
                                 color: Colors.deepOrange,
                                 blurRadius: 0,
-                                offset: Offset(0, 5),
+                                offset: Offset(0, 5 * scale),
                               ),
                             ],
                           ),
                           Positioned(
-                            top: 35,
-                            right: 35,
+                            top: 35 * scale,
+                            right: 35 * scale,
                             child: Container(
-                              width: 18,
-                              height: 18,
+                              width: 18 * scale,
+                              height: 18 * scale,
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.8),
                                 shape: BoxShape.circle,
@@ -370,27 +375,30 @@ class _FinishGamesState extends State<FinishGames>
 
                 // Main Menu Button
                 Positioned(
-                  bottom: -25,
+                  bottom: -25 * scale,
                   child: ScaleTransition(
                     scale: _dialogScale,
                     child: GestureDetector(
                       onTap: widget.onMainMenuPressed,
                       child: Container(
                         width: cardWidth * 0.7,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: EdgeInsets.symmetric(vertical: 14 * scale),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [Colors.orange, Colors.deepOrangeAccent],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                           ),
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(color: Colors.white, width: 3),
+                          borderRadius: BorderRadius.circular(50 * scale),
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 3 * scale,
+                          ),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.deepOrange.withOpacity(0.5),
-                              blurRadius: 15,
-                              offset: const Offset(0, 8),
+                              blurRadius: 15 * scale,
+                              offset: Offset(0, 8 * scale),
                             ),
                           ],
                         ),
@@ -399,17 +407,10 @@ class _FinishGamesState extends State<FinishGames>
                           "MAIN MENU",
                           style: GoogleFonts.fredoka(
                             color: Colors.white,
-                            fontSize: 20,
+                            fontSize: 20 * scale,
                             fontWeight: FontWeight.w900,
-                            letterSpacing: 1.5,
+                            letterSpacing: 1.5 * scale,
                             decoration: TextDecoration.none,
-                            shadows: [
-                              const Shadow(
-                                color: Colors.black26,
-                                offset: Offset(0, 2),
-                                blurRadius: 2,
-                              ),
-                            ],
                           ),
                         ),
                       ),
@@ -419,7 +420,7 @@ class _FinishGamesState extends State<FinishGames>
 
                 // Confetti
                 Positioned(
-                  top: -220,
+                  top: -220 * scale,
                   child: ConfettiWidget(
                     confettiController: widget.confettiController,
                     blastDirectionality: BlastDirectionality.explosive,
@@ -445,14 +446,14 @@ class _FinishGamesState extends State<FinishGames>
   }
 
   // Helpers
-  Widget _buildRibbonTail(bool isLeft) {
+  Widget _buildRibbonTail(bool isLeft, double scale) {
     return Transform.rotate(
       angle: isLeft ? -0.2 : 0.2,
       child: ClipPath(
         clipper: RibbonTailClipper(),
         child: Container(
-          width: 50,
-          height: 60,
+          width: 50 * scale,
+          height: 60 * scale,
           decoration: BoxDecoration(
             color: const Color(0xFF004D40),
             gradient: LinearGradient(
@@ -466,9 +467,13 @@ class _FinishGamesState extends State<FinishGames>
     );
   }
 
-  Widget _buildRibbonFold(bool isLeft) => ClipPath(
+  Widget _buildRibbonFold(bool isLeft, double scale) => ClipPath(
     clipper: SimpleTriangleClipper(isLeft),
-    child: Container(width: 10, height: 10, color: const Color(0xFF00332C)),
+    child: Container(
+      width: 10 * scale,
+      height: 10 * scale,
+      color: const Color(0xFF00332C),
+    ),
   );
 
   Widget _buildStar(Animation<double> animation, double size, double rotate) {
@@ -482,7 +487,7 @@ class _FinishGamesState extends State<FinishGames>
             boxShadow: [
               BoxShadow(
                 color: Colors.amber.withOpacity(0.5),
-                blurRadius: 20,
+                blurRadius: 20 * (size / 60),
                 spreadRadius: -5,
               ),
             ],
@@ -491,11 +496,11 @@ class _FinishGamesState extends State<FinishGames>
             Icons.star_rounded,
             color: Colors.amber,
             size: size,
-            shadows: const [
+            shadows: [
               Shadow(
                 color: Colors.deepOrange,
                 blurRadius: 0,
-                offset: Offset(0, 4),
+                offset: Offset(0, 4 * (size / 60)),
               ),
             ],
           ),
@@ -540,7 +545,7 @@ class RibbonTailClipper extends CustomClipper<Path> {
     final path = Path();
     path.lineTo(size.width, 0);
     path.lineTo(size.width, size.height);
-    path.lineTo(size.width / 2, size.height - 15);
+    path.lineTo(size.width / 2, size.height - (size.height * 0.25));
     path.lineTo(0, size.height);
     path.close();
     return path;

@@ -24,7 +24,6 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Intro Animation
     _logoIntroController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -34,7 +33,6 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.elasticOut,
     );
 
-    // Floating Animation
     _floatingController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -51,19 +49,26 @@ class _SplashScreenState extends State<SplashScreen>
       _floatingController.repeat(reverse: true);
     });
 
-    // Loop Animation
     _backgroundLoopController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 5),
     );
-    _backgroundLoopController.repeat(reverse: true);
 
-    // Timer
+    _backgroundLoopController.repeat();
+
     Timer(const Duration(seconds: 5), () {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 1000),
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const HomeScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+          ),
         );
       }
     });
@@ -84,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // Background
+          // Background Gradient
           Positioned.fill(
             child: Container(
               decoration: const BoxDecoration(
@@ -102,12 +107,12 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
 
-          // Bubbles
+          // Bubbles Layer
           AnimatedBuilder(
             animation: _backgroundLoopController,
             builder: (context, child) {
               final t = _backgroundLoopController.value;
-              final baseOpacity = 0.4 + (t * 0.5);
+              final baseOpacity = 0.4 + (math.sin(t * 2 * math.pi) * 0.1);
 
               return Stack(
                 children: [
@@ -141,7 +146,7 @@ class _SplashScreenState extends State<SplashScreen>
             },
           ),
 
-          // Waves
+          // Waves Layer
           Positioned(
             bottom: 0,
             left: 0,
@@ -157,7 +162,7 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
 
-          // Logo
+          // Logo Layer
           Center(
             child: ScaleTransition(
               scale: _scaleIntroAnimation,
@@ -176,7 +181,6 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 
-  // Bubble Widget
   Widget _buildBubble({required double size, required double opacity}) {
     return Container(
       width: AppSize.scaleWidth(size),
@@ -200,30 +204,27 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-// Wave Painter
 class AnimatedWavePainter extends CustomPainter {
   final double value;
   AnimatedWavePainter(this.value);
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Back Wave
     _drawWave(
       canvas,
       size,
       opacity: 0.4,
       offsetY: size.height * 0.55,
       waveHeight: 25,
-      speedMultiplier: -1.0,
+      speedMultiplier: 1.0, 
     );
-    // Front Wave
     _drawWave(
       canvas,
       size,
       opacity: 1.0,
       offsetY: size.height * 0.65,
       waveHeight: 35,
-      speedMultiplier: 1.2,
+      speedMultiplier: 1.5,
     );
   }
 
