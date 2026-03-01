@@ -27,8 +27,8 @@ class AudioManager {
         const AudioSessionConfiguration(
           // iOS
           avAudioSessionCategory: AVAudioSessionCategory.ambient,
-          avAudioSessionCategoryOptions:
-              AVAudioSessionCategoryOptions.mixWithOthers,
+          avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions
+              .mixWithOthers, 
           avAudioSessionMode: AVAudioSessionMode.defaultMode,
           avAudioSessionRouteSharingPolicy:
               AVAudioSessionRouteSharingPolicy.defaultPolicy,
@@ -43,6 +43,34 @@ class AudioManager {
         ),
       );
 
+      session.interruptionEventStream.listen((event) {
+        if (event.begin) {
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+              if (isBgmOn) _bgmPlayer.setVolume(bgmVolume * 0.3);
+              break;
+            case AudioInterruptionType.pause:
+            case AudioInterruptionType.unknown:
+              if (_bgmPlayer.playing) _bgmPlayer.pause();
+              break;
+          }
+        } else {
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+              if (isBgmOn) _bgmPlayer.setVolume(bgmVolume);
+              break;
+            case AudioInterruptionType.pause:
+            case AudioInterruptionType.unknown:
+              if (isBgmOn) _bgmPlayer.play();
+              break;
+          }
+        }
+      });
+
+      session.becomingNoisyEventStream.listen((_) {
+        if (_bgmPlayer.playing) _bgmPlayer.pause();
+      });
+
       try {
         await _bgmPlayer.setAsset('assets/sounds/bgm.mp3');
         await _bgmPlayer.setLoopMode(LoopMode.one);
@@ -52,7 +80,7 @@ class AudioManager {
           _bgmPlayer.play();
         }
       } catch (e) {
-        print("Default BGM not found, skipping auto-play: $e");
+        print("Default BGM not found/error, skipping auto-play: $e");
       }
 
       // SETUP SFX PLAYER
@@ -66,7 +94,6 @@ class AudioManager {
 
   // FUNGSI UNTUK GANTI LAGU BGM
   Future<void> playBgm(String fileName) async {
-    if (!_initialized) return;
 
     try {
       if (_bgmPlayer.playing) {
@@ -74,7 +101,6 @@ class AudioManager {
       }
 
       await _bgmPlayer.setAsset('assets/sounds/$fileName');
-
       await _bgmPlayer.setLoopMode(LoopMode.one);
       await _bgmPlayer.setVolume(bgmVolume);
 
@@ -88,18 +114,17 @@ class AudioManager {
 
   // LOGIC SFX
   Future<void> playSfx(String fileName) async {
-    if (!isSfxOn || !_initialized) return;
+    if (!isSfxOn) return; 
 
     try {
       await _sfxPlayer.setAsset('assets/sounds/$fileName');
-
-      if (_sfxPlayer.playing) {
+      if (_sfxPlayer.processingState != ProcessingState.idle) {
         await _sfxPlayer.stop();
       }
 
       _sfxPlayer.play();
     } catch (e) {
-      print("SFX Error: $e");
+      print("SFX Error ($fileName): $e");
     }
   }
 
@@ -113,28 +138,28 @@ class AudioManager {
   // LOGIC BGM
   void toggleBGM(bool isOn) {
     isBgmOn = isOn;
-    if (_initialized) {
-      if (isOn) {
+    if (isOn) {
+      if (_bgmPlayer.processingState != ProcessingState.idle) {
         _bgmPlayer.play();
       } else {
-        _bgmPlayer.pause();
+        print("BGM toggled on but player is idle");
       }
+    } else {
+      _bgmPlayer.pause();
     }
   }
 
   void setVolume(double volume) {
     bgmVolume = volume;
-    if (_initialized) {
-      _bgmPlayer.setVolume(volume);
-    }
+    _bgmPlayer.setVolume(volume);
   }
 
   void resume() {
-    if (_initialized && isBgmOn) _bgmPlayer.play();
+    if (isBgmOn) _bgmPlayer.play();
   }
 
   void pause() {
-    if (_initialized) _bgmPlayer.pause();
+    _bgmPlayer.pause();
   }
 
   void stop() {

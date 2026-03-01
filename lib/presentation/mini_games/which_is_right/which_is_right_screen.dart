@@ -184,6 +184,80 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
     );
   }
 
+  Widget _buildColorfulQuestion(String question) {
+    List<String> words = question.split(' ');
+
+    List<Color> wordColors = [
+      const Color(0xFFFF5252), 
+      const Color(0xFF40C4FF), 
+      const Color(0xFFFFD740),
+      const Color(0xFF69F0AE), 
+      const Color(0xFFE040FB),
+      const Color(0xFFFFAB40), 
+    ];
+
+    Widget buildLayer({required bool isOutline}) {
+      return RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: words.asMap().entries.map((entry) {
+            int idx = entry.key;
+            String word = entry.value;
+            Color color = wordColors[idx % wordColors.length];
+
+            return TextSpan(
+              text: "$word ",
+              style: GoogleFonts.fredoka(
+                fontSize: 38,
+                fontWeight: FontWeight.w900,
+                foreground: isOutline
+                    ? (Paint()
+                        ..style = PaintingStyle.stroke
+                        ..strokeWidth = 6
+                        ..color = Colors.white)
+                    : (Paint()..color = color),
+                shadows: isOutline
+                    ? [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    }
+
+    return Stack(
+      children: [buildLayer(isOutline: true), buildLayer(isOutline: false)],
+    );
+  }
+
+  CustomPainter _getPatternForLevel() {
+    Color patternColor = AppColors.gameRed.withOpacity(0.08);
+
+    switch (_currentIndex % 5) {
+      case 0:
+        return DotPatternPainter(color: patternColor); 
+      case 1:
+        return WavyPatternPainter(color: patternColor); 
+      case 2:
+        return GridPatternPainter(color: patternColor); 
+      case 3:
+        return CrossPatternPainter(color: patternColor); 
+      case 4:
+        return DiagonalStripesPainter(
+          color: patternColor,
+        ); 
+      default:
+        return DotPatternPainter(color: patternColor);
+    }
+  }
+
   // UI Build
   @override
   Widget build(BuildContext context) {
@@ -211,7 +285,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
               builder: (context, constraints) {
                 double h = constraints.maxHeight;
                 double headerH = max(h * 0.1, 70.0);
-                double questionH = max(h * 0.1, 90.0);
+                double questionH = max(h * 0.15, 120.0);
                 double availableH = h - headerH - questionH - 40;
 
                 return Column(
@@ -229,28 +303,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                               duration: const Duration(milliseconds: 400),
                               child: Container(
                                 key: ValueKey(level.question),
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(25),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 10,
-                                      offset: Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: Text(
-                                  level.question,
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.fredoka(
-                                    fontSize: 20,
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.bold,
-                                    height: 1.2,
-                                  ),
-                                ),
+                                child: _buildColorfulQuestion(level.question),
                               ),
                             ),
                           ),
@@ -285,7 +338,6 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  // Left Card
                                   Expanded(
                                     child: _BouncingButton(
                                       onTap: () => _checkAnswer(true),
@@ -295,8 +347,6 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                                       ),
                                     ),
                                   ),
-
-                                  // OR Spacer
                                   Container(
                                     width: 70,
                                     alignment: Alignment.center,
@@ -304,19 +354,19 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                                       "OR",
                                       style: GoogleFonts.fredoka(
                                         color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 24,
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 28,
                                         shadows: [
-                                          const Shadow(
-                                            color: Colors.black26,
-                                            blurRadius: 4,
+                                          Shadow(
+                                            color: AppColors.gameRed
+                                                .withOpacity(0.8),
+                                            offset: const Offset(2, 2),
+                                            blurRadius: 0,
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
-
-                                  // Right Card
                                   Expanded(
                                     child: _BouncingButton(
                                       onTap: () => _checkAnswer(false),
@@ -333,7 +383,6 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 20),
                   ],
                 );
@@ -369,10 +418,14 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                   "Which is right?",
                   style: GoogleFonts.fredoka(
                     fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: Colors.white,
                     shadows: const [
-                      Shadow(color: Colors.black45, blurRadius: 7),
+                      Shadow(
+                        color: Colors.black26,
+                        blurRadius: 0,
+                        offset: Offset(2, 2),
+                      ),
                     ],
                   ),
                 ),
@@ -382,10 +435,8 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.fredoka(
                     fontSize: 16,
-                    color: Colors.white,
-                    shadows: const [
-                      Shadow(color: Colors.black45, blurRadius: 7),
-                    ],
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white.withOpacity(0.9),
                   ),
                 ),
               ],
@@ -414,40 +465,173 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
 
   Widget _buildImageCard(String imagePath, double availableHeight) {
     return Container(
-      height: min(availableHeight * 0.9, 400.0),
+      height: min(availableHeight * 1.3, 500.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white, width: 4),
-        boxShadow: const [
+        border: Border.all(color: AppColors.gameRed, width: 4),
+        boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            blurRadius: 15,
-            offset: Offset(0, 8),
+            color: AppColors.gameRed.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.gameSkyBlue.withOpacity(0.1),
-          ),
-          child: Image.asset(imagePath, fit: BoxFit.contain),
+        borderRadius: BorderRadius.circular(21),
+        child: Stack(
+          children: [
+            Positioned.fill(child: CustomPaint(painter: _getPatternForLevel())),
+            Positioned.fill(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: Image.asset(imagePath, fit: BoxFit.contain),
+              ),
+            ),
+            Positioned(
+              top: 10,
+              left: 10,
+              child: Container(
+                width: 15,
+                height: 15,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.6),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-// Bouncing Button Helper
+
+class DotPatternPainter extends CustomPainter {
+  final Color color;
+  DotPatternPainter({required this.color});
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    double spacing = 20;
+    for (double y = spacing / 2; y < size.height; y += spacing) {
+      for (double x = spacing / 2; x < size.width; x += spacing) {
+        canvas.drawCircle(Offset(x, y), 3, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class WavyPatternPainter extends CustomPainter {
+  final Color color;
+  WavyPatternPainter({required this.color});
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+    double spacing = 30;
+    for (double y = spacing / 2; y < size.height + 10; y += spacing) {
+      final path = Path()..moveTo(0, y);
+      for (double x = 0; x < size.width; x += 40) {
+        path.quadraticBezierTo(x + 10, y - 5, x + 20, y);
+        path.quadraticBezierTo(x + 30, y + 5, x + 40, y);
+      }
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class GridPatternPainter extends CustomPainter {
+  final Color color;
+  GridPatternPainter({required this.color});
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5;
+    double spacing = 25;
+
+    for (double x = 0; x < size.width; x += spacing) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (double y = 0; y < size.height; y += spacing) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class CrossPatternPainter extends CustomPainter {
+  final Color color;
+  CrossPatternPainter({required this.color});
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+    double spacing = 30;
+    double crossSize = 6;
+
+    for (double y = spacing / 2; y < size.height; y += spacing) {
+      for (double x = spacing / 2; x < size.width; x += spacing) {
+        canvas.drawLine(
+          Offset(x - crossSize, y),
+          Offset(x + crossSize, y),
+          paint,
+        );
+        canvas.drawLine(
+          Offset(x, y - crossSize),
+          Offset(x, y + crossSize),
+          paint,
+        );
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class DiagonalStripesPainter extends CustomPainter {
+  final Color color;
+  DiagonalStripesPainter({required this.color});
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2;
+    double spacing = 20;
+
+    for (double i = -size.height; i < size.width; i += spacing) {
+      canvas.drawLine(
+        Offset(i, 0),
+        Offset(i + size.height, size.height),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
 class _BouncingButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onTap;
-
   const _BouncingButton({required this.child, required this.onTap});
-
   @override
   State<_BouncingButton> createState() => _BouncingButtonState();
 }
@@ -456,7 +640,6 @@ class _BouncingButtonState extends State<_BouncingButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-
   @override
   void initState() {
     super.initState();

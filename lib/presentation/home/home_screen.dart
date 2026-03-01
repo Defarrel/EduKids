@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:edukids_app/core/audio/audio_manager.dart';
-import 'package:edukids_app/presentation/home/settings.dart';
+import 'package:edukids_app/core/components/settings.dart';
 import 'package:edukids_app/presentation/mini_games/home_mini_games/home_mini_games_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:edukids_app/core/constant/colors.dart';
@@ -9,6 +9,21 @@ import 'package:edukids_app/core/constant/sizes.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+enum BubbleType {
+  none,
+  textAllah,
+  textMuhammad, 
+  iconKaaba, 
+  iconMosque,
+  iconMoon,
+  iconQuran, 
+  textAlif,
+  textBa,
+  textTa,
+  textSa,
+  textJim,
+}
 
 // Bubble Model
 class Bubble {
@@ -20,6 +35,7 @@ class Bubble {
   Color color;
   double swayOffset;
   double dirX;
+  BubbleType type;
 
   Bubble({
     required this.id,
@@ -30,6 +46,7 @@ class Bubble {
     required this.color,
     required this.swayOffset,
     required this.dirX,
+    required this.type,
   });
 }
 
@@ -147,8 +164,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() {
       _time += 0.005;
 
-      // Update Bubbles
       if (_bubbles.length < 15 && _random.nextDouble() < 0.02) {
+        BubbleType newType = BubbleType.none;
+        if (_random.nextDouble() > 0.4) {
+          newType = BubbleType
+              .values[1 + _random.nextInt(BubbleType.values.length - 1)];
+        }
+
         _bubbles.add(
           Bubble(
             id:
@@ -156,12 +178,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 _random.nextInt(9999).toString(),
             x: _random.nextDouble(),
             y: 1.1,
-            size: _random.nextDouble() * 40 + 40,
+            size: _random.nextDouble() * 50 + 50,
             speed: _random.nextDouble() * 0.0015 + 0.0005,
             color: _bubbleColors[_random.nextInt(_bubbleColors.length)]
-                .withOpacity(0.5),
+                .withOpacity(0.6),
             swayOffset: _random.nextDouble() * 2 * math.pi,
             dirX: (_random.nextDouble() - 0.5) * 0.0005,
+            type: newType,
           ),
         );
       }
@@ -173,7 +196,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         if (b.y < -0.15) _bubbles.removeAt(i);
       }
 
-      // Update Particles
       for (var i = _particles.length - 1; i >= 0; i--) {
         final p = _particles[i];
         p.x += p.vx;
@@ -225,6 +247,95 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
+  Widget _buildBubbleContent(Bubble b) {
+    double contentSize = b.size * 0.55;
+
+    TextStyle arabicStyle = GoogleFonts.amiri(
+      fontSize: contentSize,
+      color: Colors.white,
+      fontWeight: FontWeight.bold,
+      shadows: [
+        Shadow(
+          color: Colors.black.withOpacity(0.2),
+          blurRadius: 2,
+          offset: const Offset(1, 1),
+        ),
+      ],
+    );
+
+    switch (b.type) {
+      case BubbleType.textAllah:
+        return Text("الله", style: arabicStyle);
+
+      case BubbleType.textMuhammad:
+        return Text("محمد", style: arabicStyle);
+
+      case BubbleType.iconKaaba:
+        return Container(
+          width: contentSize * 0.8,
+          height: contentSize * 0.8,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(4),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 4,
+                offset: const Offset(2, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(height: contentSize * 0.15),
+              Container(
+                width: double.infinity,
+                height: contentSize * 0.1,
+                color: const Color(0xFFFFD700),
+              ),
+            ],
+          ),
+        );
+
+      case BubbleType.iconMosque:
+        return Icon(
+          Icons.mosque_rounded,
+          size: contentSize,
+          color: Colors.white,
+        );
+
+      case BubbleType.iconMoon:
+        return Icon(
+          Icons.dark_mode_rounded,
+          size: contentSize,
+          color: const Color(0xFFFFD700),
+        );
+
+      case BubbleType.iconQuran:
+        return Icon(
+          Icons.menu_book_rounded,
+          size: contentSize,
+          color: Colors.white,
+        );
+
+      case BubbleType.textAlif:
+        return Text("أ", style: arabicStyle);
+      case BubbleType.textBa:
+        return Text("ب", style: arabicStyle);
+      case BubbleType.textTa:
+        return Text("ت", style: arabicStyle);
+      case BubbleType.textSa:
+        return Text("ث", style: arabicStyle);
+      case BubbleType.textJim:
+        return Text("ج", style: arabicStyle);
+
+      case BubbleType.none:
+      default:
+        return const SizedBox(); 
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     AppSize.init(context);
@@ -235,12 +346,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        // Gradient BG
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [AppColors.bgCyan, AppColors.bgBlue, AppColors.bgPurple],
+            colors: [Color(0xFF66BB6A), Color(0xFF43A047), Color(0xFF2E7D32)],
             stops: [0.0, 0.5, 1.0],
           ),
         ),
@@ -262,27 +372,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         shape: BoxShape.circle,
                         color: b.color,
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
-                          width: 1,
+                          color: Colors.white.withOpacity(0.6),
+                          width: 1.5,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: b.color.withOpacity(0.3),
+                            color: b.color.withOpacity(0.4),
                             blurRadius: 15,
                             spreadRadius: 0,
                           ),
                         ],
                       ),
                       child: Stack(
+                        alignment: Alignment.center,
                         children: [
+                          _buildBubbleContent(b),
+
                           Positioned(
                             top: b.size * 0.2,
                             left: b.size * 0.2,
                             child: Container(
-                              width: b.size * 0.2,
-                              height: b.size * 0.1,
+                              width: b.size * 0.25,
+                              height: b.size * 0.12,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.5),
+                                color: Colors.white.withOpacity(
+                                  0.7,
+                                ), 
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
@@ -333,14 +448,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.white.withOpacity(0.5),
-                                  blurRadius: 60,
-                                  spreadRadius: -10,
+                                  color: Colors.white.withOpacity(0.4),
+                                  blurRadius: 70,
+                                  spreadRadius: -5,
                                 ),
                               ],
                             ),
                             child: Image.asset(
-                              'assets/images/logo_sementara1.png',
+                              'assets/images/logo.png',
                               height: screenHeight * 0.70,
                               fit: BoxFit.contain,
                             ),
@@ -376,7 +491,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  // Helper Widgets
+  // Helper Widgets 
   Widget _buildSettingsButton() {
     return GestureDetector(
       onTap: () {
@@ -413,7 +528,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         child: const Icon(
           Icons.settings_rounded,
-          color: AppColors.bgBlue,
+          color: Color(0xFF2E7D32),
           size: 28,
         ),
       ),
@@ -429,28 +544,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       height: btnHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
-        // Shadow
         boxShadow: [
           BoxShadow(
-            color: AppColors.btnBlueMain.withOpacity(0.4),
+            color: Colors.orange.withOpacity(0.4),
             offset: const Offset(0, 12),
             blurRadius: 25,
             spreadRadius: -3,
           ),
         ],
-        // Border
         border: Border.all(color: Colors.white.withOpacity(0.6), width: 3),
-        // Gradient
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.btnCyanLight, AppColors.btnBlueMain],
+          colors: [Color(0xFFFFB74D), Color(0xFFF57C00)],
         ),
       ),
 
       child: Stack(
         children: [
-          // Inner Shadow
           Container(
             margin: const EdgeInsets.all(3),
             decoration: BoxDecoration(
@@ -466,7 +577,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
 
-          // Wet Highlight
           Positioned(
             top: 0,
             left: 0,
@@ -491,7 +601,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
 
-          // Content
           Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,

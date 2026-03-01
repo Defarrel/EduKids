@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
-import 'package:edukids_app/core/constant/colors.dart';
+import 'package:edukids_app/core/constant/colors.dart'; 
 import 'package:edukids_app/core/constant/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:edukids_app/presentation/home/home_screen.dart';
@@ -97,9 +97,9 @@ class _SplashScreenState extends State<SplashScreen>
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    AppColors.bgCyan,
-                    AppColors.bgBlue,
-                    AppColors.bgPurple,
+                    Color(0xFF66BB6A), 
+                    Color(0xFF43A047), 
+                    Color(0xFF2E7D32), 
                   ],
                   stops: [0.0, 0.5, 1.0],
                 ),
@@ -107,7 +107,6 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
 
-          // Bubbles Layer
           AnimatedBuilder(
             animation: _backgroundLoopController,
             builder: (context, child) {
@@ -146,7 +145,7 @@ class _SplashScreenState extends State<SplashScreen>
             },
           ),
 
-          // Waves Layer
+          // Waves Layer 
           Positioned(
             bottom: 0,
             left: 0,
@@ -169,7 +168,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: SlideTransition(
                 position: _floatingAnimation,
                 child: Image.asset(
-                  'assets/images/logo_sementara1.png',
+                  'assets/images/logo.png',
                   height: AppSize.screenHeight * 0.70,
                   fit: BoxFit.contain,
                 ),
@@ -181,20 +180,21 @@ class _SplashScreenState extends State<SplashScreen>
     );
   }
 
+  // Bubble Widget 
   Widget _buildBubble({required double size, required double opacity}) {
     return Container(
       width: AppSize.scaleWidth(size),
       height: AppSize.scaleWidth(size),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.white.withOpacity(opacity * 0.3),
+        color: Colors.white.withOpacity(opacity * 0.3),
         border: Border.all(
-          color: AppColors.white.withOpacity(opacity * 0.5),
+          color: Colors.white.withOpacity(opacity * 0.5),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.white.withOpacity(opacity * 0.4),
+            color: Colors.white.withOpacity(opacity * 0.2),
             blurRadius: size * 0.5,
             spreadRadius: 0,
           ),
@@ -216,7 +216,7 @@ class AnimatedWavePainter extends CustomPainter {
       opacity: 0.4,
       offsetY: size.height * 0.55,
       waveHeight: 25,
-      speedMultiplier: 1.0, 
+      speedMultiplier: 1.0,
     );
     _drawWave(
       canvas,
@@ -237,7 +237,8 @@ class AnimatedWavePainter extends CustomPainter {
     required double speedMultiplier,
   }) {
     final paint = Paint()
-      ..color = AppColors.white.withOpacity(opacity)
+      ..color = Colors.white
+          .withOpacity(opacity) 
       ..style = PaintingStyle.fill;
 
     final path = Path()..moveTo(0, size.height);

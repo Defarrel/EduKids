@@ -25,12 +25,12 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
     PuzzleLevel(
       title: "Lafadz Allah",
       imagePath: 'assets/images/Lafadz_Allah.png',
-      gridSize: 3,
+      gridSize: 2,
     ),
     PuzzleLevel(
       title: "Lafadz Muhammad",
       imagePath: 'assets/images/Lafadz_Muhammad.png',
-      gridSize: 3,
+      gridSize: 2,
     ),
     PuzzleLevel(
       title: "Ka'bah",

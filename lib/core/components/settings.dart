@@ -17,6 +17,9 @@ class _SettingsState extends State<Settings> {
   late bool _isSfxOn;
   bool _isVibrationOn = true;
 
+  final Color _greenPrimary = const Color(0xFF2E7D32); 
+  final Color _greenLight = const Color(0xFF66BB6A); 
+
   @override
   void initState() {
     super.initState();
@@ -58,7 +61,7 @@ class _SettingsState extends State<Settings> {
                   border: Border.all(color: Colors.white, width: 4),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.btnBlueMain.withOpacity(0.4),
+                      color: _greenPrimary.withOpacity(0.3),
                       blurRadius: 30,
                       offset: const Offset(0, 10),
                     ),
@@ -75,13 +78,12 @@ class _SettingsState extends State<Settings> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Title
                     Text(
                       "SETTINGS",
                       style: GoogleFonts.fredoka(
                         fontSize: screenHeight * 0.06,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.btnBlueMain,
+                        color: _greenPrimary,
                         letterSpacing: 2.0,
                         shadows: [
                           Shadow(
@@ -95,7 +97,6 @@ class _SettingsState extends State<Settings> {
 
                     SizedBox(height: screenHeight * 0.03),
 
-                    // Music
                     _buildGameRow(
                       title: "Music",
                       icon: Icons.music_note_rounded,
@@ -114,11 +115,10 @@ class _SettingsState extends State<Settings> {
 
                     SizedBox(height: screenHeight * 0.02),
 
-                    // Sound FX
                     _buildGameRow(
                       title: "Sound FX",
                       icon: Icons.volume_up_rounded,
-                      color: AppColors.settingGreen,
+                      color: _greenLight, 
                       value: _isSfxOn,
                       screenHeight: screenHeight,
                       onChanged: (val) {
@@ -133,7 +133,6 @@ class _SettingsState extends State<Settings> {
 
                     SizedBox(height: screenHeight * 0.02),
 
-                    // Vibration
                     _buildGameRow(
                       title: "Vibration",
                       icon: Icons.vibration_rounded,
@@ -151,7 +150,6 @@ class _SettingsState extends State<Settings> {
 
                     SizedBox(height: screenHeight * 0.05),
 
-                    // OK Button
                     GestureDetector(
                       onTap: () {
                         if (_isVibrationOn) HapticFeedback.mediumImpact();
@@ -164,7 +162,6 @@ class _SettingsState extends State<Settings> {
                 ),
               ),
 
-              // Header Icon
               Positioned(
                 top: -screenHeight * 0.07,
                 child: Container(
@@ -174,17 +171,20 @@ class _SettingsState extends State<Settings> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.btnBlueMain.withOpacity(0.3),
+                        color: _greenPrimary.withOpacity(0.3), 
                         blurRadius: 15,
                         offset: const Offset(0, 5),
                       ),
                     ],
-                    border: Border.all(color: AppColors.btnBlueMain, width: 4),
+                    border: Border.all(
+                      color: _greenPrimary,
+                      width: 4,
+                    ),
                   ),
                   child: Icon(
                     Icons.settings_rounded,
                     size: screenHeight * 0.09,
-                    color: AppColors.btnBlueMain,
+                    color: _greenPrimary,
                   ),
                 ),
               ),
@@ -314,7 +314,7 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  // OK Button
+  // OK Button 
   Widget _buildGlossyOkButton(double screenHeight, double screenWidth) {
     double btnHeight = screenHeight * 0.1;
     double btnWidth = screenWidth * 0.25;
@@ -326,16 +326,16 @@ class _SettingsState extends State<Settings> {
         borderRadius: BorderRadius.circular(50),
         boxShadow: [
           BoxShadow(
-            color: AppColors.btnBlueMain.withOpacity(0.4),
+            color: _greenPrimary.withOpacity(0.4), 
             offset: const Offset(0, 8),
             blurRadius: 20,
             spreadRadius: -2,
           ),
         ],
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.btnCyanLight, AppColors.btnBlueMain],
+          colors: [_greenLight, _greenPrimary],
         ),
         border: Border.all(color: Colors.white, width: 3),
       ),
@@ -377,7 +377,7 @@ class _SettingsState extends State<Settings> {
               shadows: [
                 Shadow(
                   offset: const Offset(1, 2),
-                  color: AppColors.btnBlueMain.withOpacity(0.8),
+                  color: _greenPrimary.withOpacity(0.8),
                   blurRadius: 2,
                 ),
               ],

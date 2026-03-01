@@ -73,17 +73,17 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
       TweenSequenceItem(
         tween: Tween<double>(
           begin: 0.0,
-          end: 30.0,
+          end: 20.0,
         ).chain(CurveTween(curve: Curves.easeOut)),
         weight: 40,
       ),
       TweenSequenceItem(
-        tween: Tween<double>(begin: 30.0, end: 30.0),
+        tween: Tween<double>(begin: 20.0, end: 20.0),
         weight: 20,
-      ), 
+      ),
       TweenSequenceItem(
         tween: Tween<double>(
-          begin: 30.0,
+          begin: 20.0,
           end: 0.0,
         ).chain(CurveTween(curve: Curves.easeIn)),
         weight: 40,
@@ -105,6 +105,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
 
   @override
   void dispose() {
+    AudioManager().playBgm('bgm.mp3');
     _confettiController.dispose();
     _tutorialController.dispose();
     super.dispose();
@@ -181,7 +182,63 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildColorfulQuestion(String question, bool isTablet) {
+    List<String> words = question.split(' ');
+    List<Color> wordColors = [
+      const Color(0xFFFF5252),
+      const Color(0xFF40C4FF),
+      const Color(0xFFFFD740),
+      const Color(0xFF69F0AE),
+      const Color(0xFFE040FB),
+      const Color(0xFFFFAB40),
+    ];
+
+    double fontSize = isTablet ? 36 : 26;
+
+    Widget buildLayer({required bool isOutline}) {
+      return RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: words.asMap().entries.map((entry) {
+            int idx = entry.key;
+            String word = entry.value;
+            Color color = wordColors[idx % wordColors.length];
+
+            return TextSpan(
+              text: "$word ",
+              style: GoogleFonts.fredoka(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w900,
+                foreground: isOutline
+                    ? (Paint()
+                        ..style = PaintingStyle.stroke
+                        ..strokeWidth = isTablet
+                            ? 6
+                            : 4 
+                        ..color = Colors.white)
+                    : (Paint()..color = color),
+                shadows: isOutline
+                    ? [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    }
+
+    return Stack(
+      children: [buildLayer(isOutline: true), buildLayer(isOutline: false)],
+    );
+  }
+
+  Widget _buildHeader(bool isTablet) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -207,7 +264,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
                 Text(
                   "True or False?",
                   style: GoogleFonts.fredoka(
-                    fontSize: 24,
+                    fontSize: isTablet ? 24 : 20, 
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -215,7 +272,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
                 Text(
                   "Think carefully!",
                   style: GoogleFonts.fredoka(
-                    fontSize: 18,
+                    fontSize: isTablet ? 18 : 14,
                     color: Colors.white70,
                   ),
                 ),
@@ -247,6 +304,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
   Widget build(BuildContext context) {
     final level = _levels[_currentIndex];
     final size = MediaQuery.of(context).size;
+    final bool isTablet = size.shortestSide >= 600;
 
     return Scaffold(
       body: Stack(
@@ -254,13 +312,12 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
           Positioned.fill(
             child: Image.asset("assets/images/bg_true.jpeg", fit: BoxFit.cover),
           ),
-
           SafeArea(
             child: Column(
               children: [
                 SizedBox(
                   height: max(size.height * 0.12, 80.0),
-                  child: _buildHeader(),
+                  child: _buildHeader(isTablet),
                 ),
                 const Spacer(),
               ],
@@ -268,10 +325,10 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
           ),
 
           Positioned(
-            top: size.height * 0.15,
+            top: isTablet ? size.height * 0.15 : size.height * 0.12,
             left: size.width * 0.2,
             right: size.width * 0.2,
-            height: size.height * 0.42,
+            height: isTablet ? size.height * 0.42 : size.height * 0.45,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -279,28 +336,13 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
                   child: Image.asset(level.imagePath, fit: BoxFit.contain),
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  level.question,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.fredoka(
-                    fontSize: size.width > 600 ? 32 : 22,
-                    color: Colors.white.withOpacity(0.9),
-                    fontWeight: FontWeight.bold,
-                    shadows: [
-                      const Shadow(
-                        color: Colors.black45,
-                        blurRadius: 2,
-                        offset: Offset(2, 2),
-                      ),
-                    ],
-                  ),
-                ),
+                _buildColorfulQuestion(level.question, isTablet),
               ],
             ),
           ),
 
           Positioned(
-            bottom: size.height * 0.13,
+            bottom: isTablet ? size.height * 0.12 : size.height * 0.05,
             left: 0,
             right: 0,
             child: Row(
@@ -309,41 +351,48 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
                 RealisticGameButton(
                   imagePath: 'assets/images/btn_false.png',
                   onTap: () => _checkAnswer(false),
+                  isTablet: isTablet,
                 ),
-                SizedBox(width: size.width * 0.2),
-                RealisticGameButton(
-                  imagePath: 'assets/images/btn_true.png',
-                  onTap: () => _checkAnswer(true),
+
+                SizedBox(width: isTablet ? size.width * 0.2 : size.width * 0.1),
+
+                Stack(
+                  alignment: Alignment.bottomCenter,
+                  clipBehavior:
+                      Clip.none,
+                  children: [
+                    RealisticGameButton(
+                      imagePath: 'assets/images/btn_true.png',
+                      onTap: () => _checkAnswer(true),
+                      isTablet: isTablet,
+                    ),
+
+                    if (_currentIndex == 0 && _showTutorial)
+                      IgnorePointer(
+                        child: AnimatedBuilder(
+                          animation: _tutorialController,
+                          builder: (context, child) {
+                            return Transform.translate(
+                              offset: Offset(0, -30 + _handYAnimation.value),
+                              child: Transform.scale(
+                                scale: _handScaleAnimation.value,
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Image.asset(
+                            'assets/images/hand_pointer.png',
+                            width: isTablet ? 100 : 80,
+                            height: isTablet ? 100 : 80,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),
           ),
 
-          if (_currentIndex == 0 && _showTutorial)
-            Positioned(
-              
-              bottom: size.height * 0.20,
-              right: size.width * 0.30,
-              child: IgnorePointer(
-                child: AnimatedBuilder(
-                  animation: _tutorialController,
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: Offset(0, _handYAnimation.value),
-                      child: Transform.scale(
-                        scale: _handScaleAnimation.value,
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: Image.asset(
-                    'assets/images/hand_pointer.png',
-                    width: 100,
-                    height: 100,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -353,10 +402,13 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
 class RealisticGameButton extends StatefulWidget {
   final String imagePath;
   final VoidCallback onTap;
+  final bool isTablet;
+
   const RealisticGameButton({
     super.key,
     required this.imagePath,
     required this.onTap,
+    required this.isTablet,
   });
 
   @override
@@ -368,7 +420,8 @@ class _RealisticGameButtonState extends State<RealisticGameButton> {
 
   @override
   Widget build(BuildContext context) {
-    double btnSize = MediaQuery.of(context).size.width > 600 ? 120 : 120;
+    double btnSize = widget.isTablet ? 120 : 90;
+
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) => setState(() => _isPressed = false),

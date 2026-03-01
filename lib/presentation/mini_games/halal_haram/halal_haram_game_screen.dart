@@ -25,20 +25,26 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
 
   bool showHandTutorial = true;
   late AnimationController _handController;
-  late Animation<Offset> _handSlideAnimation;
   late Animation<double> _handScaleAnimation;
+
+  final GlobalKey _foodKey = GlobalKey();
+  final GlobalKey _halalBinKey = GlobalKey();
+  final GlobalKey _haramBinKey = GlobalKey();
+
+  Animation<Offset>? _handSlideAnimation;
 
   final List<Map<String, dynamic>> _foodItems = [
     {
       'name': 'Fried Chicken',
       'image': 'assets/images/chicken.png',
-      'isHalal': true,
+      'isHalal': true, 
     },
     {
       'name': 'Alcohol / Wine',
       'image': 'assets/images/wine.png',
       'isHalal': false,
     },
+
     {'name': 'Cow Milk', 'image': 'assets/images/milk.png', 'isHalal': true},
     {'name': 'Snake', 'image': 'assets/images/snake.png', 'isHalal': false},
     {'name': 'Fish', 'image': 'assets/images/fish.png', 'isHalal': true},
@@ -77,20 +83,55 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
       TweenSequenceItem(tween: Tween(begin: 0.8, end: 1.0), weight: 20),
     ]).animate(_handController);
 
-    _handSlideAnimation =
-        Tween<Offset>(
-          begin: const Offset(0.0, 0.0),
-          end: const Offset(-5.3, 1), 
-        ).animate(
-          CurvedAnimation(
-            parent: _handController,
-            curve: const Interval(0.2, 0.8, curve: Curves.easeInOut),
-          ),
-        );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && currentIndex == 0) {
+        _calculateTutorialPath();
+      }
+    });
+  }
 
-    if (currentIndex == 0) {
-      _handController.repeat();
+  void _calculateTutorialPath() {
+    final Offset? startPoint = _getWidgetCenterCoord(_foodKey);
+
+    final bool isFirstItemHalal = _foodItems[0]['isHalal'];
+    final GlobalKey targetBinKey = isFirstItemHalal
+        ? _halalBinKey
+        : _haramBinKey;
+
+    final Offset? endPoint = _getWidgetCenterCoord(targetBinKey);
+
+    if (startPoint != null && endPoint != null) {
+
+      final Offset pathVector = endPoint - startPoint;
+
+      setState(() {
+        _handSlideAnimation =
+            Tween<Offset>(
+              begin: Offset.zero, 
+              end: pathVector,
+            ).animate(
+              CurvedAnimation(
+                parent: _handController,
+                curve: const Interval(0.2, 0.8, curve: Curves.easeInOut),
+              ),
+            );
+
+        if (showHandTutorial) {
+          _handController.repeat();
+        }
+      });
     }
+  }
+
+  Offset? _getWidgetCenterCoord(GlobalKey key) {
+    final RenderBox? renderBox =
+        key.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null && renderBox.hasSize) {
+      final Size size = renderBox.size;
+      final Offset topLeft = renderBox.localToGlobal(Offset.zero);
+      return topLeft + Offset(size.width / 2, size.height / 2);
+    }
+    return null;
   }
 
   @override
@@ -108,10 +149,18 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
     }
   }
 
-  void _handleCorrectDrop() {
+  void _handleDrop(bool droppedInHalalBin, bool itemIsHalal) {
+    bool isCorrect = droppedInHalalBin == itemIsHalal;
+    if (isCorrect) {
+      _handleCorrect();
+    } else {
+      _handleWrong();
+    }
+  }
+
+  void _handleCorrect() {
     AudioManager().playSfx('correct.mp3');
     HapticFeedback.lightImpact();
-
     setState(() {
       score += 10;
       if (currentIndex < _foodItems.length - 1) {
@@ -123,10 +172,9 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
     });
   }
 
-  void _handleWrongDrop() {
+  void _handleWrong() {
     AudioManager().playSfx('wrong.mp3');
     HapticFeedback.heavyImpact();
-
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -142,7 +190,6 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
   void _showWinDialog() {
     AudioManager().playSfx('win.mp3');
     _confettiController.play();
-
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -165,6 +212,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
       backgroundColor: AppColors.gameYellow,
       body: Stack(
         children: [
+          // Background
           Positioned.fill(
             child: Image.asset(
               "assets/images/bg_halal_haram.jpeg",
@@ -172,6 +220,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
             ),
           ),
 
+          // Layout Utama
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -179,14 +228,12 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
                 double h = constraints.maxHeight;
 
                 double headerH = max(h * 0.1, 70.0);
-
-                double cardSize = w * 0.20;
-
-                double binWidth = w * 0.23;
-                double binHeight = h * 0.32;
+                double foodSize = w * 0.25;
+                double binSize = w * 0.21;
 
                 return Stack(
                   children: [
+                    // Header
                     Positioned(
                       top: 0,
                       left: 0,
@@ -195,70 +242,81 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
                       child: _buildHeader(),
                     ),
 
+                    // Bin Kiri 
                     Positioned(
-                      left: -20,
-                      bottom: h * 0.2, 
+                      left: -15,
+                      bottom: h * 0.1,
                       child: _buildBinDropZone(
-                        "HALAL",
-                        "assets/images/keranjang.png",
-                        true,
-                        binWidth,
-                        binHeight,
+                        key: _halalBinKey, 
+                        label: "HALAL",
+                        asset: "assets/images/keranjang.png",
+                        isHalalBin: true,
+                        size: binSize,
                       ),
                     ),
 
+                    // Bin Kanan 
                     Positioned(
-                      right: -20,
-                      bottom: h * 0.2,
+                      right: -15,
+                      bottom: h * 0.1,
                       child: _buildBinDropZone(
-                        "HARAM",
-                        "assets/images/trash_red.png",
-                        false,
-                        binWidth,
-                        binHeight,
+                        key: _haramBinKey, 
+                        label: "HARAM",
+                        asset: "assets/images/trash_red.png",
+                        isHalalBin: false,
+                        size: binSize,
                       ),
                     ),
 
-                    Positioned(
+                    // Area Tengah 
+                    Positioned.fill(
                       top: headerH,
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
                       child: Center(
-                        child: Align(
-                          alignment: const Alignment(0, 0.1),
-                          child: isGameOver
-                              ? const SizedBox()
-                              : Stack(
-                                  alignment: Alignment.center,
-                                  clipBehavior: Clip.none,
-                                  children: [
-                                    _buildDraggableItem(cardSize),
+                        child: isGameOver
+                            ? const SizedBox()
+                            : Stack(
+                                alignment: Alignment.center,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  _buildDraggableItem(foodSize),
 
-                                    // Tutorial Hand
-                                    if (showHandTutorial)
-                                      IgnorePointer(
-                                        child: SlideTransition(
-                                          position: _handSlideAnimation,
-                                          child: ScaleTransition(
-                                            scale: _handScaleAnimation,
-                                            child: Image.asset(
-                                              'assets/images/hand_pointer.png',
-                                              width: 80,
-                                              height: 80,
+                                  // Tutorial Hand
+                                  if (showHandTutorial &&
+                                      _handSlideAnimation != null)
+                                    IgnorePointer(
+                                      child: AnimatedBuilder(
+                                        animation: _handController,
+                                        builder: (context, child) {
+                                          return Transform.translate(
+
+                                            offset: _handSlideAnimation!.value,
+                                            child: Transform.scale(
+                                              scale: _handScaleAnimation.value,
+                                              child: child,
                                             ),
-                                          ),
+                                          );
+                                        },
+                                        child: Image.asset(
+                                          'assets/images/hand_pointer.png',
+                                          width: 80,
+                                          height: 80,
                                         ),
                                       ),
-                                  ],
-                                ),
-                        ),
+                                    ),
+                                ],
+                              ),
                       ),
                     ),
                   ],
                 );
               },
             ),
+          ),
+          // Badge Score
+          Positioned(
+            top: 30,
+            right: 20,
+            child: _scoreBadge("$score", Icons.star_rounded, Colors.white),
           ),
         ],
       ),
@@ -312,77 +370,8 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
               ],
             ),
           ),
-          _scoreBadge("$score", Icons.star_rounded, Colors.white),
         ],
       ),
-    );
-  }
-
-  Widget _buildDraggableItem(double size) {
-    final item = _foodItems[currentIndex];
-    return Draggable<bool>(
-      data: item['isHalal'],
-      onDragStarted: () {
-        _hideTutorial();
-        AudioManager().playSfx('bubble-pop.mp3');
-      },
-      feedback: Transform.scale(scale: 1.1, child: _foodCard(item, size)),
-      childWhenDragging: Opacity(opacity: 0.0, child: _foodCard(item, size)),
-      child: _foodCard(item, size),
-    );
-  }
-
-  Widget _foodCard(Map<String, dynamic> item, double size) {
-    return Material(
-      color: Colors.transparent,
-      child: SizedBox(
-        width: size,
-        height: size,
-        child: Image.asset(item['image'], fit: BoxFit.contain),
-      ),
-    );
-  }
-
-  Widget _buildBinDropZone(
-    String label,
-    String asset,
-    bool accepts,
-    double width,
-    double height,
-  ) {
-    return DragTarget<bool>(
-      onAccept: (data) =>
-          data == accepts ? _handleCorrectDrop() : _handleWrongDrop(),
-      builder: (context, candidate, rejected) {
-        bool hovering = candidate.isNotEmpty;
-        return AnimatedScale(
-          scale: hovering ? 1.1 : 1.0,
-          duration: const Duration(milliseconds: 200),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Label Text
-              Text(
-                label,
-                style: GoogleFonts.fredoka(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: width > 120 ? 20 : 16,
-                  shadows: const [Shadow(color: Colors.black45, blurRadius: 7)],
-                ),
-              ),
-              const SizedBox(height: 5),
-              // Bin Image
-              Image.asset(
-                asset,
-                width: width,
-                height: height,
-                fit: BoxFit.contain,
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -409,4 +398,82 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
       ],
     ),
   );
+
+  Widget _buildDraggableItem(double size) {
+    final item = _foodItems[currentIndex];
+    return Draggable<bool>(
+      data: item['isHalal'],
+      onDragStarted: () {
+        _hideTutorial();
+        AudioManager().playSfx('bubble-pop.mp3');
+      },
+      feedback: Transform.scale(scale: 1.1, child: _foodCard(item, size)),
+      childWhenDragging: Opacity(opacity: 0.0, child: _foodCard(item, size)),
+      child: Container(key: _foodKey, child: _foodCard(item, size)),
+    );
+  }
+
+  Widget _foodCard(Map<String, dynamic> item, double size) {
+    return Material(
+      color: Colors.transparent,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: size,
+            height: size,
+            child: Image.asset(item['image'], fit: BoxFit.contain),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBinDropZone({
+    required Key key, // Tambahkan parameter Key
+    required String label,
+    required String asset,
+    required bool isHalalBin,
+    required double size,
+  }) {
+    return DragTarget<bool>(
+      onWillAccept: (data) => true,
+      onAccept: (droppedItemIsHalal) {
+        _handleDrop(isHalalBin, droppedItemIsHalal);
+      },
+      builder: (context, candidate, rejected) {
+        bool hovering = candidate.isNotEmpty;
+        return AnimatedScale(
+          scale: hovering ? 1.1 : 1.0,
+          duration: const Duration(milliseconds: 200),
+          child: Container(
+            key: key,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.fredoka(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: size > 100 ? 20 : 16,
+                    shadows: const [
+                      Shadow(color: Colors.black45, blurRadius: 7),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Image.asset(
+                  asset,
+                  width: size,
+                  height: size * 1.2,
+                  fit: BoxFit.contain,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

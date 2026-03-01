@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:edukids_app/presentation/mini_games/alphabet_sort/alphabet_sort_screen.dart';
 import 'package:edukids_app/presentation/mini_games/halal_haram/halal_haram_game_screen.dart';
 import 'package:edukids_app/presentation/mini_games/learn_to_draw/learn_to_draw_menu_screen.dart';
@@ -34,21 +35,21 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
       "color": AppColors.gamePink,
       "icon": Icons.check_circle_rounded,
       "route": "/game-true-false",
-      "image": "assets/images/bg_true.jpeg",
+      "image": "assets/images/bg_menu_true.jpeg",
     },
     {
       "title": "Halal\nHaram",
       "color": AppColors.gameYellow,
       "icon": Icons.checklist_rtl_rounded,
       "route": "/halal-hara,",
-      "image": "assets/images/bg_halal_haram.jpeg",
+      "image": "assets/images/bg_menu_halal.jpeg",
     },
     {
       "title": "Learn to\nDraw",
       "color": AppColors.gameGreen,
       "icon": Icons.brush_rounded,
       "route": "/game-drawing",
-      "image": "assets/images/bg_learn.jpeg",
+      "image": "assets/images/bg_menu_learn.jpeg",
     },
     {
       "title": "Alphabet\nSort",
@@ -62,7 +63,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
       "color": AppColors.gameRed,
       "icon": Icons.question_mark_rounded,
       "route": "/game-right-wrong",
-      "image": "assets/images/bg_right.jpeg",
+      "image": "assets/images/bg_menu_which.jpeg",
     },
   ];
 
@@ -81,72 +82,86 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.btnBlueMain,
-              AppColors.bgBlue,
-              AppColors.gameSkyBlue,
+              Color(0xFF66BB6A), 
+              Color(0xFF43A047), 
+              Color(0xFF2E7D32),
             ],
             stops: [0.0, 0.5, 1.0],
           ),
         ),
-        child: SafeArea(
-          bottom: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSize.paddingMedium(),
-                  vertical: 8,
-                ),
-                child: Row(
-                  children: [
-                    _buildCompactBubbleBackButton(context),
-                    const SizedBox(width: 12),
-                    Text(
-                      "Mini Games",
-                      style: GoogleFonts.fredoka(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.white,
-                        shadows: [
-                          const BoxShadow(
-                            color: Colors.black12,
-                            offset: Offset(1, 1),
-                            blurRadius: 1,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Opacity(
+                opacity: 0.1, // Transparan agar subtle
+                child: CustomPaint(
+                  painter: IslamicPatternPainter(),
                 ),
               ),
+            ),
 
-              // Game Grid
-              Expanded(
-                child: GridView.builder(
-                  padding: EdgeInsets.fromLTRB(
-                    AppSize.paddingMedium(),
-                    10,
-                    AppSize.paddingMedium(),
-                    20,
+            SafeArea(
+              bottom: false,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSize.paddingMedium(),
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      children: [
+                        _buildCompactBubbleBackButton(context),
+                        const SizedBox(width: 12),
+                        Text(
+                          "Mini Games",
+                          style: GoogleFonts.fredoka(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            shadows: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                offset: const Offset(1, 1),
+                                blurRadius: 2,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  scrollDirection: Axis.vertical,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 15,
-                    crossAxisSpacing: 15,
-                    childAspectRatio: itemAspectRatio,
+
+                  // Game Grid
+                  Expanded(
+                    child: GridView.builder(
+                      padding: EdgeInsets.fromLTRB(
+                        AppSize.paddingMedium(),
+                        10,
+                        AppSize.paddingMedium(),
+                        20,
+                      ),
+                      scrollDirection: Axis.vertical,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 15,
+                        crossAxisSpacing: 15,
+                        childAspectRatio: itemAspectRatio,
+                      ),
+                      itemCount: _games.length,
+                      itemBuilder: (context, index) {
+                        final game = _games[index];
+                        return _BubbleGameCard(index: index, gameData: game);
+                      },
+                    ),
                   ),
-                  itemCount: _games.length,
-                  itemBuilder: (context, index) {
-                    final game = _games[index];
-                    return _BubbleGameCard(index: index, gameData: game);
-                  },
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -166,21 +181,64 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.cyan.withOpacity(0.3),
+              color: Colors.black.withOpacity(0.1),
               offset: const Offset(0, 2),
               blurRadius: 4,
             ),
           ],
-          border: Border.all(color: Colors.cyan.shade100, width: 1.5),
+          border: Border.all(color: Colors.white, width: 2),
         ),
         child: const Icon(
           Icons.arrow_back_rounded,
-          color: AppColors.gameSkyBlue,
-          size: 20,
+          color: Color(0xFF2E7D32),
+          size: 24,
         ),
       ),
     );
   }
+}
+
+class IslamicPatternPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+
+    double patternSize = 60.0; 
+
+    for (double y = 0; y < size.height; y += patternSize) {
+      for (double x = 0; x < size.width; x += patternSize) {
+        Path path = Path();
+        
+        double cx = x + patternSize / 2;
+        double cy = y + patternSize / 2;
+        double r = patternSize / 2.5;
+
+        path.moveTo(cx, cy - r);
+        path.lineTo(cx + r, cy);
+        path.lineTo(cx, cy + r);
+        path.lineTo(cx - r, cy);
+        path.close();
+
+        double rSmall = r * 0.7; 
+        path.moveTo(cx - rSmall, cy - rSmall);
+        path.lineTo(cx + rSmall, cy - rSmall);
+        path.lineTo(cx + rSmall, cy + rSmall);
+        path.lineTo(cx - rSmall, cy + rSmall);
+        path.close();
+        
+        canvas.drawCircle(Offset(cx, cy), 2, paint..style = PaintingStyle.fill);
+        paint.style = PaintingStyle.stroke;
+
+        canvas.drawPath(path, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
 class _BubbleGameCard extends StatefulWidget {
@@ -213,7 +271,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
       SnackBar(
         content: Text(
           "Game ini sedang dibuat, tunggu ya!",
-          style: GoogleFonts.fredoka(),
+          style: GoogleFonts.fredoka(color: Colors.white),
         ),
         backgroundColor: Colors.orange,
         duration: const Duration(seconds: 1),
@@ -226,7 +284,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
     final color = widget.gameData['color'] as Color;
     final String title = widget.gameData['title'];
     final String imagePath =
-        widget.gameData['image'] ?? "assets/images/bg_puzzle.png";
+        widget.gameData['image'] ?? "assets/images/bg_puzzle.jpeg";
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -290,22 +348,24 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                 _showComingSoon();
               }
             },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: color,
-                  boxShadow: [
-                    BoxShadow(
-                      color: color.withOpacity(0.4),
-                      offset: const Offset(0, 4),
-                      blurRadius: 6,
-                    ),
-                  ],
-                ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: color,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2), 
+                    offset: const Offset(0, 4),
+                    blurRadius: 6,
+                  ),
+                ],
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18), 
                 child: Stack(
                   children: [
-                    // Background
+                    // Background Image
                     Positioned.fill(
                       child: Image.asset(
                         imagePath,
@@ -315,7 +375,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                       ),
                     ),
 
-                    // Gradient Overlay
+                    // Gradient Overlay 
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
@@ -324,8 +384,11 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              Colors.black.withOpacity(0.4),
+                              Colors.black.withOpacity(
+                                0.7,
+                              ), 
                             ],
+                            stops: const [0.5, 1.0],
                           ),
                         ),
                       ),
@@ -341,17 +404,25 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.65),
+                          color: Colors.black.withOpacity(0.5),
+                          border: const Border(
+                            top: BorderSide(color: Colors.white24, width: 1),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              widget.gameData['icon'],
-                              size: iconSize,
-                              color: color,
+                            // Icon Game
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                widget.gameData['icon'],
+                                size: iconSize,
+                                color: color,
+                              ),
                             ),
                             const SizedBox(width: 8),
+                            // Judul Game
                             Flexible(
                               child: Text(
                                 title.replaceAll("\n", " "),
@@ -362,6 +433,13 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,
                                   height: 1.1,
+                                  shadows: [
+                                    Shadow(
+                                      offset: const Offset(1, 1),
+                                      color: Colors.black.withOpacity(0.5),
+                                      blurRadius: 2,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
