@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/data/drawing/drawing_model.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +18,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 class LearnToDrawScreen extends StatefulWidget {
   final List<String> allImagePaths;
   final int initialIndex;
-  final Set<int>
-  completedIndices; 
+  final Set<int> completedIndices;
   const LearnToDrawScreen({
     super.key,
     required this.allImagePaths,
@@ -84,7 +84,6 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
       duration: const Duration(seconds: 2),
     );
     AudioManager().playBgm('bgm_draw.mp3');
-
   }
 
   @override
@@ -97,7 +96,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
   int? _findFirstIncompleteLevel() {
     for (int i = 0; i < widget.allImagePaths.length; i++) {
       if (!_currentSessionCompleted.contains(i)) {
-        return i; 
+        return i;
       }
     }
     return null;
@@ -165,8 +164,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
       barrierColor: Colors.black.withOpacity(0.5),
       transitionDuration: const Duration(milliseconds: 400),
       pageBuilder: (ctx, anim1, anim2) => WinGames(
-        isLastLevel:
-            isAllFinished,  
+        isLastLevel: isAllFinished,
         confettiController: _confettiController,
         onActionPressed: () {
           Navigator.pop(ctx);
@@ -182,7 +180,6 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
       ),
     );
   }
-
 
   void _addPoint(Offset globalPos) {
     if (isHandMode || isFillMode) return;
@@ -234,7 +231,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Pick Pen Color'),
+        title: Text('Pick Pen Color'.tr()),
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: selectedColor,
@@ -245,7 +242,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
         ),
         actions: [
           ElevatedButton(
-            child: const Text('Select'),
+            child: Text('Select'.tr()),
             onPressed: () {
               setState(() {
                 selectedColor = tempColor;
@@ -267,7 +264,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Pick Fill Color'),
+        title: Text('Pick Fill Color'.tr()),
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: fillSelectedColor,
@@ -278,7 +275,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
         ),
         actions: [
           ElevatedButton(
-            child: const Text('Select'),
+            child: Text('Select'.tr()),
             onPressed: () {
               setState(() => fillSelectedColor = tempColor);
               Navigator.of(context).pop();
@@ -522,7 +519,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
                       child: Row(
                         children: [
                           Text(
-                            "DONE",
+                            "DONE".tr(),
                             style: GoogleFonts.fredoka(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -879,7 +876,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Fill Color",
+                  "Fill Color".tr(),
                   style: GoogleFonts.fredoka(fontWeight: FontWeight.bold),
                 ),
                 GestureDetector(

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:confetti/confetti.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:edukids_app/core/components/finish_games.dart';
 import 'package:edukids_app/core/components/win_games.dart';
 import 'package:edukids_app/data/alphabet_sort/alphabet_sort_model.dart';
@@ -291,7 +292,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Alphabet Sort",
+                  "Alphabet Sort".tr(),
                   style: GoogleFonts.fredoka(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -303,7 +304,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   child: Text(
-                    level.hint,
+                    level.hint.tr(),
                     key: ValueKey<String>(level.hint),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -325,7 +326,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
               border: Border.all(color: Colors.white30),
             ),
             child: Text(
-              "Level ${_currentIndex + 1}",
+              "${'Level'.tr()} ${_currentIndex + 1}",
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -392,7 +393,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
                 position: _handSlideAnimation,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.asset(
                       'assets/images/hand_pointer.png',
@@ -400,7 +401,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
                       height: letterSize * 0.9,
                     ),
                     Text(
-                      'Drag and Drop',
+                      'Drag and Drop'.tr(),
                       style: GoogleFonts.fredoka(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,

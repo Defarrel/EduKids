@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:confetti/confetti.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:edukids_app/core/components/finish_games.dart';
 import 'package:edukids_app/core/components/win_games.dart';
 import 'package:edukids_app/data/puzzle/puzzle_level_model.dart';
@@ -540,7 +541,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                                                       BorderRadius.circular(20),
                                                 ),
                                                 child: Text(
-                                                  "Shuffling...",
+                                                  "Shuffling...".tr(),
                                                   style: GoogleFonts.fredoka(
                                                     color: Colors.white,
                                                     fontSize: 16,
@@ -589,7 +590,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  "Drag to swap pieces",
+                                  "Drag to swap pieces".tr(),
                                   style: GoogleFonts.fredoka(
                                     color: Colors.white,
                                     fontSize: 14,
@@ -745,7 +746,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Fix the Image!",
+                  "Fix the Image!".tr(),
                   style: GoogleFonts.fredoka(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -753,7 +754,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                   ),
                 ),
                 Text(
-                  level.title,
+                  level.title.tr(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.fredoka(fontSize: 18, color: Colors.white),
@@ -769,7 +770,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
               border: Border.all(color: Colors.white30),
             ),
             child: Text(
-              "Level ${_currentIndex + 1}",
+              "Level".tr() + " ${_currentIndex + 1}",
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,

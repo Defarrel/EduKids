@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:confetti/confetti.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/components/finish_games.dart';
 import 'package:edukids_app/core/components/win_games.dart';
@@ -152,7 +153,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: "Wrong",
+      barrierLabel: "Wrong".tr(),
       barrierColor: Colors.black.withOpacity(0.6),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
@@ -185,15 +186,15 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
   }
 
   Widget _buildColorfulQuestion(String question) {
-    List<String> words = question.split(' ');
+    List<String> words = question.tr().split(' ');
 
     List<Color> wordColors = [
-      const Color(0xFFFF5252), 
-      const Color(0xFF40C4FF), 
+      const Color(0xFFFF5252),
+      const Color(0xFF40C4FF),
       const Color(0xFFFFD740),
-      const Color(0xFF69F0AE), 
+      const Color(0xFF69F0AE),
       const Color(0xFFE040FB),
-      const Color(0xFFFFAB40), 
+      const Color(0xFFFFAB40),
     ];
 
     Widget buildLayer({required bool isOutline}) {
@@ -242,17 +243,15 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
 
     switch (_currentIndex % 5) {
       case 0:
-        return DotPatternPainter(color: patternColor); 
+        return DotPatternPainter(color: patternColor);
       case 1:
-        return WavyPatternPainter(color: patternColor); 
+        return WavyPatternPainter(color: patternColor);
       case 2:
-        return GridPatternPainter(color: patternColor); 
+        return GridPatternPainter(color: patternColor);
       case 3:
-        return CrossPatternPainter(color: patternColor); 
+        return CrossPatternPainter(color: patternColor);
       case 4:
-        return DiagonalStripesPainter(
-          color: patternColor,
-        ); 
+        return DiagonalStripesPainter(color: patternColor);
       default:
         return DotPatternPainter(color: patternColor);
     }
@@ -351,7 +350,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                                     width: 70,
                                     alignment: Alignment.center,
                                     child: Text(
-                                      "OR",
+                                      "OR".tr(),
                                       style: GoogleFonts.fredoka(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w900,
@@ -415,7 +414,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Which is right?",
+                  "Which is right?".tr(),
                   style: GoogleFonts.fredoka(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
@@ -430,7 +429,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
                   ),
                 ),
                 Text(
-                  "Think fast and choose wisely!",
+                  "Think fast and choose wisely!".tr(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.fredoka(
@@ -450,7 +449,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
               border: Border.all(color: Colors.white30),
             ),
             child: Text(
-              "Level ${_currentIndex + 1}",
+              "Level".tr() + " ${_currentIndex + 1}",
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -507,7 +506,6 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
     );
   }
 }
-
 
 class DotPatternPainter extends CustomPainter {
   final Color color;

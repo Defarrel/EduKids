@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/constant/colors.dart';
 import 'package:edukids_app/core/constant/sizes.dart';
@@ -149,7 +150,7 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Let's Draw!",
+                  "Let's Draw!".tr(),
                   style: GoogleFonts.fredoka(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -160,7 +161,7 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
                   ),
                 ),
                 Text(
-                  "Choose a pattern",
+                  "Choose a pattern".tr(),
                   style: GoogleFonts.fredoka(
                     fontSize: 16,
                     color: Colors.white,
@@ -180,7 +181,7 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
               border: Border.all(color: Colors.white30),
             ),
             child: Text(
-              "Menu",
+              "Menu".tr(),
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -220,8 +221,7 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
             builder: (context) => LearnToDrawScreen(
               allImagePaths: allImagePaths,
               initialIndex: index,
-              completedIndices:
-                  previouslyCompletedIndices, 
+              completedIndices: previouslyCompletedIndices,
             ),
           ),
         );
@@ -279,7 +279,7 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
                 children: [
                   Expanded(
                     child: Text(
-                      item['title']!,
+                      item['title']!.tr(),
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:edukids_app/presentation/mini_games/alphabet_sort/alphabet_sort_screen.dart';
 import 'package:edukids_app/presentation/mini_games/halal_haram/halal_haram_game_screen.dart';
 import 'package:edukids_app/presentation/mini_games/learn_to_draw/learn_to_draw_menu_screen.dart';
@@ -81,11 +82,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF66BB6A), 
-              Color(0xFF43A047), 
-              Color(0xFF2E7D32),
-            ],
+            colors: [Color(0xFF66BB6A), Color(0xFF43A047), Color(0xFF2E7D32)],
             stops: [0.0, 0.5, 1.0],
           ),
         ),
@@ -94,9 +91,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
             Positioned.fill(
               child: Opacity(
                 opacity: 0.1, // Transparan agar subtle
-                child: CustomPaint(
-                  painter: IslamicPatternPainter(),
-                ),
+                child: CustomPaint(painter: IslamicPatternPainter()),
               ),
             ),
 
@@ -116,7 +111,7 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
                         _buildCompactBubbleBackButton(context),
                         const SizedBox(width: 12),
                         Text(
-                          "Mini Games",
+                          "Mini Games".tr(), // <-- Ditambahkan .tr()
                           style: GoogleFonts.fredoka(
                             fontSize: 30,
                             fontWeight: FontWeight.w600,
@@ -146,11 +141,11 @@ class _HomeMiniGamesScreenState extends State<HomeMiniGamesScreen> {
                       scrollDirection: Axis.vertical,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 15,
-                        crossAxisSpacing: 15,
-                        childAspectRatio: itemAspectRatio,
-                      ),
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 15,
+                            crossAxisSpacing: 15,
+                            childAspectRatio: itemAspectRatio,
+                          ),
                       itemCount: _games.length,
                       itemBuilder: (context, index) {
                         final game = _games[index];
@@ -206,12 +201,12 @@ class IslamicPatternPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
-    double patternSize = 60.0; 
+    double patternSize = 60.0;
 
     for (double y = 0; y < size.height; y += patternSize) {
       for (double x = 0; x < size.width; x += patternSize) {
         Path path = Path();
-        
+
         double cx = x + patternSize / 2;
         double cy = y + patternSize / 2;
         double r = patternSize / 2.5;
@@ -222,13 +217,13 @@ class IslamicPatternPainter extends CustomPainter {
         path.lineTo(cx - r, cy);
         path.close();
 
-        double rSmall = r * 0.7; 
+        double rSmall = r * 0.7;
         path.moveTo(cx - rSmall, cy - rSmall);
         path.lineTo(cx + rSmall, cy - rSmall);
         path.lineTo(cx + rSmall, cy + rSmall);
         path.lineTo(cx - rSmall, cy + rSmall);
         path.close();
-        
+
         canvas.drawCircle(Offset(cx, cy), 2, paint..style = PaintingStyle.fill);
         paint.style = PaintingStyle.stroke;
 
@@ -270,7 +265,8 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          "Game ini sedang dibuat, tunggu ya!",
+          "Game is under development, please wait!"
+              .tr(), // <-- Diubah dan ditambahkan .tr()
           style: GoogleFonts.fredoka(color: Colors.white),
         ),
         backgroundColor: Colors.orange,
@@ -354,7 +350,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                 color: color,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2), 
+                    color: Colors.black.withOpacity(0.2),
                     offset: const Offset(0, 4),
                     blurRadius: 6,
                   ),
@@ -362,7 +358,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                 border: Border.all(color: Colors.white, width: 2),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(18), 
+                borderRadius: BorderRadius.circular(18),
                 child: Stack(
                   children: [
                     // Background Image
@@ -375,7 +371,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                       ),
                     ),
 
-                    // Gradient Overlay 
+                    // Gradient Overlay
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
@@ -384,9 +380,7 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              Colors.black.withOpacity(
-                                0.7,
-                              ), 
+                              Colors.black.withOpacity(0.7),
                             ],
                             stops: const [0.5, 1.0],
                           ),
@@ -425,7 +419,10 @@ class _BubbleGameCardState extends State<_BubbleGameCard> {
                             // Judul Game
                             Flexible(
                               child: Text(
-                                title.replaceAll("\n", " "),
+                                title.tr().replaceAll(
+                                  "\n",
+                                  " ",
+                                ), // <-- Ditambahkan .tr() SEBELUM .replaceAll
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.fredoka(

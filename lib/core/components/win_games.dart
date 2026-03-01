@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:confetti/confetti.dart';
@@ -221,7 +222,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                               children: [
                                 SizedBox(height: 50 * scale),
                                 Text(
-                                  "Level Completed!",
+                                  "Level Completed!".tr(),
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.fredoka(
                                     fontSize: 28 * scale,
@@ -287,7 +288,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                             ),
                             alignment: Alignment.center,
                             child: Text(
-                              "MASYAALLAH",
+                              "MASYAALLAH".tr(),
                               style: GoogleFonts.fredoka(
                                 fontSize: 20 * scale,
                                 fontWeight: FontWeight.w900,
@@ -393,7 +394,7 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          widget.isLastLevel ? "FINISH" : "NEXT",
+                          widget.isLastLevel ? "FINISH".tr() : "NEXT".tr(),
                           style: GoogleFonts.fredoka(
                             color: Colors.white,
                             fontSize: 22 * scale,

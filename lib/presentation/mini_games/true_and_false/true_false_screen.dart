@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:confetti/confetti.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:edukids_app/core/components/finish_games.dart';
 import 'package:edukids_app/core/components/win_games.dart';
 import 'package:edukids_app/core/components/wrong_games.dart';
@@ -138,7 +139,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: "Wrong",
+      barrierLabel: "Wrong".tr(),
       barrierColor: Colors.black.withOpacity(0.6),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) =>
@@ -183,7 +184,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
   }
 
   Widget _buildColorfulQuestion(String question, bool isTablet) {
-    List<String> words = question.split(' ');
+    List<String> words = question.tr().split(' ');
     List<Color> wordColors = [
       const Color(0xFFFF5252),
       const Color(0xFF40C4FF),
@@ -212,9 +213,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
                 foreground: isOutline
                     ? (Paint()
                         ..style = PaintingStyle.stroke
-                        ..strokeWidth = isTablet
-                            ? 6
-                            : 4 
+                        ..strokeWidth = isTablet ? 6 : 4
                         ..color = Colors.white)
                     : (Paint()..color = color),
                 shadows: isOutline
@@ -262,15 +261,15 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "True or False?",
+                  "True or False?".tr(),
                   style: GoogleFonts.fredoka(
-                    fontSize: isTablet ? 24 : 20, 
+                    fontSize: isTablet ? 24 : 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
                 Text(
-                  "Think carefully!",
+                  "Think carefully!".tr(),
                   style: GoogleFonts.fredoka(
                     fontSize: isTablet ? 18 : 14,
                     color: Colors.white70,
@@ -287,7 +286,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
               border: Border.all(color: Colors.white30),
             ),
             child: Text(
-              "Level ${_currentIndex + 1}",
+              "Level".tr() + " ${_currentIndex + 1}",
               style: GoogleFonts.fredoka(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -358,8 +357,7 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
 
                 Stack(
                   alignment: Alignment.bottomCenter,
-                  clipBehavior:
-                      Clip.none,
+                  clipBehavior: Clip.none,
                   children: [
                     RealisticGameButton(
                       imagePath: 'assets/images/btn_true.png',
@@ -392,7 +390,6 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
               ],
             ),
           ),
-
         ],
       ),
     );

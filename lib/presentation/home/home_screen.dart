@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/components/settings.dart';
 import 'package:edukids_app/presentation/mini_games/home_mini_games/home_mini_games_screen.dart';
@@ -13,11 +14,11 @@ import 'package:google_fonts/google_fonts.dart';
 enum BubbleType {
   none,
   textAllah,
-  textMuhammad, 
-  iconKaaba, 
+  textMuhammad,
+  iconKaaba,
   iconMosque,
   iconMoon,
-  iconQuran, 
+  iconQuran,
   textAlif,
   textBa,
   textTa,
@@ -25,7 +26,6 @@ enum BubbleType {
   textJim,
 }
 
-// Bubble Model
 class Bubble {
   String id;
   double x;
@@ -50,7 +50,6 @@ class Bubble {
   });
 }
 
-// Particle Model
 class SplashParticle {
   String id;
   double x;
@@ -81,22 +80,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  // Controllers
   late AnimationController _btnController;
   late Animation<double> _btnScaleAnimation;
   late AnimationController _logoFloatingController;
   late Animation<Offset> _logoFloatingAnimation;
 
-  // Game Loop
   late Ticker _ticker;
   final math.Random _random = math.Random();
   double _time = 0;
 
-  // Objects
   final List<Bubble> _bubbles = [];
   final List<SplashParticle> _particles = [];
 
-  // Colors
   final List<Color> _bubbleColors = [
     AppColors.settingPink,
     const Color(0xFFFECFEF),
@@ -112,7 +107,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    // Animations
     _btnController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -139,7 +133,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         );
     _logoFloatingController.repeat(reverse: true);
 
-    // Loop
     _ticker = createTicker((elapsed) {
       _updateGameLoop(elapsed.inMilliseconds / 1000.0);
     });
@@ -154,7 +147,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  // Logic
   void _updateGameLoop(double dt) {
     if (!mounted) return;
 
@@ -211,7 +203,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
-  // Spawn Splash
   void _spawnSplash(double x, double y, Color color) {
     int particleCount = 8 + _random.nextInt(5);
     for (int i = 0; i < particleCount; i++) {
@@ -232,7 +223,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  // Pop Bubble
   void _popBubble(Bubble b, double screenWidth, double screenHeight) {
     AudioManager().playSfx('bubble-pop.mp3');
     HapticFeedback.lightImpact();
@@ -332,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
       case BubbleType.none:
       default:
-        return const SizedBox(); 
+        return const SizedBox();
     }
   }
 
@@ -357,7 +347,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: SafeArea(
           child: Stack(
             children: [
-              // Bubbles Layer
               ..._bubbles.map((b) {
                 return Positioned(
                   key: ValueKey(b.id),
@@ -395,9 +384,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               width: b.size * 0.25,
                               height: b.size * 0.12,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(
-                                  0.7,
-                                ), 
+                                color: Colors.white.withOpacity(0.7),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
@@ -409,7 +396,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 );
               }).toList(),
 
-              // Particles Layer
               ..._particles.map((p) {
                 return Positioned(
                   key: ValueKey(p.id),
@@ -429,16 +415,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 );
               }).toList(),
 
-              // Settings Button
               Positioned(top: 16, left: 16, child: _buildSettingsButton()),
 
-              // Center Content
               Center(
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Logo
                       SlideTransition(
                         position: _logoFloatingAnimation,
                         child: GestureDetector(
@@ -463,7 +446,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
 
-                      // Play Button
                       ScaleTransition(
                         scale: _btnScaleAnimation,
                         child: GestureDetector(
@@ -491,7 +473,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  // Helper Widgets 
   Widget _buildSettingsButton() {
     return GestureDetector(
       onTap: () {
@@ -612,7 +593,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 SizedBox(width: btnWidth * 0.04),
                 Text(
-                  "PLAY NOW",
+                  "PLAY NOW".tr(),
                   style: GoogleFonts.fredoka(
                     fontSize: btnHeight * 0.35,
                     fontWeight: FontWeight.w700,

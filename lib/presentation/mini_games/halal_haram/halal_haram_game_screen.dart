@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:edukids_app/core/components/wrong_games.dart';
 import 'package:edukids_app/core/constant/colors.dart';
@@ -37,7 +38,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
     {
       'name': 'Fried Chicken',
       'image': 'assets/images/chicken.png',
-      'isHalal': true, 
+      'isHalal': true,
     },
     {
       'name': 'Alcohol / Wine',
@@ -101,15 +102,11 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
     final Offset? endPoint = _getWidgetCenterCoord(targetBinKey);
 
     if (startPoint != null && endPoint != null) {
-
       final Offset pathVector = endPoint - startPoint;
 
       setState(() {
-        _handSlideAnimation =
-            Tween<Offset>(
-              begin: Offset.zero, 
-              end: pathVector,
-            ).animate(
+        _handSlideAnimation = Tween<Offset>(begin: Offset.zero, end: pathVector)
+            .animate(
               CurvedAnimation(
                 parent: _handController,
                 curve: const Interval(0.2, 0.8, curve: Curves.easeInOut),
@@ -242,33 +239,33 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
                       child: _buildHeader(),
                     ),
 
-                    // Bin Kiri 
+                    // Bin Kiri
                     Positioned(
                       left: -15,
                       bottom: h * 0.1,
                       child: _buildBinDropZone(
-                        key: _halalBinKey, 
-                        label: "HALAL",
+                        key: _halalBinKey,
+                        label: "HALAL".tr(),
                         asset: "assets/images/keranjang.png",
                         isHalalBin: true,
                         size: binSize,
                       ),
                     ),
 
-                    // Bin Kanan 
+                    // Bin Kanan
                     Positioned(
                       right: -15,
                       bottom: h * 0.1,
                       child: _buildBinDropZone(
-                        key: _haramBinKey, 
-                        label: "HARAM",
+                        key: _haramBinKey,
+                        label: "HARAM".tr(),
                         asset: "assets/images/trash_red.png",
                         isHalalBin: false,
                         size: binSize,
                       ),
                     ),
 
-                    // Area Tengah 
+                    // Area Tengah
                     Positioned.fill(
                       top: headerH,
                       child: Center(
@@ -288,7 +285,6 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
                                         animation: _handController,
                                         builder: (context, child) {
                                           return Transform.translate(
-
                                             offset: _handSlideAnimation!.value,
                                             child: Transform.scale(
                                               scale: _handScaleAnimation.value,
@@ -311,12 +307,6 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
                 );
               },
             ),
-          ),
-          // Badge Score
-          Positioned(
-            top: 30,
-            right: 20,
-            child: _scoreBadge("$score", Icons.star_rounded, Colors.white),
           ),
         ],
       ),
@@ -347,7 +337,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Halal or Haram?",
+                  "Halal or Haram?".tr(),
                   style: GoogleFonts.fredoka(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -358,7 +348,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
                   ),
                 ),
                 Text(
-                  "Drag The Food!",
+                  "Drag The Food!".tr(),
                   style: GoogleFonts.fredoka(
                     fontSize: 16,
                     color: Colors.white,
@@ -370,6 +360,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
               ],
             ),
           ),
+          _scoreBadge("$score", Icons.star_rounded, Colors.white),
         ],
       ),
     );
@@ -430,7 +421,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
   }
 
   Widget _buildBinDropZone({
-    required Key key, // Tambahkan parameter Key
+    required Key key,
     required String label,
     required String asset,
     required bool isHalalBin,

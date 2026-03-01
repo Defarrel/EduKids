@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:confetti/confetti.dart';
@@ -217,7 +218,7 @@ class _FinishGamesState extends State<FinishGames>
                               children: [
                                 SizedBox(height: 50 * scale),
                                 Text(
-                                  "All Levels Done!",
+                                  "All Levels Done!".tr(),
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.fredoka(
                                     fontSize: 22 * scale,
@@ -285,7 +286,7 @@ class _FinishGamesState extends State<FinishGames>
                             ),
                             alignment: Alignment.center,
                             child: Text(
-                              "CONGRATS!",
+                              "CONGRATS!".tr(),
                               style: GoogleFonts.fredoka(
                                 fontSize: 20 * scale,
                                 fontWeight: FontWeight.w900,
@@ -404,7 +405,7 @@ class _FinishGamesState extends State<FinishGames>
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          "MAIN MENU",
+                          "MAIN MENU".tr(),
                           style: GoogleFonts.fredoka(
                             color: Colors.white,
                             fontSize: 20 * scale,

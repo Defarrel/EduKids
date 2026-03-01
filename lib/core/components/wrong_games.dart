@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:edukids_app/core/audio/audio_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -188,7 +189,7 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
                               children: [
                                 SizedBox(height: 50 * scale),
                                 Text(
-                                  "Wrong Answer",
+                                  "Wrong Answer".tr(),
                                   style: GoogleFonts.fredoka(
                                     fontSize: 28 * scale,
                                     color: Colors.redAccent,
@@ -198,7 +199,7 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
                                 ),
                                 SizedBox(height: 10 * scale),
                                 Text(
-                                  "Don't give up!",
+                                  "Don't give up!".tr(),
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.fredoka(
                                     fontSize: 20 * scale,
@@ -248,7 +249,7 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
                             ),
                             alignment: Alignment.center,
                             child: Text(
-                              "OOPS!",
+                              "OOPS!".tr(),
                               style: GoogleFonts.fredoka(
                                 fontSize: 20 * scale,
                                 fontWeight: FontWeight.w900,
@@ -367,7 +368,7 @@ class _WrongGamesState extends State<WrongGames> with TickerProviderStateMixin {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          "TRY AGAIN",
+                          "TRY AGAIN".tr(),
                           style: GoogleFonts.fredoka(
                             color: Colors.white,
                             fontSize: 20 * scale,
