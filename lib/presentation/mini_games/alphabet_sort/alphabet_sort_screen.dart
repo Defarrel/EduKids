@@ -48,6 +48,31 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
       imagePath: 'assets/images/quran.png',
       hint: "The Holy Book",
     ),
+    AlphabetLevel(
+      answer: "MOSQUE",
+      imagePath: 'assets/images/masjid.png',
+      hint: "Place of Worship",
+    ),
+    AlphabetLevel(
+      answer: "RUG",
+      imagePath: 'assets/images/sajadah.png',
+      hint: "Prayer Mat",
+    ),
+    AlphabetLevel(
+      answer: "DATES",
+      imagePath: 'assets/images/kurma.png',
+      hint: "Sunnah Food",
+    ),
+    AlphabetLevel(
+      answer: "PRAYING",
+      imagePath: 'assets/images/praying.png',
+      hint: "Talking to Allah",
+    ),
+    AlphabetLevel(
+      answer: "ZAKAT",
+      imagePath: 'assets/images/zakat.png',
+      hint: "Giving Charity",
+    ),
   ];
 
   // State
@@ -210,7 +235,7 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
                 double w = constraints.maxWidth;
                 double h = constraints.maxHeight;
 
-                double headerHeight = h * 0.1;
+                double headerHeight = h * 0.15;
                 if (headerHeight < 70) headerHeight = 70;
 
                 double availableH = h - headerHeight;

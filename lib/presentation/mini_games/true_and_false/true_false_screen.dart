@@ -47,6 +47,31 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
       question: "Is this the Mecca?",
       isTrue: false,
     ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/masjid.png',
+      question: "Is this a Mosque?",
+      isTrue: true,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/sajadah.png',
+      question: "Is this a prayer mat?",
+      isTrue: true,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/kurma.png',
+      question: "Is this haram food?",
+      isTrue: false, 
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/matahari.png',
+      question: "Did Allah create this?",
+      isTrue: true, 
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/mobil.png',
+      question: "Did Allah create this?",
+      isTrue: false, 
+    ),
   ];
 
   int _currentIndex = 0;

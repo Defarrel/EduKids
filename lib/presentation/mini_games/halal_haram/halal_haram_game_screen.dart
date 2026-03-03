@@ -224,7 +224,7 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
                 double w = constraints.maxWidth;
                 double h = constraints.maxHeight;
 
-                double headerH = max(h * 0.1, 70.0);
+                double headerH = max(h * 0.15, 70.0);
                 double foodSize = w * 0.25;
                 double binSize = w * 0.21;
 

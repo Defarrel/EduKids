@@ -82,7 +82,7 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
             child: LayoutBuilder(
               builder: (context, constraints) {
                 double h = constraints.maxHeight;
-                double headerH = max(h * 0.1, 70.0);
+                double headerH = max(h * 0.15, 70.0);
 
                 return Column(
                   children: [

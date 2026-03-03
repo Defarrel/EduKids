@@ -54,6 +54,39 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
       rightImage: 'assets/images/kurma.png',
       isLeftCorrect: false,
     ),
+    WhichLevel(
+      question: "Which is the Ka'bah?",
+      leftImage: 'assets/images/madinah.png',
+      rightImage: 'assets/images/kabah.png',
+      isLeftCorrect: false,
+    ),
+    WhichLevel(
+      question: "Which drink is Halal?",
+      leftImage: 'assets/images/honey.png',
+      rightImage: 'assets/images/beer.png',
+      isLeftCorrect: true,
+    ),
+    // Level 8: ASET BARU (Tema Hari Raya)
+    WhichLevel(
+      question: "Which is Eid food?",
+      leftImage: 'assets/images/kue_ulang_tahun.png',
+      rightImage: 'assets/images/ketupat.png',
+      isLeftCorrect: false,
+    ),
+    // Level 9: ASET BARU (Tema Pakaian)
+    WhichLevel(
+      question: "Which is Muslim clothing?",
+      leftImage: 'assets/images/peci.png',
+      rightImage: 'assets/images/topi_koboi.png',
+      isLeftCorrect: true,
+    ),
+    // Level 10: ASET BARU (Tema Ibadah)
+    WhichLevel(
+      question: "What do we use for Dhikr?",
+      leftImage: 'assets/images/kalkulator.png',
+      rightImage: 'assets/images/tasbih.png',
+      isLeftCorrect: false,
+    ),
   ];
 
   // State
@@ -241,7 +274,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
   CustomPainter _getPatternForLevel() {
     Color patternColor = AppColors.gameRed.withOpacity(0.08);
 
-    switch (_currentIndex % 5) {
+    switch (_currentIndex % 10) {
       case 0:
         return DotPatternPainter(color: patternColor);
       case 1:
@@ -252,6 +285,16 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
         return CrossPatternPainter(color: patternColor);
       case 4:
         return DiagonalStripesPainter(color: patternColor);
+      case 5:
+        return CircleOutlinePainter(color: patternColor); 
+      case 6:
+        return StarPatternPainter(color: patternColor); 
+      case 7:
+        return ZigZagPatternPainter(color: patternColor); 
+      case 8:
+        return HexagonPatternPainter(color: patternColor); 
+      case 9:
+        return CheckeredPatternPainter(color: patternColor); 
       default:
         return DotPatternPainter(color: patternColor);
     }
@@ -283,7 +326,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
             child: LayoutBuilder(
               builder: (context, constraints) {
                 double h = constraints.maxHeight;
-                double headerH = max(h * 0.1, 70.0);
+                double headerH = max(h * 0.15, 70.0);
                 double questionH = max(h * 0.15, 120.0);
                 double availableH = h - headerH - questionH - 40;
 
@@ -619,6 +662,178 @@ class DiagonalStripesPainter extends CustomPainter {
         Offset(i + size.height, size.height),
         paint,
       );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class CircleOutlinePainter extends CustomPainter {
+  final Color color;
+  CircleOutlinePainter({required this.color});
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    double spacing = 30;
+    for (double y = spacing / 2; y < size.height; y += spacing) {
+      for (double x = spacing / 2; x < size.width; x += spacing) {
+        canvas.drawCircle(Offset(x, y), 8, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class StarPatternPainter extends CustomPainter {
+  final Color color;
+  StarPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    double spacing = 40;
+
+    for (double y = spacing / 2; y < size.height; y += spacing) {
+      for (double x = spacing / 2; x < size.width; x += spacing) {
+        _drawStar(canvas, paint, Offset(x, y), 5, 8, 4);
+      }
+    }
+  }
+
+  void _drawStar(
+    Canvas canvas,
+    Paint paint,
+    Offset center,
+    int points,
+    double outerRadius,
+    double innerRadius,
+  ) {
+    var path = Path();
+    var angle = -pi / 2.0;
+    var step = pi / points;
+
+    path.moveTo(
+      center.dx + outerRadius * cos(angle),
+      center.dy + outerRadius * sin(angle),
+    );
+
+    for (int i = 0; i < points; i++) {
+      angle += step;
+      path.lineTo(
+        center.dx + innerRadius * cos(angle),
+        center.dy + innerRadius * sin(angle),
+      );
+      angle += step;
+      path.lineTo(
+        center.dx + outerRadius * cos(angle),
+        center.dy + outerRadius * sin(angle),
+      );
+    }
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class ZigZagPatternPainter extends CustomPainter {
+  final Color color;
+  ZigZagPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+    double spacingY = 25;
+    double spacingX = 20;
+
+    for (double y = spacingY; y < size.height + spacingY; y += spacingY) {
+      final path = Path()..moveTo(0, y);
+      bool isUp = true;
+      for (double x = 0; x < size.width + spacingX; x += spacingX) {
+        path.lineTo(x, isUp ? y - 10 : y + 10);
+        isUp = !isUp;
+      }
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class HexagonPatternPainter extends CustomPainter {
+  final Color color;
+  HexagonPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+
+    double radius = 15;
+    double width = sqrt(3) * radius;
+    double height = 2 * radius;
+
+    for (double y = 0; y < size.height + height; y += height * 0.75) {
+      double offsetX = (y / (height * 0.75)) % 2 == 0 ? 0 : width / 2;
+      for (double x = offsetX; x < size.width + width; x += width) {
+        _drawHexagon(canvas, paint, Offset(x, y), radius);
+      }
+    }
+  }
+
+  void _drawHexagon(Canvas canvas, Paint paint, Offset center, double radius) {
+    final path = Path();
+    for (int i = 0; i < 6; i++) {
+      double angle =
+          2 * pi / 6 * (i + 0.5); // Putar 30 derajat agar flat di atas
+      double x = center.dx + radius * cos(angle);
+      double y = center.dy + radius * sin(angle);
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class CheckeredPatternPainter extends CustomPainter {
+  final Color color;
+  CheckeredPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    double squareSize = 20;
+
+    for (double y = 0; y < size.height; y += squareSize) {
+      for (double x = 0; x < size.width; x += squareSize) {
+        if (((x / squareSize).floor() + (y / squareSize).floor()) % 2 == 0) {
+          canvas.drawRect(Rect.fromLTWH(x, y, squareSize, squareSize), paint);
+        }
+      }
     }
   }
 

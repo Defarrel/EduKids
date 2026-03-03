@@ -36,16 +36,41 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
     PuzzleLevel(
       title: "Ka'bah",
       imagePath: 'assets/images/kabah.png',
-      gridSize: 3,
+      gridSize: 2,
     ),
     PuzzleLevel(
       title: "Mosque",
       imagePath: 'assets/images/masjid.png',
-      gridSize: 3,
+      gridSize: 2,
     ),
     PuzzleLevel(
       title: "Muslim dress",
       imagePath: 'assets/images/baju_muslim.png',
+      gridSize: 2,
+    ),
+    PuzzleLevel(
+      title: "The Holy Quran",
+      imagePath: 'assets/images/quran.png',
+      gridSize: 3,
+    ),
+    PuzzleLevel(
+      title: "The Sun",
+      imagePath: 'assets/images/matahari.png',
+      gridSize: 3,
+    ),
+    PuzzleLevel(
+      title: "Dates Fruit",
+      imagePath: 'assets/images/kurma.png',
+      gridSize: 3,
+    ),
+    PuzzleLevel(
+      title: "Honey",
+      imagePath: 'assets/images/honey.png',
+      gridSize: 3,
+    ),
+    PuzzleLevel(
+      title: "Prayer Mat",
+      imagePath: 'assets/images/sajadah.png',
       gridSize: 3,
     ),
   ];
@@ -339,7 +364,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                 double w = constraints.maxWidth;
                 double h = constraints.maxHeight;
 
-                double headerHeight = h * 0.1;
+                double headerHeight = h * 0.15;
                 double footerHeight = h * 0.15;
 
                 if (headerHeight < 70) headerHeight = 70;
