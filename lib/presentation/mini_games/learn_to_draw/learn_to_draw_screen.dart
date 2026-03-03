@@ -761,7 +761,7 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     );
   }
 
-  // Widget helper sama seperti sebelumnya...
+  // Widget helper
   Widget _paletteItem({
     required Color color,
     required bool isSelected,
@@ -788,8 +788,8 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
             : null,
         shape: BoxShape.circle,
         border: isSelected
-            ? Border.all(color: Colors.black, width: 3)
-            : Border.all(color: Colors.black12, width: 1),
+            ? Border.all(color: Colors.white60, width: 3)
+            : Border.all(color: Colors.white24, width: 1),
       ),
       child: isRainbow
           ? const Icon(Icons.colorize, color: Colors.white, size: 20)

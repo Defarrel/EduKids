@@ -20,8 +20,14 @@ class LearnToDrawMenuScreen extends StatefulWidget {
 class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
     with TickerProviderStateMixin {
   final List<Map<String, String>> _tracingPages = [
-    {'title': 'Alif, Ba, Ta', 'image': 'assets/images/alif.svg'},
-    {'title': 'Sa, Zaa', 'image': 'assets/images/sa.svg'},
+    {'title': 'Alif', 'image': 'assets/images/alif.svg'},
+    {'title': 'Ba', 'image': 'assets/images/ba.svg'},
+    {'title': 'Ta', 'image': 'assets/images/ta.svg'},
+    {'title': 'Tsa', 'image': 'assets/images/tsa.svg'},
+    {'title': 'Jim', 'image': 'assets/images/jim.svg'},
+    {'title': 'Kha', 'image': 'assets/images/kha.svg'},
+    {'title': 'Kho', 'image': 'assets/images/kho.svg'},
+    {'title': 'Dal', 'image': 'assets/images/dal.svg'},
     {'title': 'Allah', 'image': 'assets/images/allah.svg'},
     {'title': 'Muhammad', 'image': 'assets/images/muhammad.svg'},
   ];

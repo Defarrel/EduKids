@@ -343,6 +343,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             colors: [Color(0xFF66BB6A), Color(0xFF43A047), Color(0xFF2E7D32)],
             stops: [0.0, 0.5, 1.0],
           ),
+          image: DecorationImage(
+            image: AssetImage(
+              'assets/images/bg_home.jpeg',
+            ), // Sesuaikan nama gambarnya dengan yang kamu punya ya
+            fit: BoxFit.cover,
+          ),
         ),
         child: SafeArea(
           child: Stack(

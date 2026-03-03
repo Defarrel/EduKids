@@ -46,8 +46,6 @@
   "Menu": "選單",
   "Alif, Ba, Ta": "Alif, Ba, Ta",
   "Sa, Zaa": "Sa, Zaa",
-  "Allah": "真主",
-  "Muhammad": "穆罕默德",
 
   "Fix the Image!": "修復圖片！",
   "Lafadz Allah": "真主字畫",
@@ -106,5 +104,9 @@
   "Which is Muslim clothing?": "哪一個是穆斯林服裝？",
   "What do we use for Dhikr?": "我們用什麼來做齊克爾（讚主）？",
   "Drag to swap pieces": "拖曳以交換拼圖",
-  "Shuffling...": "打亂中..."
+  "Shuffling...": "打亂中...",
+  "DONE": "完成",
+  "Pick Pen Color": "選擇畫筆顏色",
+  "Pick Fill Color": "選擇填充顏色",
+  "Fill Color": "填充顏色"
 }
