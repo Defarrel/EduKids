@@ -231,19 +231,52 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Pick Pen Color'.tr()),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'Pick Pen Color'.tr(),
+          textAlign: TextAlign.center,
+          style: GoogleFonts.fredoka(
+            color: Colors.orange[800],
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        contentPadding: const EdgeInsets.only(
+          top: 20,
+          bottom: 0,
+          left: 24,
+          right: 24,
+        ),
+        actionsPadding: const EdgeInsets.only(top: 10, bottom: 20),
         content: SingleChildScrollView(
-          child: ColorPicker(
+          child: HueRingPicker(
             pickerColor: selectedColor,
             onColorChanged: (c) => tempColor = c,
             enableAlpha: false,
-            displayThumbColor: true,
+            displayThumbColor: false,
           ),
         ),
+        actionsAlignment: MainAxisAlignment.center,
         actions: [
           ElevatedButton(
-            child: Text('Select'.tr()),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.greenAccent[400],
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 3,
+            ),
+            child: Text(
+              'Select'.tr(),
+              style: GoogleFonts.fredoka(
+                fontSize: 18,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
+            ),
             onPressed: () {
+              AudioManager().playSfx('bubble-pop.mp3');
               setState(() {
                 selectedColor = tempColor;
                 isEraser = false;
@@ -264,19 +297,53 @@ class _LearnToDrawScreenState extends State<LearnToDrawScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Pick Fill Color'.tr()),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(
+          'Pick Fill Color'.tr(),
+          textAlign: TextAlign.center,
+          style: GoogleFonts.fredoka(
+            color: Colors.orange[800],
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        contentPadding: const EdgeInsets.only(
+          top: 20,
+          bottom: 0,
+          left: 24,
+          right: 24,
+        ),
+
+        actionsPadding: const EdgeInsets.only(top: 10, bottom: 20),
         content: SingleChildScrollView(
-          child: ColorPicker(
+          child: HueRingPicker(
             pickerColor: fillSelectedColor,
             onColorChanged: (c) => tempColor = c,
             enableAlpha: false,
-            displayThumbColor: true,
+            displayThumbColor: false,
           ),
         ),
+        actionsAlignment: MainAxisAlignment.center,
         actions: [
           ElevatedButton(
-            child: Text('Select'.tr()),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.greenAccent[400],
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 3,
+            ),
+            child: Text(
+              'Select'.tr(),
+              style: GoogleFonts.fredoka(
+                fontSize: 18,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
+            ),
             onPressed: () {
+              AudioManager().playSfx('bubble-pop.mp3');
               setState(() => fillSelectedColor = tempColor);
               Navigator.of(context).pop();
             },
