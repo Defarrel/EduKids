@@ -4,7 +4,7 @@ import 'package:edukids_app/core/constant/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:easy_localization/easy_localization.dart'; 
+import 'package:easy_localization/easy_localization.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -84,7 +84,7 @@ class _SettingsState extends State<Settings> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "SETTINGS".tr(), 
+                      "SETTINGS".tr(),
                       style: GoogleFonts.fredoka(
                         fontSize: screenHeight * 0.06,
                         fontWeight: FontWeight.w700,
@@ -166,7 +166,7 @@ class _SettingsState extends State<Settings> {
                             SizedBox(height: screenHeight * 0.02),
 
                             _buildLanguageRow(
-                              title: "Language".tr(), // Gunakan .tr()
+                              title: "Language".tr(),
                               icon: Icons.language_rounded,
                               color: Colors.blueAccent,
                               isEnglish: isEn,
@@ -412,7 +412,7 @@ class _SettingsState extends State<Settings> {
               shape: BoxShape.circle,
             ),
             child: Text(
-              isEnglish ? "EN" : "繁",
+              isEnglish ? "中文" : "EN",
               style: GoogleFonts.fredoka(
                 color: isEnglish ? activeColor : Colors.orangeAccent,
                 fontWeight: FontWeight.bold,
@@ -477,7 +477,7 @@ class _SettingsState extends State<Settings> {
             ),
           ),
           Text(
-            "OK".tr(), // Gunakan .tr()
+            "OK".tr(), 
             style: GoogleFonts.fredoka(
               fontSize: btnHeight * 0.5,
               fontWeight: FontWeight.w700,
