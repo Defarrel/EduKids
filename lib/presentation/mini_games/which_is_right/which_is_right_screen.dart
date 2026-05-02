@@ -121,7 +121,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
       isLeftCorrect: true,
     ),
     WhichLevel(
-      question: "Which one do we wear to go to Mecca?",
+      question: "Which one should we wear when going for Hajj?",
       leftImage: 'assets/images/baju_muslim.png',
       rightImage: 'assets/images/baju_ihram.png',
       isLeftCorrect: false,
