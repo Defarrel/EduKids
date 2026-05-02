@@ -66,26 +66,83 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
       rightImage: 'assets/images/beer.png',
       isLeftCorrect: true,
     ),
-    // Level 8: ASET BARU (Tema Hari Raya)
     WhichLevel(
       question: "Which is Eid food?",
       leftImage: 'assets/images/kue_ulang_tahun.png',
       rightImage: 'assets/images/ketupat.png',
       isLeftCorrect: false,
     ),
-    // Level 9: ASET BARU (Tema Pakaian)
     WhichLevel(
-      question: "Which is Muslim clothing?",
+      question: "Which one do Muslim boys wear on their head?",
       leftImage: 'assets/images/peci.png',
       rightImage: 'assets/images/topi_koboi.png',
       isLeftCorrect: true,
     ),
-    // Level 10: ASET BARU (Tema Ibadah)
     WhichLevel(
       question: "What do we use for Dhikr?",
       leftImage: 'assets/images/kalkulator.png',
       rightImage: 'assets/images/tasbih.png',
       isLeftCorrect: false,
+    ),
+    WhichLevel(
+      question: "Which is used for Wudu?",
+      leftImage: 'assets/images/air.png',
+      rightImage: 'assets/images/milk.png',
+      isLeftCorrect: true,
+    ),
+    WhichLevel(
+      question: "Which is a pillar of Islam?",
+      leftImage: 'assets/images/sholat.png',
+      rightImage: 'assets/images/pilar.png',
+      isLeftCorrect: true,
+    ),
+    WhichLevel(
+      question: "Which animal is Haram to eat?",
+      leftImage: 'assets/images/kambing.png',
+      rightImage: 'assets/images/pig.png',
+      isLeftCorrect: false,
+    ),
+    WhichLevel(
+      question: "Which one do Muslims walk around seven times?",
+      leftImage: 'assets/images/kabah.png',
+      rightImage: 'assets/images/gunung.png',
+      isLeftCorrect: true,
+    ),
+    WhichLevel(
+      question: "Which building do Muslims go to on Friday?",
+      leftImage: 'assets/images/masjid.png',
+      rightImage: 'assets/images/taman_bermain.png',
+      isLeftCorrect: true,
+    ),
+    WhichLevel(
+      question: "Which one do Muslims face when they pray?",
+      leftImage: 'assets/images/kabah.png',
+      rightImage: 'assets/images/matahari.png',
+      isLeftCorrect: true,
+    ),
+    WhichLevel(
+      question: "Which one do we wear to go to Mecca?",
+      leftImage: 'assets/images/baju_muslim.png',
+      rightImage: 'assets/images/baju_ihram.png',
+      isLeftCorrect: false,
+    ),
+    WhichLevel(
+      question: "Which one makes a sound to call us to pray?",
+      leftImage: 'assets/images/adzan.png',
+      rightImage: 'assets/images/nyanyi.png',
+      isLeftCorrect: true,
+    ),
+    WhichLevel(
+      question: "Which one is the house of Allah?",
+      leftImage: 'assets/images/masjid.png',
+      rightImage: 'assets/images/rumah.png',
+      isLeftCorrect: true,
+    ),
+    WhichLevel(
+      question: "Which is the Prophet's city?",
+      leftImage: 'assets/images/madinah.png',
+      rightImage: 'assets/images/gunung.png',
+      isLeftCorrect: true,
     ),
   ];
 
@@ -274,7 +331,7 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
   CustomPainter _getPatternForLevel() {
     Color patternColor = AppColors.gameRed.withOpacity(0.08);
 
-    switch (_currentIndex % 10) {
+    switch (_currentIndex % 20) {
       case 0:
         return DotPatternPainter(color: patternColor);
       case 1:
@@ -286,15 +343,35 @@ class _WhichIsRightScreenState extends State<WhichIsRightScreen>
       case 4:
         return DiagonalStripesPainter(color: patternColor);
       case 5:
-        return CircleOutlinePainter(color: patternColor); 
+        return CircleOutlinePainter(color: patternColor);
       case 6:
-        return StarPatternPainter(color: patternColor); 
+        return StarPatternPainter(color: patternColor);
       case 7:
-        return ZigZagPatternPainter(color: patternColor); 
+        return ZigZagPatternPainter(color: patternColor);
       case 8:
-        return HexagonPatternPainter(color: patternColor); 
+        return HexagonPatternPainter(color: patternColor);
       case 9:
-        return CheckeredPatternPainter(color: patternColor); 
+        return CheckeredPatternPainter(color: patternColor);
+      case 10:
+        return TrianglePatternPainter(color: patternColor);
+      case 11:
+        return DiamondPatternPainter(color: patternColor);
+      case 12:
+        return SpiralDotPatternPainter(color: patternColor);
+      case 13:
+        return BrickPatternPainter(color: patternColor);
+      case 14:
+        return ArrowPatternPainter(color: patternColor);
+      case 15:
+        return ScalePatternPainter(color: patternColor);
+      case 16:
+        return PlusPatternPainter(color: patternColor);
+      case 17:
+        return DashedGridPatternPainter(color: patternColor);
+      case 18:
+        return ConfettiPatternPainter(color: patternColor);
+      case 19:
+        return RingPatternPainter(color: patternColor);
       default:
         return DotPatternPainter(color: patternColor);
     }
@@ -833,6 +910,288 @@ class CheckeredPatternPainter extends CustomPainter {
         if (((x / squareSize).floor() + (y / squareSize).floor()) % 2 == 0) {
           canvas.drawRect(Rect.fromLTWH(x, y, squareSize, squareSize), paint);
         }
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class TrianglePatternPainter extends CustomPainter {
+  final Color color;
+  TrianglePatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    double spacing = 30;
+
+    for (double y = 0; y < size.height + spacing; y += spacing) {
+      for (double x = 0; x < size.width + spacing; x += spacing) {
+        final path = Path()
+          ..moveTo(x, y + spacing)
+          ..lineTo(x + spacing / 2, y)
+          ..lineTo(x + spacing, y + spacing)
+          ..close();
+        canvas.drawPath(path, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class DiamondPatternPainter extends CustomPainter {
+  final Color color;
+  DiamondPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    double s = 18;
+
+    for (double y = s; y < size.height + s; y += s * 2) {
+      for (double x = s; x < size.width + s; x += s * 2) {
+        final path = Path()
+          ..moveTo(x, y - s)
+          ..lineTo(x + s, y)
+          ..lineTo(x, y + s)
+          ..lineTo(x - s, y)
+          ..close();
+        canvas.drawPath(path, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class SpiralDotPatternPainter extends CustomPainter {
+  final Color color;
+  SpiralDotPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    double spacing = 25;
+    int row = 0;
+
+    for (double y = spacing / 2; y < size.height; y += spacing) {
+      double offsetX = (row % 3) * (spacing / 3);
+      for (double x = offsetX; x < size.width; x += spacing) {
+        double radius = (row % 3 == 0)
+            ? 4
+            : (row % 3 == 1)
+            ? 2.5
+            : 1.5;
+        canvas.drawCircle(Offset(x, y), radius, paint);
+      }
+      row++;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class BrickPatternPainter extends CustomPainter {
+  final Color color;
+  BrickPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    double brickW = 40;
+    double brickH = 20;
+    int row = 0;
+
+    for (double y = 0; y < size.height + brickH; y += brickH) {
+      double offsetX = (row % 2 == 0) ? 0 : brickW / 2;
+      for (double x = -brickW + offsetX; x < size.width + brickW; x += brickW) {
+        canvas.drawRect(Rect.fromLTWH(x, y, brickW, brickH), paint);
+      }
+      row++;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class ArrowPatternPainter extends CustomPainter {
+  final Color color;
+  ArrowPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round;
+    double spacingX = 30;
+    double spacingY = 25;
+
+    for (double y = spacingY / 2; y < size.height; y += spacingY) {
+      for (double x = spacingX / 2; x < size.width; x += spacingX) {
+        canvas.drawLine(Offset(x - 8, y - 6), Offset(x, y), paint);
+        canvas.drawLine(Offset(x, y), Offset(x + 8, y - 6), paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class ScalePatternPainter extends CustomPainter {
+  final Color color;
+  ScalePatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    double r = 18;
+    double spacingX = r * 1.5;
+    double spacingY = r * 0.9;
+    int row = 0;
+
+    for (double y = 0; y < size.height + r; y += spacingY) {
+      double offsetX = (row % 2 == 0) ? 0 : spacingX / 2;
+      for (double x = offsetX - r; x < size.width + r; x += spacingX) {
+        canvas.drawArc(
+          Rect.fromCircle(center: Offset(x, y), radius: r),
+          pi,
+          pi,
+          false,
+          paint,
+        );
+      }
+      row++;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class PlusPatternPainter extends CustomPainter {
+  final Color color;
+  PlusPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+    double spacing = 28;
+    double arm = 5;
+
+    for (double y = spacing / 2; y < size.height; y += spacing) {
+      for (double x = spacing / 2; x < size.width; x += spacing) {
+        canvas.drawLine(Offset(x - arm, y), Offset(x + arm, y), paint);
+        canvas.drawLine(Offset(x, y - arm), Offset(x, y + arm), paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class DashedGridPatternPainter extends CustomPainter {
+  final Color color;
+  DashedGridPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5;
+    double spacing = 25;
+    double dashLen = 6;
+    double gap = 4;
+
+    for (double x = 0; x < size.width; x += spacing) {
+      for (double y = 0; y < size.height; y += dashLen + gap) {
+        canvas.drawLine(Offset(x, y), Offset(x, y + dashLen), paint);
+      }
+    }
+    for (double y = 0; y < size.height; y += spacing) {
+      for (double x = 0; x < size.width; x += dashLen + gap) {
+        canvas.drawLine(Offset(x, y), Offset(x + dashLen, y), paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class ConfettiPatternPainter extends CustomPainter {
+  final Color color;
+  ConfettiPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    final shapes = [
+      Rect.fromLTWH(0, 0, 8, 4),
+      Rect.fromLTWH(0, 0, 4, 8),
+      Rect.fromLTWH(0, 0, 5, 5),
+    ];
+    double spacingX = 35;
+    double spacingY = 30;
+    int i = 0;
+
+    for (double y = spacingY / 2; y < size.height; y += spacingY) {
+      for (double x = spacingX / 2; x < size.width; x += spacingX) {
+        canvas.save();
+        canvas.translate(x, y);
+        canvas.rotate((i % 4) * pi / 4);
+        canvas.drawRect(shapes[i % shapes.length], paint);
+        canvas.restore();
+        i++;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class RingPatternPainter extends CustomPainter {
+  final Color color;
+  RingPatternPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    double spacing = 32;
+
+    for (double y = spacing / 2; y < size.height; y += spacing) {
+      for (double x = spacing / 2; x < size.width; x += spacing) {
+        canvas.drawCircle(Offset(x, y), 6, paint);
+        canvas.drawCircle(Offset(x, y), 11, paint);
       }
     }
   }

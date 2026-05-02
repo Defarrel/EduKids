@@ -62,6 +62,24 @@ class _HalalHaramGameScreenState extends State<HalalHaramGameScreen>
     {'name': 'Beer', 'image': 'assets/images/beer.png', 'isHalal': false},
     {'name': 'Honey', 'image': 'assets/images/honey.png', 'isHalal': true},
     {'name': 'date fruit', 'image': 'assets/images/kurma.png', 'isHalal': true},
+    {'name': 'Egg', 'image': 'assets/images/telur.png', 'isHalal': true},
+    {'name': 'Banana', 'image': 'assets/images/banana.png', 'isHalal': true},
+    {'name': 'Carrot', 'image': 'assets/images/carrot.png', 'isHalal': true},
+    {'name': 'Pig', 'image': 'assets/images/pig.png', 'isHalal': false},
+    {
+      'name': 'Watermelon',
+      'image': 'assets/images/watermelon.png',
+      'isHalal': true,
+    },
+    {'name': 'Tomato', 'image': 'assets/images/tomato.png', 'isHalal': true},
+    {'name': 'Candy', 'image': 'assets/images/candy.png', 'isHalal': true},
+    {'name': 'Frog', 'image': 'assets/images/frog.png', 'isHalal': false},
+    {
+      'name': 'Ice Cream',
+      'image': 'assets/images/ice_cream.png',
+      'isHalal': true,
+    },
+    {'name': 'Rat / Mouse', 'image': 'assets/images/rat.png', 'isHalal': false},
   ];
 
   @override

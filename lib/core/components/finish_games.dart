@@ -422,20 +422,22 @@ class _FinishGamesState extends State<FinishGames>
                 // Confetti
                 Positioned(
                   top: -220 * scale,
-                  child: ConfettiWidget(
-                    confettiController: widget.confettiController,
-                    blastDirectionality: BlastDirectionality.explosive,
-                    shouldLoop: false,
-                    colors: const [
-                      Colors.teal,
-                      Colors.orange,
-                      Colors.yellow,
-                      Colors.purpleAccent,
-                      Colors.blue,
-                      Colors.redAccent,
-                    ],
-                    gravity: 0.3,
-                    numberOfParticles: 50,
+                  child: IgnorePointer(
+                    child: ConfettiWidget(
+                      confettiController: widget.confettiController,
+                      blastDirectionality: BlastDirectionality.explosive,
+                      shouldLoop: false,
+                      colors: const [
+                        AppColors.gameGreen,
+                        AppColors.gamePink,
+                        AppColors.gameYellow,
+                        AppColors.gameSkyBlue,
+                        Colors.orange,
+                        Colors.purpleAccent,
+                      ],
+                      gravity: 0.3,
+                      numberOfParticles: 50,
+                    ),
                   ),
                 ),
               ],

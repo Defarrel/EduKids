@@ -407,22 +407,25 @@ class _WinGamesState extends State<WinGames> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
+                // Confetti
                 Positioned(
                   top: -220 * scale,
-                  child: ConfettiWidget(
-                    confettiController: widget.confettiController,
-                    blastDirectionality: BlastDirectionality.explosive,
-                    shouldLoop: false,
-                    colors: const [
-                      AppColors.gameGreen,
-                      AppColors.gamePink,
-                      AppColors.gameYellow,
-                      AppColors.gameSkyBlue,
-                      Colors.orange,
-                      Colors.purpleAccent,
-                    ],
-                    gravity: 0.3,
-                    numberOfParticles: 50,
+                  child: IgnorePointer(
+                    child: ConfettiWidget(
+                      confettiController: widget.confettiController,
+                      blastDirectionality: BlastDirectionality.explosive,
+                      shouldLoop: false,
+                      colors: const [
+                        AppColors.gameGreen,
+                        AppColors.gamePink,
+                        AppColors.gameYellow,
+                        AppColors.gameSkyBlue,
+                        Colors.orange,
+                        Colors.purpleAccent,
+                      ],
+                      gravity: 0.3,
+                      numberOfParticles: 50,
+                    ),
                   ),
                 ),
               ],

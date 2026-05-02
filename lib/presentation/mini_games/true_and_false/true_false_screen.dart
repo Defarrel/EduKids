@@ -60,17 +60,67 @@ class _TrueFalseScreenState extends State<TrueFalseScreen>
     TrueFalseLevel(
       imagePath: 'assets/images/kurma.png',
       question: "Is this haram food?",
-      isTrue: false, 
+      isTrue: false,
     ),
     TrueFalseLevel(
       imagePath: 'assets/images/matahari.png',
       question: "Did Allah create this?",
-      isTrue: true, 
+      isTrue: true,
     ),
     TrueFalseLevel(
       imagePath: 'assets/images/mobil.png',
       question: "Did Allah create this?",
-      isTrue: false, 
+      isTrue: false,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/tasbih.png',
+      question: "Is this used for Dhikr?",
+      isTrue: true,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/wudhu.png',
+      question: "Do we do Wudu before Salah?",
+      isTrue: true,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/pork.png',
+      question: "Is pork Halal in Islam?",
+      isTrue: false,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/adzan.png',
+      question: "Is Adhan a call to prayer?",
+      isTrue: true,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/beer.png',
+      question: "Is alcohol allowed in Islam?",
+      isTrue: false,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/kabah.png',
+      question: "Is Ka'bah located in Mecca?",
+      isTrue: true,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/gunung.png',
+      question: "Did humans build the mountain?",
+      isTrue: false,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/honey.png',
+      question: "Is honey mentioned in the Quran?",
+      isTrue: true,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/peci.png',
+      question: "Is Kufiyyah a Muslim headwear?",
+      isTrue: true,
+    ),
+    TrueFalseLevel(
+      imagePath: 'assets/images/wine.png',
+      question: "Is wine Halal to drink?",
+      isTrue: false,
     ),
   ];
 

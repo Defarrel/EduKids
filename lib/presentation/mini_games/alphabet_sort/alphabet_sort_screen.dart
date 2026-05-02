@@ -69,9 +69,59 @@ class _AlphabetSortScreenState extends State<AlphabetSortScreen>
       hint: "Talking to Allah",
     ),
     AlphabetLevel(
+      answer: "TOMATO",
+      imagePath: 'assets/images/tomato.png',
+      hint: "Red and Round Fruit",
+    ),
+    AlphabetLevel(
       answer: "ZAKAT",
       imagePath: 'assets/images/zakat.png',
       hint: "Giving Charity",
+    ),
+    AlphabetLevel(
+      answer: "WUDHU",
+      imagePath: 'assets/images/wudhu.png',
+      hint: "Purification before prayer",
+    ),
+    AlphabetLevel(
+      answer: "HAJJ",
+      imagePath: 'assets/images/haji.png',
+      hint: "Pilgrimage to Makkah",
+    ),
+    AlphabetLevel(
+      answer: "CAMEL",
+      imagePath: 'assets/images/camel.png',
+      hint: "Animal often mentioned in Islamic stories",
+    ),
+    AlphabetLevel(
+      answer: "HONEY",
+      imagePath: 'assets/images/honey.png',
+      hint: "Sweet Gift from Bees",
+    ),
+    AlphabetLevel(
+      answer: "DOME",
+      imagePath: 'assets/images/kubah.png',
+      hint: "Big Round Roof of a Mosque",
+    ),
+    AlphabetLevel(
+      answer: "FISH",
+      imagePath: 'assets/images/fish.png',
+      hint: "Lives in the Water",
+    ),
+    AlphabetLevel(
+      answer: "MILK",
+      imagePath: 'assets/images/milk.png',
+      hint: "White Healthy Drink",
+    ),
+    AlphabetLevel(
+      answer: "FAST",
+      imagePath: 'assets/images/puasa.png',
+      hint: "No Eating, No Drinking",
+    ),
+    AlphabetLevel(
+      answer: "SUN",
+      imagePath: 'assets/images/matahari.png',
+      hint: "Allah Made It Shine",
     ),
   ];
 

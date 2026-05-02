@@ -27,51 +27,121 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
       title: "Lafadz Allah",
       imagePath: 'assets/images/Lafadz_Allah.png',
       gridSize: 2,
+      boardColor: const Color(0xFFB2DFDB),
     ),
     PuzzleLevel(
       title: "Lafadz Muhammad",
       imagePath: 'assets/images/Lafadz_Muhammad.png',
       gridSize: 2,
+      boardColor: const Color(0xFFFFCC80),
     ),
     PuzzleLevel(
       title: "Ka'bah",
       imagePath: 'assets/images/kabah.png',
       gridSize: 2,
+      boardColor: const Color(0xFF80DEEA),
     ),
     PuzzleLevel(
       title: "Mosque",
       imagePath: 'assets/images/masjid.png',
       gridSize: 2,
+      boardColor: const Color(0xFFCE93D8),
+    ),
+    PuzzleLevel(
+      title: "Prayer Mat",
+      imagePath: 'assets/images/sajadah.png',
+      gridSize: 2,
+      boardColor: const Color(0xFFEF9A9A),
     ),
     PuzzleLevel(
       title: "Muslim dress",
       imagePath: 'assets/images/baju_muslim.png',
-      gridSize: 2,
+      gridSize: 3,
+      boardColor: const Color(0xFF80CBC4),
     ),
     PuzzleLevel(
       title: "The Holy Quran",
       imagePath: 'assets/images/quran.png',
       gridSize: 3,
+      boardColor: const Color(0xFFFFE082),
     ),
     PuzzleLevel(
       title: "The Sun",
       imagePath: 'assets/images/matahari.png',
       gridSize: 3,
+      boardColor: const Color(0xFFFFF176),
     ),
     PuzzleLevel(
       title: "Dates Fruit",
       imagePath: 'assets/images/kurma.png',
       gridSize: 3,
+      boardColor: const Color(0xFFFFAB91),
     ),
     PuzzleLevel(
       title: "Honey",
       imagePath: 'assets/images/honey.png',
       gridSize: 3,
+      boardColor: const Color(0xFFFFD54F),
     ),
     PuzzleLevel(
-      title: "Prayer Mat",
-      imagePath: 'assets/images/sajadah.png',
+      title: "Camel",
+      imagePath: 'assets/images/camel.png',
       gridSize: 3,
+      boardColor: const Color(0xFFBCAAA4),
+    ),
+    PuzzleLevel(
+      title: "Zakat",
+      imagePath: 'assets/images/zakat.png',
+      gridSize: 3,
+      boardColor: const Color(0xFFA5D6A7),
+    ),
+    PuzzleLevel(
+      title: "Adhan",
+      imagePath: 'assets/images/adzan.png',
+      gridSize: 3,
+      boardColor: const Color(0xFF9FA8DA),
+    ),
+    PuzzleLevel(
+      title: "Apple",
+      imagePath: 'assets/images/apple.png',
+      gridSize: 3,
+      boardColor: const Color(0xFFF48FB1),
+    ),
+    PuzzleLevel(
+      title: "Milk",
+      imagePath: 'assets/images/milk.png',
+      gridSize: 3,
+      boardColor: const Color(0xFFC5E1A5),
+    ),
+    PuzzleLevel(
+      title: "Medina",
+      imagePath: 'assets/images/madinah.png',
+      gridSize: 3,
+      boardColor: const Color(0xFFB39DDB),
+    ),
+    PuzzleLevel(
+      title: "Wudhu",
+      imagePath: 'assets/images/wudhu.png',
+      gridSize: 3,
+      boardColor: const Color(0xFF80DEEA),
+    ),
+    PuzzleLevel(
+      title: "Hajj",
+      imagePath: 'assets/images/haji.png',
+      gridSize: 3,
+      boardColor: const Color(0xFFF48FB1),
+    ),
+    PuzzleLevel(
+      title: "Praying",
+      imagePath: 'assets/images/praying.png',
+      gridSize: 3,
+      boardColor: const Color(0xFF69F0AE),
+    ),
+    PuzzleLevel(
+      title: "Dome",
+      imagePath: 'assets/images/kubah.png',
+      gridSize: 3,
+      boardColor: const Color(0xFFFFCC80),
     ),
   ];
 
@@ -443,7 +513,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
                                           Positioned.fill(
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                color: Colors.white,
+                                                color: level.boardColor,
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                                 boxShadow: const [
@@ -739,7 +809,7 @@ class _IslamicPuzzleScreenState extends State<IslamicPuzzleScreen>
           fit: BoxFit.fill,
           color: isGameFinished
               ? null
-              : Colors.white.withOpacity(isFeedback ? 1.0 : 0.95),
+              : Colors.white.withOpacity(isFeedback ? 1.0 : 0.92),
           colorBlendMode: BlendMode.modulate,
           filterQuality: FilterQuality.high,
         ),
