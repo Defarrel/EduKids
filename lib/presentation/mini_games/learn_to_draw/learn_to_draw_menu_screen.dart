@@ -20,6 +20,8 @@ class LearnToDrawMenuScreen extends StatefulWidget {
 class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
     with TickerProviderStateMixin {
   final List<Map<String, String>> _tracingPages = [
+    {'title': 'Allah', 'image': 'assets/images/allah.svg'},
+    {'title': 'Muhammad', 'image': 'assets/images/muhammad.svg'},
     {'title': 'Alif', 'image': 'assets/images/alif.svg'},
     {'title': 'Ba', 'image': 'assets/images/ba.svg'},
     {'title': 'Ta', 'image': 'assets/images/ta.svg'},
@@ -28,8 +30,16 @@ class _LearnToDrawMenuScreenState extends State<LearnToDrawMenuScreen>
     {'title': 'Kha', 'image': 'assets/images/kha.svg'},
     {'title': 'Kho', 'image': 'assets/images/kho.svg'},
     {'title': 'Dal', 'image': 'assets/images/dal.svg'},
-    {'title': 'Allah', 'image': 'assets/images/allah.svg'},
-    {'title': 'Muhammad', 'image': 'assets/images/muhammad.svg'},
+    {'title': 'Dzal', 'image': 'assets/images/dzal.svg'},
+    {'title': 'Ra', 'image': 'assets/images/ra.svg'},
+    {'title': 'Zal', 'image': 'assets/images/zal.svg'},
+    {'title': 'Sin', 'image': 'assets/images/sin.svg'},
+    {'title': 'Syin', 'image': 'assets/images/syin.svg'},
+    {'title': 'Shad', 'image': 'assets/images/shad.svg'},
+    {'title': 'Dhad', 'image': 'assets/images/dhad.svg'},
+    {'title': 'Tha', 'image': 'assets/images/tha.svg'},
+    {'title': 'Zha', 'image': 'assets/images/zha.svg'},
+    {'title': 'Ain', 'image': 'assets/images/ain.svg'},
   ];
 
   final Map<String, Uint8List> _savedDrawings = {};
